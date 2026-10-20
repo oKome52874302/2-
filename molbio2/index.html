@@ -1,0 +1,1025 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>分子生物学Ⅱ 演習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+:root{
+  --bg:#F4F6F8; --surface:#FFFFFF; --sunk:#EBEEF2; --line:#DCE1E8;
+  --ink:#141A24; --muted:#59636F; --faint:#8A939F;
+  --accent:#2748A6; --accent-soft:#E2E8F8; --accent-ink:#1E3B8C; --onaccent:#FFFFFF;
+  --good:#1E7A4C; --good-soft:#DFF1E6;
+  --warn:#9A6212; --warn-soft:#FAEEDC;
+  --bad:#B3302C; --bad-soft:#FBE7E5;
+  --sans:"Noto Sans JP","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  --r:12px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#101319; --surface:#181C24; --sunk:#212632; --line:#2C3340;
+    --ink:#E7EAF0; --muted:#9EA8B6; --faint:#78828F;
+    --accent:#8FA6EE; --accent-soft:#222B44; --accent-ink:#AEBEF5; --onaccent:#0E1118;
+    --good:#5FC08C; --good-soft:#17301F;
+    --warn:#E0AC5C; --warn-soft:#332616;
+    --bad:#F08078; --bad-soft:#36201E;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#101319; --surface:#181C24; --sunk:#212632; --line:#2C3340;
+  --ink:#E7EAF0; --muted:#9EA8B6; --faint:#78828F;
+  --accent:#8FA6EE; --accent-soft:#222B44; --accent-ink:#AEBEF5; --onaccent:#0E1118;
+  --good:#5FC08C; --good-soft:#17301F;
+  --warn:#E0AC5C; --warn-soft:#332616;
+  --bad:#F08078; --bad-soft:#36201E;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.7;-webkit-text-size-adjust:100%}
+.wrap{max-width:720px;margin:0 auto;padding-inline:16px;padding-block:18px 56px}
+h1,h2,h3{margin:0;line-height:1.35;text-wrap:balance}
+h1{font-size:1.35rem;font-weight:700}
+h2{font-size:1.08rem;font-weight:700}
+h3{font-size:.95rem;font-weight:700}
+p{margin:0}
+.muted{color:var(--muted)}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.card > * + *{margin-top:12px}
+.stack{display:grid;gap:14px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.eyebrow{font-size:.7rem;letter-spacing:.14em;color:var(--faint);font-weight:700}
+
+/* header */
+header.app{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:14px}
+button{font:inherit;cursor:pointer}
+.ghost{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:8px;padding:6px 10px;font-size:.82rem}
+.ghost:hover{color:var(--ink)}
+button:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* hero accuracy */
+.hero{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.dial{--p:0;--c:var(--accent);flex:none;width:112px;height:112px;border-radius:50%;display:grid;place-items:center;
+  background:conic-gradient(var(--c) calc(var(--p)*1%), var(--sunk) 0);}
+.dial span{width:84px;height:84px;border-radius:50%;background:var(--surface);display:grid;place-items:center;
+  font-family:var(--mono);font-weight:700;font-size:1.5rem;color:var(--c)}
+.hero .meta{flex:1 1 180px;display:grid;gap:4px}
+.hero .meta b{font-size:1.02rem}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.kpi{background:var(--sunk);border-radius:10px;padding:8px 10px;text-align:center}
+.kpi .v{font-family:var(--mono);font-weight:700;font-size:1.1rem}
+.kpi .l{font-size:.7rem;color:var(--muted)}
+
+/* bars */
+.bars{display:grid;gap:9px}
+.bar{display:grid;grid-template-columns:1fr auto;gap:2px 10px;align-items:baseline}
+.bar .name{font-size:.88rem}
+.bar .num{font-family:var(--mono);font-size:.82rem;color:var(--muted)}
+.bar .track{grid-column:1/-1;height:8px;border-radius:4px;background:var(--sunk);overflow:hidden}
+.bar .fill{height:100%;border-radius:4px;background:var(--accent);transition:width .35s}
+.bar.good .fill{background:var(--good)} .bar.warn .fill{background:var(--warn)} .bar.bad .fill{background:var(--bad)}
+.bar .tag{font-size:.68rem;font-weight:700;padding:0 6px;border-radius:4px}
+.bar.good .tag{background:var(--good-soft);color:var(--good)}
+.bar.warn .tag{background:var(--warn-soft);color:var(--warn)}
+.bar.bad .tag{background:var(--bad-soft);color:var(--bad)}
+@media (prefers-reduced-motion: reduce){.bar .fill{transition:none}}
+
+/* mode picker */
+.modes{display:grid;gap:8px}
+.mode{display:grid;grid-template-columns:1fr auto;gap:4px 12px;align-items:center;text-align:left;width:100%;
+  background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;color:var(--ink)}
+.mode:hover{border-color:var(--accent)}
+.mode[disabled]{opacity:.45;cursor:not-allowed}
+.mode b{font-size:.96rem;grid-column:1;grid-row:1}
+.mode small{grid-column:1;color:var(--muted);font-size:.8rem;line-height:1.5}
+.mode .cnt{grid-column:2;grid-row:1/3;font-family:var(--mono);font-size:.8rem;color:var(--accent);background:var(--accent-soft);padding:4px 8px;border-radius:999px}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{background:var(--sunk);border:1px solid transparent;color:var(--muted);border-radius:999px;padding:5px 12px;font-size:.84rem}
+.seg button[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent-ink);border-color:var(--accent);font-weight:700}
+
+/* quiz */
+.qhead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--sunk);color:var(--muted)}
+.chip.type{background:var(--accent-soft);color:var(--accent-ink)}
+.prog{height:5px;border-radius:3px;background:var(--sunk);overflow:hidden;margin-bottom:14px}
+.prog span{display:block;height:100%;background:var(--accent);transition:width .3s}
+.qtext{font-size:1.04rem;line-height:1.85;font-weight:500}
+.tfrow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.opt{display:block;width:100%;text-align:left;background:var(--surface);border:1.5px solid var(--line);color:var(--ink);
+  border-radius:10px;padding:12px 14px;font-size:.95rem;line-height:1.6}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt:disabled{cursor:default}
+.tfrow .opt{text-align:center;font-size:1.25rem;font-weight:700;padding:14px}
+.opt.pick{border-color:var(--accent);background:var(--accent-soft)}
+.opt.right{border-color:var(--good);background:var(--good-soft);color:var(--good)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.opts{display:grid;gap:8px}
+textarea{width:100%;min-height:140px;background:var(--sunk);border:1px solid var(--line);border-radius:10px;
+  padding:12px;color:var(--ink);font:inherit;font-size:.95rem;line-height:1.7;resize:vertical}
+.primary{background:var(--accent);color:var(--onaccent);border:0;border-radius:10px;padding:12px 18px;font-weight:700;font-size:.95rem;width:100%}
+.verdict{border-radius:10px;padding:12px 14px;font-weight:700;display:flex;gap:8px;align-items:center}
+.verdict.ok{background:var(--good-soft);color:var(--good)}
+.verdict.ng{background:var(--bad-soft);color:var(--bad)}
+.explain{background:var(--sunk);border-radius:10px;padding:12px 14px;font-size:.92rem;line-height:1.8}
+.explain b{color:var(--accent-ink)}
+.kw{display:flex;flex-wrap:wrap;gap:6px}
+.kw span{font-size:.82rem;padding:2px 9px;border-radius:6px;font-weight:500}
+.kw .hit{background:var(--good-soft);color:var(--good)}
+.kw .miss{background:var(--bad-soft);color:var(--bad)}
+details.model{border:1px solid var(--line);border-radius:10px}
+details.model summary{padding:10px 14px;font-weight:700;font-size:.9rem;cursor:pointer;list-style:none}
+details.model summary::-webkit-details-marker{display:none}
+details.model summary::before{content:"▸ ";color:var(--accent)}
+details.model[open] summary::before{content:"▾ "}
+details.model .body{padding:0 14px 14px;font-size:.92rem;line-height:1.85}
+
+/* cloze */
+.cz{font-size:1.02rem;line-height:2.3;font-weight:500}
+.cz .pick{display:inline-flex;gap:0;margin:0 2px;vertical-align:baseline;border-radius:7px;overflow:hidden;border:1.5px solid var(--accent)}
+.cz .pick button{font:inherit;font-size:.88rem;line-height:1.5;padding:1px 9px;border:0;background:var(--surface);color:var(--muted);cursor:pointer}
+.cz .pick button+button{border-left:1.5px solid var(--accent)}
+.cz .pick button[aria-pressed="true"]{background:var(--accent);color:var(--onaccent);font-weight:700}
+.cz .pick.right{border-color:var(--good)} .cz .pick.right button[aria-pressed="true"]{background:var(--good)}
+.cz .pick.wrong{border-color:var(--bad)} .cz .pick.wrong button[aria-pressed="true"]{background:var(--bad)}
+.cz .pick button:disabled{cursor:default}
+.cz select{font:inherit;font-size:.92rem;padding:2px 6px;margin:0 2px;border:0;border-bottom:2px solid var(--accent);border-radius:6px 6px 0 0;background:var(--accent-soft);color:var(--ink)}
+.cz select.right{border-color:var(--good);background:var(--good-soft);color:var(--good);opacity:1}
+.cz select.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad);opacity:1}
+.cz input{font:inherit;font-size:.95rem;line-height:1.4;min-width:4.5em;max-width:100%;padding:2px 8px;margin:0 2px;
+  border:0;border-bottom:2px solid var(--accent);border-radius:6px 6px 0 0;background:var(--accent-soft);color:var(--ink);vertical-align:baseline}
+.cz input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.cz input.right{border-color:var(--good);background:var(--good-soft);color:var(--good)}
+.cz input.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad);text-decoration:line-through}
+.cz .ans{font-size:.85rem;font-weight:700;color:var(--good);background:var(--good-soft);border-radius:6px;padding:1px 6px;margin-right:2px}
+.src{font-size:.78rem;color:var(--faint)}
+.zoomable{display:block;width:100%;padding:0;border:0;background:none;cursor:zoom-in;font:inherit;text-align:left}
+#lb{position:fixed;inset:0;z-index:50;background:rgba(10,12,18,.92);display:flex;flex-direction:column}
+#lb[hidden]{display:none!important}
+.lbbar{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 14px;padding-top:calc(10px + env(safe-area-inset-top,0px));color:#E7EAF0;font-size:.85rem}
+.lbbar button,.lbzoom button{font:inherit;font-size:.88rem;border:1px solid #556;background:#222836;color:#fff;border-radius:8px;padding:6px 12px;cursor:pointer}
+.lbbox{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y pinch-zoom;padding:0 8px}
+.lbbox img{display:block;width:100%;max-width:none;height:auto;background:#fff;margin:0 auto}
+.lbzoom{display:flex;justify-content:center;gap:8px;padding:10px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px))}
+.crop{display:block;position:relative;width:100%;background-color:#fff;background-repeat:no-repeat;border:1px solid var(--line);border-radius:8px;margin-top:4px;overflow:hidden}
+.crop .mk{position:absolute;background:rgba(255,214,0,.38);mix-blend-mode:multiply;border-radius:2px}
+.cropcap{font-size:.78rem;font-weight:700;color:var(--muted);margin-top:10px}
+.slide img.full,.slide img{display:block;width:100%;height:auto;border-radius:8px;border:1px solid var(--line);background:#fff;margin-top:8px}
+.slq{margin:0;padding:8px 12px;border-left:3px solid var(--accent);background:var(--accent-soft);border-radius:0 8px 8px 0;font-size:.88rem;line-height:1.75}
+/* result */
+.review{display:grid;gap:8px}
+.rev{border:1px solid var(--line);border-left:3px solid var(--bad);border-radius:8px;padding:10px 12px;font-size:.88rem}
+.rev .q{font-weight:500}
+.rev .a{color:var(--muted);margin-top:4px}
+footer{margin-top:24px;font-size:.78rem;color:var(--faint);text-align:center}
+</style>
+
+<div class="wrap">
+<header class="app">
+  <div>
+    <a class="eyebrow" href="../" style="text-decoration:none">← 科目一覧</a>
+    <div class="eyebrow">分子生物学Ⅱ ・ 中間試験対策</div>
+    <h1 id="screenTitle">演習モード</h1>
+  </div>
+  <button class="ghost" id="homeBtn" hidden>ホームへ</button>
+</header>
+
+<!-- ======== HOME ======== -->
+<section id="home" class="stack">
+  <div class="card">
+    <div class="hero">
+      <div class="dial" id="dial"><span id="dialNum">—</span></div>
+      <div class="meta">
+        <div class="eyebrow">通算正答率</div>
+        <b id="heroLine">まだ解答がありません</b>
+        <p class="muted" style="font-size:.85rem" id="heroSub">どのモードからでも始められます。記録はこの端末のブラウザに保存されます。</p>
+      </div>
+    </div>
+    <div class="kpis">
+      <div class="kpi"><div class="v mono" id="kTotal">0</div><div class="l">解答した問題</div></div>
+      <div class="kpi"><div class="v mono" id="kWrong">0</div><div class="l">要復習</div></div>
+      <div class="kpi"><div class="v mono" id="kSeen">0<span style="font-size:.7rem">/382</span></div><div class="l">出題済み</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>演習モード</h2>
+    <div class="row" style="justify-content:space-between">
+      <span class="muted" style="font-size:.85rem">1回の問題数</span>
+      <div class="seg" id="lenSeg" role="group" aria-label="1回の問題数">
+        <button data-len="5" aria-pressed="false">5問</button>
+        <button data-len="10" aria-pressed="true">10問</button>
+        <button data-len="20" aria-pressed="false">20問</button>
+        <button data-len="999" aria-pressed="false">全部</button>
+      </div>
+    </div>
+    <div class="modes" id="modes">
+      <button class="mode" data-mode="lec1"><b>第1講から出す</b><span class="cnt" id="c-lec1">0</span><small>受容体・転写調節・ステロイド薬・クロマチン</small></button>
+      <button class="mode" data-mode="lec2"><b>第2講から出す</b><span class="cnt" id="c-lec2">0</span><small>NF-κB・レチノイド・APLとトレチノイン・ビタミンD</small></button>
+      <button class="mode" data-mode="lec3"><b>第3講から出す</b><span class="cnt" id="c-lec3">0</span><small>骨代謝・石灰化・RANKL/OPG・骨粗鬆症治療薬</small></button>
+      <button class="mode" data-mode="lec4"><b>第4講から出す</b><span class="cnt" id="c-lec4">0</span><small>ビタミンDとCa吸収・PTH・骨形成と骨吸収</small></button>
+      <button class="mode" data-mode="lec5"><b>予習範囲から出す</b><span class="cnt" id="c-lec5">0</span><small>穴埋めシートにあって、第1〜3講のスライドには無かった内容。がんと遺伝子変異・エピジェネティクス治療薬・骨転移・Gタンパク質の詳細</small></button>
+      <button class="mode" data-mode="all"><b>全範囲からランダム</b><span class="cnt" id="c-all">0</span><small>試験前の通し演習に</small></button>
+      <button class="mode" data-mode="wrong"><b>間違えた問題だけ</b><span class="cnt" id="c-wrong">0</span><small>直近で落とした問題を繰り返す</small></button>
+      <button class="mode" data-mode="weak"><b>苦手な論点を優先</b><span class="cnt" id="c-weak">0</span><small>正答率の低い論点から多めに出題</small></button>
+    </div>
+    <div class="row" style="justify-content:space-between">
+      <span class="muted" style="font-size:.85rem">出題形式</span>
+      <div class="seg" id="typeSeg" role="group" aria-label="出題形式">
+        <button data-type="all" aria-pressed="true">すべて</button>
+        <button data-type="tf" aria-pressed="false">正誤</button>
+        <button data-type="mc" aria-pressed="false">四択</button>
+        <button data-type="desc" aria-pressed="false">記述</button>
+        <button data-type="cloze" aria-pressed="false">穴埋め</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>論点別の正答率</h2>
+    <p class="muted" style="font-size:.85rem">3問以上解いた論点だけ表示します。色は到達度(80%以上・60%以上・それ未満)を示し、数字も併記しています。</p>
+    <div class="bars" id="topicBars"><p class="muted" style="font-size:.88rem">まだデータがありません。</p></div>
+  </div>
+
+  <div class="card">
+    <h2>講義別</h2>
+    <div class="bars" id="lecBars"></div>
+  </div>
+
+  <div class="card">
+    <div class="row" style="justify-content:space-between">
+      <div><h3>記録のリセット</h3><p class="muted" style="font-size:.82rem">正答率と履歴をすべて消します。</p></div>
+      <button class="ghost" id="resetBtn">リセット</button>
+    </div>
+  </div>
+</section>
+
+<!-- ======== QUIZ ======== -->
+<section id="quiz" hidden>
+  <div class="prog"><span id="progFill" style="width:0"></span></div>
+  <div class="qhead">
+    <div class="chips" id="qChips"></div>
+    <span class="mono muted" style="font-size:.82rem" id="qCount"></span>
+  </div>
+  <div class="card stack">
+    <p class="qtext" id="qText"></p>
+    <div id="answerArea"></div>
+    <div id="feedback" aria-live="polite"></div>
+  </div>
+  <div style="margin-top:14px"><button class="primary" id="nextBtn" hidden>次の問題へ</button></div>
+</section>
+
+<!-- ======== RESULT ======== -->
+<section id="result" hidden class="stack">
+  <div class="card">
+    <div class="hero">
+      <div class="dial" id="rDial"><span id="rDialNum">—</span></div>
+      <div class="meta">
+        <div class="eyebrow">今回の結果</div>
+        <b id="rLine"></b>
+        <p class="muted" style="font-size:.85rem" id="rSub"></p>
+      </div>
+    </div>
+  </div>
+  <div class="card" id="rReviewCard">
+    <h2>落とした問題</h2>
+    <div class="review" id="rReview"></div>
+  </div>
+  <div class="stack">
+    <button class="primary" id="againBtn">もう一度おなじモードで</button>
+    <button class="ghost" id="retryWrongBtn" style="padding:12px;width:100%">今回間違えた問題だけ解き直す</button>
+  </div>
+</section>
+
+<footer>問題は第1〜4講のスライド・課題レポート・穴埋めシートから作成 ・ 全382問</footer>
+</div>
+
+<script>
+// ===================== QUESTION BANK =====================
+const T = {
+  horm:"ホルモン・オータコイド", rec:"受容体の型", tx:"転写の基本", basal:"基本転写活性",
+  nuc:"核内受容体", ster:"ステロイド薬と炎症", ret:"レチノイド", chr:"クロマチン",
+  thy:"甲状腺ホルモン", apl:"APLとトレチノイン", vd:"ビタミンDとCa", bone:"骨代謝", drug:"骨粗鬆症治療薬",
+  cancer:"がんと遺伝子変異", epi:"エピジェネティクスと治療薬", kid:"腎臓", meta:"骨転移と高Ca血症", gpcr:"Gタンパク質とPKA"
+};
+const Q = [
+// ---------- 第1講 ----------
+{id:1,lec:1,t:T.horm,type:"tf",q:"オータコイドとは、産生された局所で作用する生理活性分子であり、プロスタグランジンE₂やロイコトリエンD₄がこれにあたる。",a:true,ex:"ホルモンが血液を介して遠隔の標的細胞に働くのに対し、オータコイドは局所で作られ局所で働く。"},
+{id:2,lec:1,t:T.horm,type:"tf",q:"血管透過性が亢進すると、血漿は毛細血管の血管平滑筋細胞間の間隙から間質へ漏れ出る。",a:false,fix:"血管平滑筋細胞 → 血管内皮細胞",ex:"透過性を決めるのは<b>血管内皮細胞</b>の間隙。平滑筋細胞は血管の拡張・収縮を担当する。課題でも繰り返し問われた論点。"},
+{id:3,lec:1,t:T.horm,type:"tf",q:"インスリンは膵ランゲルハンス島のα細胞から分泌されるペプチド性ホルモンである。",a:false,fix:"α細胞 → β細胞",ex:"α細胞から出るのはグルカゴン。インスリンの標的は肝細胞・脂肪細胞・骨格筋細胞。"},
+{id:4,lec:1,t:T.horm,type:"tf",q:"細胞が分泌した生理活性分子が、その細胞自身の受容体に作用する情報伝達様式をオートクリンという。",a:true,ex:"近傍の別の細胞に作用するのがパラクリン。第1講・第2講の課題で合計4回問われている。"},
+{id:5,lec:1,t:T.horm,type:"tf",q:"ダメージを受けた皮膚細胞から分泌されたTNF-αが近傍の未損傷皮膚細胞に作用するのは、オートクリン作用である。",a:false,fix:"オートクリン → パラクリン",ex:"自分自身に作用すればオートクリン、近くの別の細胞ならパラクリン。TNF-αは両方の働き方をする。"},
+{id:6,lec:1,t:T.horm,type:"mc",q:"炎症性脂質メディエーターに分類されるのはどれか。",ch:["プロスタグランジンE₂","TNF-α","IL-1β","NF-κB"],a:0,ex:"PG・LTが<b>脂質メディエーター</b>、TNF-αとIL-1βが<b>サイトカイン</b>。NF-κBは転写因子。"},
+{id:7,lec:1,t:T.horm,type:"mc",q:"細胞外マトリックスの構成成分として挙げられていないのはどれか。",ch:["コラーゲン","ラミニン","フィブロネクチン","ヒストン"],a:3,ex:"ヒストンは核内でDNAを巻き取るタンパク質。細胞外マトリックスは細胞の支持・接着・情報伝達に関わる。"},
+{id:8,lec:1,t:T.rec,type:"mc",q:"Gqタンパク質共役型受容体の下流として正しい組み合わせはどれか。",ch:["PLC → IP₃ → Ca²⁺ → CaMキナーゼ","PLC → IP₃ → プロテインキナーゼC","アデニル酸シクラーゼ → cAMP → PKA","グアニル酸シクラーゼ → cGMP → PKG"],a:0,ex:"IP₃はCa²⁺を動かしCaMキナーゼへ、DGがプロテインキナーゼCを活性化する。課題問14の引っかけ。"},
+{id:9,lec:1,t:T.rec,type:"tf",q:"Gsタンパク質共役型受容体が活性化されると、アデニル酸シクラーゼによってATPからcAMPが生成される。",a:true,ex:"「cAMPからATP」と書いてあったら×。向きが逆の引っかけが課題に出ている。"},
+{id:10,lec:1,t:T.rec,type:"tf",q:"イオンチャネル型受容体は、ATPを利用してイオンを能動輸送する。",a:false,fix:"能動輸送 → 受動輸送",ex:"チャネルはゲートが開いて濃度勾配に従ってイオンを通す。ATPを使うのはポンプ(PMCA1bなど)。"},
+{id:11,lec:1,t:T.rec,type:"mc",q:"ステロイドホルモンが結合する受容体はどの型か。",ch:["細胞質／核内受容体型","イオンチャネル型","Gタンパク質共役型","接着分子型"],a:0,ex:"脂溶性のため細胞膜を通過でき、受容体自身が転写因子として働く。"},
+{id:12,lec:1,t:T.rec,type:"tf",q:"レドックス制御型受容体では、酸化ストレスによってNF-κBやAP-1などの転写因子が活性化される。",a:true,ex:"炎症・放射線による酸化ストレスが引き金。受容体7分類のうちの一つ。"},
+{id:13,lec:1,t:T.tx,type:"tf",q:"RNAポリメラーゼⅡは、転写領域のDNAを3'→5'方向に移動しながらmRNAを合成する。",a:false,fix:"3'→5' → 5'→3'",ex:"講義の表記では、移動も合成も<b>5'→3'</b>。方向を入れ替える引っかけは課題に3回出ている。"},
+{id:14,lec:1,t:T.tx,type:"tf",q:"mRNAの5'末端には7-メチルアデノシンが結合し、キャップ構造を形成する。",a:false,fix:"7-メチルアデノシン → 7-メチルグアノシン",ex:"ポリ(A)の印象に引きずられてアデノシンと答えがちな問題。キャップはグアノシン。"},
+{id:15,lec:1,t:T.tx,type:"mc",q:"ヘテロ核RNA(hnRNA)の説明として正しいのはどれか。",ch:["スプライシング前の、エキソンとイントロンを含む一次転写産物","イントロンが除去された成熟mRNA","リボソームを構成するRNA","アミノ酸を運搬するRNA"],a:0,ex:"hnRNA → キャップ付加 → スプライシング → ポリ(A)付加 → 成熟mRNA。"},
+{id:16,lec:1,t:T.tx,type:"tf",q:"ポリ(A)鎖は3'末端に付加され、mRNAの安定性と翻訳効率に寄与する。",a:true,ex:"付加シグナルはAATAAA。ベクターの基本要素としても出てくる。"},
+{id:17,lec:1,t:T.tx,type:"tf",q:"リボソーム上では、アミノ酸がC末端からN末端の方向へ連結されてタンパク質が合成される。",a:false,fix:"C末端→N末端 → N末端→C末端",ex:"核酸は5'→3'、タンパク質はN→C。セットで覚える。"},
+{id:18,lec:1,t:T.tx,type:"mc",q:"プロモーターに結合するものとして正しいのはどれか。",ch:["基本転写因子とRNAポリメラーゼⅡ","転写活性化因子","転写抑制因子","コリプレッサー"],a:0,ex:"転写活性化因子はエンハンサー、転写抑制因子はサイレンサーに結合する。"},
+{id:19,lec:1,t:T.tx,type:"tf",q:"エンハンサーには転写抑制因子が結合する。",a:false,fix:"転写抑制因子 → 転写活性化因子",ex:"抑制因子が結合するのはサイレンサー。3者の対応は毎回問われる。"},
+{id:20,lec:1,t:T.basal,type:"tf",q:"プロモーターのCAATボックスには転写因子NF-Yが、GCボックスにはSp1が結合する。",a:true,ex:"入れ替えた形(CAATにSp1、GCにNF-Y)で×問題が作られている。"},
+{id:21,lec:1,t:T.basal,type:"tf",q:"転写開始複合体の形成後にRNAポリメラーゼⅡがリン酸化されると、NF-YやSp1もプロモーターから離れる。",a:false,fix:"NF-YやSp1は結合したまま",ex:"崩壊するのは<b>基本転写装置</b>だけ。NF-Y/Sp1が残っているから、すぐ再構築できる。"},
+{id:22,lec:1,t:T.basal,type:"tf",q:"RNAポリメラーゼⅡが転写領域を1回移動すると、1本のヘテロ核RNAが合成される。",a:true,ex:"「複数本」と書いてあれば×。合成量は移動回数で決まる。"},
+{id:23,lec:1,t:T.basal,type:"mc",q:"基本転写活性とは何か。",ch:["単位時間あたりのmRNA合成量","転写開始複合体の数","プロモーターに結合した転写因子の数","1本のmRNAの長さ"],a:0,ex:"構築→崩壊→放出→再構築の繰り返し回数が、単位時間あたりの合成量を決める。"},
+{id:24,lec:1,t:T.basal,type:"tf",q:"基本転写活性がない遺伝子では、転写活性化因子とコアクチベーターが結合して初めてプロモーター上に基本転写装置が構築される。",a:true,ex:"「ある遺伝子」は元の速度を上げる、「ない遺伝子」はゼロから起こす。この対比が狙われる。"},
+{id:25,lec:1,t:T.basal,type:"mc",q:"コアクチベーターの働きとして正しいのはどれか。",ch:["転写活性化因子と基本転写装置を橋渡しし、構築と再構築を速める","RNAポリメラーゼⅡを分解する","サイレンサーに結合して転写を抑える","mRNAにポリ(A)を付加する"],a:0,ex:"結果として単位時間あたりのmRNA合成量が増える。締めの一文まで書けると記述で強い。"},
+{id:26,lec:1,t:T.nuc,type:"tf",q:"レチノイン酸受容体(RAR)と甲状腺ホルモン受容体(TR)は細胞質受容体であり、ホモ二量体を形成して働く。",a:false,fix:"核内受容体／RXRとヘテロ二量体",ex:"ホモ二量体はGR・MR・AR・ER。RAR・TR・VDRはRXRとヘテロ二量体。課題で3回問われている最頻出。"},
+{id:27,lec:1,t:T.nuc,type:"tf",q:"テストステロンが結合してホモ二量体化したミネラルコルチコイド受容体は、ミネラルコルチコイド応答配列に結合する。",a:false,fix:"テストステロン → アルドステロン",ex:"テストステロンはアンドロゲン受容体のリガンド。リガンドと受容体の組み合わせをずらす定番の作り方。"},
+{id:28,lec:1,t:T.nuc,type:"mc",q:"グルココルチコイドに分類されるのはどれか。",ch:["コルチゾール","アルドステロン","テストステロン","エストラジオール"],a:0,ex:"アルドステロン=ミネラルコルチコイド、テストステロン=アンドロゲン、エストラジオール=エストロゲン。"},
+{id:29,lec:1,t:T.nuc,type:"mc",q:"受容体と応答配列の組み合わせとして正しいのはどれか。",ch:["VDR — VDRE","RAR — TRE","TR — RARE","GR — ERE"],a:0,ex:"RAR→RARE、TR→TRE、GR→GRE、ER→ERE。頭文字で揃っている。"},
+{id:30,lec:1,t:T.nuc,type:"tf",q:"ステロイドホルモン受容体のDNA結合ドメインには、ジンクフィンガーモチーフが存在する。",a:true,ex:"ヘリックス・ターン・ヘリックスに差し替える×問題が課題に出ている。"},
+{id:31,lec:1,t:T.nuc,type:"tf",q:"ステロイドホルモン受容体は、リガンド非存在下では細胞質でHsp90などの熱ショックタンパク質と複合体を形成している。",a:true,ex:"リガンド結合でHspが解離 → ホモ二量体化 → 核内移行、の順。"},
+{id:32,lec:1,t:T.nuc,type:"mc",q:"ATRA非存在下のRAR/RXRヘテロ二量体で起きていることはどれか。",ch:["コリプレッサーとHDACがリクルートされ、転写が抑制されている","コアクチベーターとHATがリクルートされている","RAR/RXRがRAREから解離している","サイレンサーに転写抑制因子が結合している"],a:0,ex:"RAR/RXRはRAREに結合したまま。外れるわけではない点が課題問53の引っかけ。"},
+{id:33,lec:1,t:T.nuc,type:"desc",q:"ステロイドホルモンが標的遺伝子の転写を活性化するまでを、細胞膜の通過から順に説明せよ。",kw:[{k:"脂質二重層を通過",a:["脂質二重層","細胞膜を通過","受動拡散"]},{k:"熱ショックタンパク質の解離",a:["熱ショック","HSP","Hsp90"]},{k:"ホモ二量体",a:["ホモ二量体","ホモ2量体"]},{k:"核内移行",a:["核内へ移行","核内移行","核へ移行"]},{k:"応答配列に結合",a:["応答配列","SHRE","GRE"]},{k:"コアクチベーター",a:["コアクチベーター","コアクチベータ"]},{k:"基本転写装置／転写開始複合体",a:["基本転写装置","転写開始複合体"]}],model:"ステロイドホルモンは脂溶性が高く、細胞膜の脂質二重層を受動拡散で通過して細胞内に入る。細胞質で熱ショックタンパク質と複合体を形成している受容体に結合すると、熱ショックタンパク質が解離し、受容体は構造変化してホモ二量体を形成する。二量体は核内へ移行し、DNA結合ドメインのジンクフィンガーを介して標的遺伝子の転写調節領域に存在するステロイドホルモン応答配列に結合する。そこにコアクチベーターが結合し、基本転写装置と相互作用して転写開始複合体が形成されることで、標的遺伝子の転写が活性化される。"},
+// ---------- ステロイド薬と炎症 ----------
+{id:34,lec:2,t:T.ster,type:"tf",q:"ベタメタゾン吉草酸エステルは、合成ミネラルコルチコイド製剤である。",a:false,fix:"ミネラルコルチコイド → グルココルチコイド",ex:"コルチゾールに類似した構造をもつ合成グルココルチコイド。「副腎髄質ホルモン剤」と書く×問題もある(正しくは副腎皮質)。"},
+{id:35,lec:2,t:T.ster,type:"tf",q:"ベタメタゾンをエステル化すると脂溶性が上がり、皮膚透過性と局所滞留性が高まる。",a:true,ex:"外用薬として局所で効かせるための工夫。"},
+{id:36,lec:2,t:T.ster,type:"tf",q:"IκB遺伝子の転写調節領域にはグルココルチコイド応答配列(GRE)が存在する。",a:true,ex:"だからステロイド薬はIκBを発現誘導できる。リポコルチン遺伝子も同じくGREをもつ。"},
+{id:37,lec:2,t:T.ster,type:"tf",q:"ステロイド薬によって発現誘導されたIκBは、核内でNF-κBに結合して転写を抑制する。",a:false,fix:"核内 → 細胞質",ex:"IκBは<b>細胞質で</b>NF-κBに結合し、核内移行そのものを阻止する。場所をずらす引っかけが頻出。"},
+{id:38,lec:2,t:T.ster,type:"tf",q:"炎症刺激が加わると、IκBキナーゼが不活性化されIκBが脱リン酸化されて分解される。",a:false,fix:"不活性化→活性化、脱リン酸化→リン酸化",ex:"IκBキナーゼ活性化 → IκBリン酸化 → 分解 → NF-κBの核内移行、が正しい順。"},
+{id:39,lec:2,t:T.ster,type:"mc",q:"trans-repressionの説明として正しいのはどれか。",ch:["GRがNF-κBと直接結合し、その核内移行を阻止する","GRがGREに結合してリポコルチンを発現誘導する","GRがnGREに結合して転写を抑制する","GRがコアクチベーターを呼び寄せる"],a:0,ex:"GREでの発現誘導がtrans-activation。2つを分けて書けるかが記述の分かれ目。"},
+{id:40,lec:2,t:T.ster,type:"tf",q:"リポコルチンは、ホスホリパーゼA₂の発現誘導を抑制することでアラキドン酸の遊離を抑える。",a:false,fix:"発現誘導の抑制 → 酵素活性の阻害",ex:"リポコルチンが抑えるのはPLA₂の<b>酵素活性</b>。転写レベルか活性レベルかをずらす引っかけ。"},
+{id:41,lec:2,t:T.ster,type:"mc",q:"ホスホリパーゼA₂が切り出すのはどれか。",ch:["グリセロール骨格2位の不飽和脂肪酸(アラキドン酸)","グリセロール骨格1位の飽和脂肪酸(パルミチン酸)","3位のリン酸基","コレステロール"],a:0,ex:"1位が飽和脂肪酸、2位が不飽和脂肪酸、3位がリン酸基。位置を入れ替える×問題が課題に2問出ている。"},
+{id:42,lec:2,t:T.ster,type:"tf",q:"炎症時に発現誘導され、アラキドン酸からプロスタグランジンを産生するのはシクロオキシゲナーゼ-1である。",a:false,fix:"COX-1 → COX-2",ex:"COX-2は炎症時に<b>発現誘導</b>される。既存の酵素が活性化されるのはPLA₂のほう。"},
+{id:43,lec:2,t:T.ster,type:"mc",q:"COX-2遺伝子の発現を誘導する転写因子はどれか。",ch:["NF-κB","IκB","Sp1","コリプレッサー"],a:0,ex:"COX-2遺伝子の転写調節領域にNF-κB結合配列がある。ステロイド薬はここを止めにいく。"},
+{id:44,lec:2,t:T.ster,type:"tf",q:"ロイコトリエンD₄は、シクロオキシゲナーゼ-2がアラキドン酸に働くことで産生される。",a:false,fix:"シクロオキシゲナーゼ-2 → リポキシゲナーゼ",ex:"COX-2→プロスタグランジン、リポキシゲナーゼ→ロイコトリエン。経路の取り違えは定番。"},
+{id:45,lec:2,t:T.ster,type:"desc",q:"ステロイド外用薬が皮膚の炎症を抑える機序を、trans-activationとtrans-repressionに分けて説明せよ。",kw:[{k:"GREに結合",a:["GRE","グルココルチコイド応答配列"]},{k:"リポコルチン",a:["リポコルチン"]},{k:"IκB",a:["IκB","IkB","IκＢ"]},{k:"NF-κBと直接結合",a:["NF-κBと直接","NF-κBに直接","直接結合"]},{k:"核内移行を阻止",a:["核内移行を阻止","核内移行が阻止","核移行を阻止","核内移行を抑制"]},{k:"ホスホリパーゼA2の阻害",a:["ホスホリパーゼA","PLA2","PLA₂"]},{k:"アラキドン酸の遊離抑制",a:["アラキドン酸"]}],model:"trans-activation: ステロイド薬が結合したグルココルチコイド受容体はホモ二量体を形成して核内に移行し、リポコルチンやIκBをコードする遺伝子のグルココルチコイド応答配列(GRE)に結合して転写を活性化する。リポコルチンはホスホリパーゼA₂の酵素活性を阻害し、細胞膜リン脂質からのアラキドン酸の遊離を抑えるため、プロスタグランジンやロイコトリエンの産生が低下する。trans-repression: ステロイド薬が結合した受容体は細胞質でNF-κBと直接結合してその核内移行を阻止し、IL-1βやTNF-αなど炎症関連遺伝子の転写を抑制する。さらに増加したIκBもNF-κBに結合して核内移行を抑えるため、COX-2の発現誘導も抑制される。"},
+// ---------- レチノイド ----------
+{id:46,lec:2,t:T.ret,type:"tf",q:"β-カロテンは小腸上皮細胞内で還元されてレチナールになる。",a:false,fix:"還元 → 開裂(酸化的開裂)",ex:"β-カロテン15,15'-ジオキシゲナーゼによる開裂で2分子のレチナールになる。"},
+{id:47,lec:2,t:T.ret,type:"tf",q:"レチノールはレチノール結合タンパク質(RBP)と複合体を形成して血中を運ばれ、輸送担体STRA6を介して細胞内に取り込まれる。",a:true,ex:"細胞内ではCRBPに受け渡される。"},
+{id:48,lec:2,t:T.ret,type:"mc",q:"レチノイン酸受容体(RAR)に結合するリガンドはどれか。",ch:["全trans-レチノイン酸","9-cis-レチノイン酸","レチナール","β-カロテン"],a:0,ex:"9-cis型が結合するのはRXR。課題問41の引っかけ。"},
+{id:49,lec:2,t:T.ret,type:"tf",q:"レチノールからレチナール、レチナールからレチノイン酸への変換は、いずれも酸化反応である。",a:true,ex:"RDHとRALDHはどちらも脱水素酵素。「還元」と書いてあれば×。"},
+// ---------- クロマチン ----------
+{id:50,lec:1,t:T.chr,type:"tf",q:"ヒストンはリジンやアルギニンなどの酸性アミノ酸を多く含むため、正に帯電している。",a:false,fix:"酸性アミノ酸 → 塩基性アミノ酸",ex:"リジン・アルギニンは塩基性アミノ酸。DNAのリン酸基は負に帯電し、静電的に引き合う。"},
+{id:51,lec:1,t:T.chr,type:"tf",q:"HATがリジン残基のε-アミノ基をアセチル化すると正電荷が消失し、DNAとの静電的相互作用が弱まる。",a:true,ex:"「正電荷が増加する」と書いてあれば×。消失が正しい。"},
+{id:52,lec:1,t:T.chr,type:"tf",q:"HDACが働くとクロマチンが弛緩し、ユークロマチン化が進んで転写が活性化される。",a:false,fix:"弛緩・ユークロマチン → 凝集・ヘテロクロマチン",ex:"HAT=弛緩=転写活性化、HDAC=凝集=転写抑制。逆にする×問題が3問出ている。"},
+{id:53,lec:1,t:T.chr,type:"mc",q:"ヌクレオソームを構成するヒストン八量体の組み合わせはどれか。",ch:["H2A・H2B・H3・H4が各2分子","H2A・H2B・H3・H1が各2分子","H1・H2A・H3・H4が各2分子","H2A・H2B・H3・H4・H1が各1分子"],a:0,ex:"H1はリンカーDNAに結合してクロマチンを安定化する別枠。"},
+{id:54,lec:2,t:T.chr,type:"mc",q:"ATRAがRARに結合したあと、クロマチンリモデリング因子が働くのはどの段階か。",ch:["コアクチベーターによるヒストンのアセチル化のあと","コアクチベーターがリクルートされる前","コリプレッサーが結合している状態で","転写開始複合体が崩壊したあと"],a:0,ex:"コリプレッサー解離 → コアクチベーター(HAT)結合 → アセチル化 → リモデリング因子 → DNA露出、の順。"},
+{id:55,lec:1,t:T.chr,type:"desc",q:"ヒストンのアセチル化が転写を活性化する理由を、電荷の観点から説明せよ。",kw:[{k:"リジン残基",a:["リジン"]},{k:"ε-アミノ基",a:["ε-アミノ基","イプシロンアミノ基","εアミノ基","アミノ基"]},{k:"正電荷の消失",a:["正電荷が消失","正電荷が無くなる","正電荷がなくなる","正電荷を消失","正電荷が低下"]},{k:"静電的相互作用が弱まる",a:["静電的","相互作用が弱","結合が弱"]},{k:"ユークロマチン",a:["ユークロマチン","クロマチンが弛緩","クロマチンが緩"]},{k:"DNAの露出",a:["DNAが露出","露出"]},{k:"転写開始複合体",a:["転写開始複合体","基本転写装置"]}],model:"DNAはリン酸基により負に帯電し、ヒストンはリジンやアルギニンなど塩基性アミノ酸により正に帯電しているため、両者は静電的相互作用でヌクレオソームを形成している。ヒストンアセチル化酵素はアセチルCoAのアセチル基をリジン残基のε-アミノ基に転移し、正電荷を消失させる。その結果ヒストンとDNAの静電的相互作用が弱まり、ヌクレオソーム同士の凝集も解けてクロマチンが弛緩しユークロマチン化が進む。さらにクロマチンリモデリング因子が働いてDNAが露出することで、基本転写装置が構築されて転写開始複合体が形成され、転写が活性化される。"},
+// ---------- 甲状腺 ----------
+{id:56,lec:2,t:T.thy,type:"mc",q:"T₄を活性型のT₃に変換する酵素はどれか。",ch:["ヨードチロニン脱ヨード酵素(D1・D2)","チロシンキナーゼ","アロマターゼ","ヨードペルオキシダーゼ"],a:0,ex:"D1は主に肝臓・腎臓で血中T₃を維持、D2は脳・下垂体で局所のT₃濃度を調節。D3はrT₃を作る。"},
+{id:57,lec:2,t:T.thy,type:"tf",q:"T₃がTRに結合すると、コリプレッサーが解離してコアクチベーターがリクルートされ、転写が活性化される。",a:true,ex:"リガンド非存在下はコリプレッサー+HDACで抑制。RAR/RXRとまったく同じ構図。"},
+{id:58,lec:2,t:T.thy,type:"mc",q:"甲状腺ホルモンの生理作用として誤っているのはどれか。",ch:["血中総コレステロールの上昇","基礎代謝の亢進による体温上昇","肝グリコーゲン分解と糖新生の促進による血糖上昇","β受容体の発現誘導による心拍数増加"],a:0,ex:"肝臓でコレステロールから胆汁酸への異化が亢進するため、血中総コレステロールは<b>低下</b>する。"},
+// ---------- APL ----------
+{id:59,lec:2,t:T.apl,type:"tf",q:"APLは15番染色体と17番染色体の相互転座t(15;17)により生じるPML-RARA融合遺伝子によって発症する。",a:true,ex:"RARAはレチノイン酸受容体α。17番染色体にあるRARA遺伝子と15番のPML遺伝子が融合する。"},
+{id:60,lec:2,t:T.apl,type:"tf",q:"PML-RARAタンパク質は、正常なRARAに比べてコリプレッサーとの結合力が弱い。",a:false,fix:"弱い → 強固",ex:"結合が強固だから生理的濃度のATRAでは外れず、分化が止まる。ここが病態の核心。"},
+{id:61,lec:2,t:T.apl,type:"mc",q:"トレチノインがAPLに有効である理由として正しいのはどれか。",ch:["薬理学的濃度ではPML-RARAからコリプレッサーを解離させられるから","PML-RARA融合遺伝子そのものを切断するから","HDACを直接阻害するから","RXRに結合してヘテロ二量体を壊すから"],a:0,ex:"生理的濃度では足りず、経口投与で血中濃度を薬理学的レベルまで上げる必要がある。"},
+{id:62,lec:2,t:T.apl,type:"mc",q:"APLに伴うDICで、線溶系の亢進に関与するのはどれか。",ch:["アネキシンⅡ","組織因子(TF)","トロンボモジュリン","フィブリノーゲン"],a:0,ex:"アネキシンⅡがt-PAとプラスミノーゲンを細胞膜に結合させ、プラスミン産生を促す。凝固側は組織因子。"},
+{id:63,lec:2,t:T.apl,type:"tf",q:"亜ヒ酸(ATO)はPML-RARAタンパク質のPML部分に結合し、その分解を促進する。",a:true,ex:"再発例やATRA無効例に使われ、ATRAとの併用療法も行われる。"},
+{id:64,lec:2,t:T.apl,type:"desc",q:"APLで前骨髄球の分化が停止する機序を、PML-RARA融合タンパク質の性質を含めて説明せよ。",kw:[{k:"t(15;17)／相互転座",a:["t(15;17)","相互転座","15番","17番"]},{k:"PML-RARA",a:["PML-RARA","PML－RARA","PMLRARA"]},{k:"RXRとヘテロ二量体",a:["RXR"]},{k:"RARE／レチノイン酸応答配列",a:["RARE","レチノイン酸応答配列"]},{k:"コリプレッサー",a:["コリプレッサー"]},{k:"結合が強固",a:["強固","強い","高い"]},{k:"HDAC",a:["HDAC","脱アセチル化"]},{k:"生理的濃度では解離しない",a:["生理的濃度","生理的な濃度"]},{k:"分化が停止",a:["分化が停止","分化停止","分化できない"]}],model:"APLでは15番染色体と17番染色体の相互転座t(15;17)によりPML-RARA融合遺伝子が形成される。PML-RARAタンパク質はレチノイドX受容体とヘテロ二量体を形成し、標的遺伝子の転写調節領域に存在するレチノイン酸応答配列に結合する。この複合体はコリプレッサーとの結合力が正常なRARAより強固であり、ヒストン脱アセチル化酵素がリクルートされてクロマチンが凝集した状態が維持される。そのため生理的濃度の全trans-レチノイン酸ではコリプレッサーが解離せず、前骨髄球の分化・成熟に関与する遺伝子の転写が誘導されない。その結果、前骨髄球の段階で分化が停止し、APL細胞が骨髄内で異常増殖する。"},
+{id:65,lec:2,t:T.apl,type:"desc",q:"APLでDICを合併しやすい理由を、凝固系と線溶系の両面から説明せよ。",kw:[{k:"組織因子(TF)",a:["組織因子","TF"]},{k:"凝固系の活性化",a:["凝固系","凝固因子"]},{k:"トロンビン／フィブリン",a:["トロンビン","フィブリン"]},{k:"アネキシンⅡ",a:["アネキシン"]},{k:"t-PA",a:["t-PA","tPA","プラスミノーゲン活性化因子"]},{k:"プラスミン",a:["プラスミン"]},{k:"線溶の亢進",a:["線溶"]},{k:"凝固因子・血小板の消費",a:["消費"]},{k:"出血傾向",a:["出血"]}],model:"APL細胞では組織因子の発現が増加しており、血液凝固因子と結合して凝固系を活性化し、トロンビンの産生を介してフィブリンが形成される。同時にアネキシンⅡの発現も増加しており、細胞膜表面に組織型プラスミノーゲン活性化因子(t-PA)とプラスミノーゲンを結合させることでプラスミンへの変換が促進され、線溶系も著しく亢進する。凝固と線溶の両方が過剰に進行するため、凝固因子や血小板が消費されるとともに形成されたフィブリンが過剰に分解され、著しい出血傾向を伴う線溶亢進型のDICが生じる。"},
+// ---------- ビタミンD / Ca ----------
+{id:66,lec:2,t:T.vd,type:"mc",q:"ビタミンD₃の活性化で、肝臓において起こる反応はどれか。",ch:["25位の水酸化","1α位の水酸化","24位の水酸化","紫外線による光化学反応"],a:0,ex:"肝臓で25位 → 腎臓で1α位。順番と臓器をずらす問題が作りやすい。"},
+{id:67,lec:2,t:T.vd,type:"tf",q:"活性型ビタミンD₃が結合したVDRは、RXRとヘテロ二量体を形成してVDREに結合する。",a:true,ex:"VDRは細胞質受容体だが、リガンド結合後にRXRとヘテロ二量体となり核内へ移行する。"},
+{id:68,lec:2,t:T.vd,type:"mc",q:"活性型ビタミンD₃によって直接発現誘導されるものの組み合わせはどれか。",ch:["TRPV6とカルバインディン-D","TRPV5とPMCA1b","NCX1とNaPi-Ⅱb","Cav1.3とTRPV5"],a:0,ex:"TRPV5・PMCA1b・NCX1・NaPi-Ⅱbは二次的な誘導。Cav1.3は誘導を受けない。"},
+{id:69,lec:2,t:T.vd,type:"tf",q:"Cav1.3は活性型ビタミンD₃によって強く発現誘導される。",a:false,fix:"発現誘導を受けない",ex:"Cav1.3は基礎的なCa²⁺取り込みを担う。ビタミンD₃依存的なのはTRPV6・TRPV5。"},
+{id:70,lec:2,t:T.vd,type:"desc",q:"ビタミンD₃が活性化される過程と、小腸でCa²⁺吸収を促進する機序を説明せよ。",kw:[{k:"7-デヒドロコレステロール",a:["7-デヒドロコレステロール","プロビタミン"]},{k:"紫外線",a:["紫外線","UV"]},{k:"肝臓の25-ヒドロキシラーゼ",a:["25-ヒドロキシラーゼ","25位","25ヒドロキシラーゼ"]},{k:"腎臓の1α-ヒドロキシラーゼ",a:["1α-ヒドロキシラーゼ","1α位","1αヒドロキシラーゼ"]},{k:"VDR",a:["VDR","ビタミンD受容体"]},{k:"RXRとヘテロ二量体",a:["RXR"]},{k:"VDRE",a:["VDRE","ビタミンD応答配列"]},{k:"TRPV6",a:["TRPV6"]},{k:"カルバインディン-D",a:["カルバインディン","カルビンディン"]},{k:"PMCA／NCX",a:["PMCA","NCX"]}],model:"皮膚ではコレステロール由来のプロビタミンD₃(7-デヒドロコレステロール)が紫外線B波により光化学反応を受けてビタミンD₃となる。ビタミンD₃は肝臓の25-ヒドロキシラーゼにより25(OH)ビタミンD₃となり、さらに腎臓の1α-ヒドロキシラーゼにより活性型の1α,25(OH)₂ビタミンD₃となる。活性型ビタミンD₃は小腸上皮細胞の細胞質でビタミンD受容体に結合し、レチノイドX受容体とヘテロ二量体を形成して核内に移行し、ビタミンD応答配列に結合して転写活性化因子として働く。その結果、管腔側のTRPV6と細胞内のカルバインディン-Dが直接発現誘導され、Ca²⁺の取り込みと細胞内輸送が増加する。さらに基底膜側のPMCA1bやNCX1が二次的に発現誘導されてCa²⁺の排出が強化され、Ca²⁺は毛細血管に取り込まれて血中Ca²⁺濃度が上昇する。"},
+// ---------- 骨代謝 ----------
+{id:71,lec:3,t:T.bone,type:"mc",q:"骨基質の有機成分のうち約90%を占めるのはどれか。",ch:["Ⅰ型コラーゲン","オステオカルシン","オステオネクチン","ヒドロキシアパタイト"],a:0,ex:"ヒドロキシアパタイトは無機成分(骨塩)。有機成分がしなやかさ、無機成分が硬さを担う。"},
+{id:72,lec:3,t:T.bone,type:"tf",q:"破骨細胞は骨吸収膜のV-ATPaseによって骨吸収窩を酸性化し、ヒドロキシアパタイトを溶解する。",a:true,ex:"酸性条件でリソソーム酵素が活性化し、Ⅰ型コラーゲンやオステオカルシンを分解する。"},
+{id:73,lec:3,t:T.bone,type:"tf",q:"PTHは破骨細胞上のPTH受容体に直接結合して、骨吸収を促進する。",a:false,fix:"破骨細胞 → 骨芽細胞",ex:"PTH受容体があるのは<b>骨芽細胞</b>。骨芽細胞のRANKL/OPGを介して間接的に破骨細胞を動かす。"},
+{id:74,lec:3,t:T.bone,type:"mc",q:"OPG(オステオプロテゲリン)の働きとして正しいのはどれか。",ch:["RANKLのデコイ受容体として結合し、破骨細胞への分化を抑制する","RANKに結合して破骨細胞への分化を促進する","破骨細胞前駆細胞の増殖を促進する","骨基質を分解する"],a:0,ex:"RANKL/OPG比が上がると破骨細胞ができる。治療薬の多くはこの比を下げにいく。"},
+{id:75,lec:3,t:T.bone,type:"tf",q:"アルカリホスファターゼ(ALP)はピロリン酸を加水分解してリン酸を生じ、石灰化を進める。",a:true,ex:"ピロリン酸は結晶化を阻害するので、それを壊すALPが石灰化のスイッチになる。"},
+{id:76,lec:3,t:T.bone,type:"tf",q:"ENPP1はピロリン酸を分解することで、ヒドロキシアパタイトの結晶化を促進する。",a:false,fix:"ピロリン酸を産生し、結晶化を阻害する",ex:"ENPP1はATPを分解してピロリン酸とAMPを産生する側。ALPと逆向きの働き。"},
+{id:77,lec:3,t:T.bone,type:"mc",q:"海綿骨のリモデリング周期として正しいのはどれか。",ch:["約3〜4か月","約10か月","約2年","約2〜3週"],a:0,ex:"皮質骨は約10か月。海綿骨は表面積が大きく血流も豊富なため回転が速く、骨粗鬆症で先に減る。"},
+{id:78,lec:3,t:T.bone,type:"desc",q:"PTHが骨吸収を促進する機序を、RANKLとOPGを含めて説明せよ。",kw:[{k:"骨芽細胞のPTH受容体",a:["骨芽細胞"]},{k:"Gsタンパク質／アデニル酸シクラーゼ",a:["Gs","アデニル酸シクラーゼ"]},{k:"cAMP",a:["cAMP","サイクリックAMP"]},{k:"PKA",a:["PKA","プロテインキナーゼA"]},{k:"RANKLの発現増加",a:["RANKL"]},{k:"OPGの発現低下",a:["OPG"]},{k:"RANK",a:["RANK"]},{k:"破骨細胞前駆細胞の分化",a:["前駆細胞","分化"]}],model:"血中Ca²⁺濃度が低下すると副甲状腺からパラトルモンが分泌され、骨芽細胞膜上のGsタンパク質共役型PTH受容体に結合する。アデニル酸シクラーゼが活性化されて細胞内cAMP濃度が上昇し、プロテインキナーゼAが活性化される。その結果、骨芽細胞におけるRANKLの発現が増加する一方、デコイ受容体であるOPGの発現は抑制され、RANKL/OPG比が上昇する。破骨細胞前駆細胞上のRANKにRANKLが優位に結合できるようになり、前駆細胞は成熟破骨細胞へ分化する。さらにM-CSFの産生も亢進して前駆細胞の増殖と生存が支えられ、骨吸収が促進されて骨からCa²⁺とリン酸が血中に供給される。"},
+// ---------- 骨粗鬆症治療薬 ----------
+{id:79,lec:3,t:T.drug,type:"mc",q:"ビスホスホネートが破骨細胞内で阻害する酵素はどれか。",ch:["ファルネシルピロリン酸合成酵素(FPPS)","V-ATPase","アルカリホスファターゼ","カテプシンK"],a:0,ex:"メバロン酸経路のFPPSを阻害し、低分子GTP結合タンパク質のプレニル化を妨げる。"},
+{id:80,lec:3,t:T.drug,type:"tf",q:"デノスマブは抗RANKL抗体であり、投与時には低Ca血症に注意が必要である。",a:true,ex:"骨吸収が強力に抑えられ、骨からのCa²⁺供給が遮断されるため。"},
+{id:81,lec:3,t:T.drug,type:"tf",q:"SERMは骨組織ではアンタゴニスト、乳腺組織ではアゴニストとして働く。",a:false,fix:"骨でアゴニスト、乳腺でアンタゴニスト",ex:"だから骨密度を上げつつ乳がんリスクを上げない。逆に書くと意味が反転する。"},
+{id:82,lec:3,t:T.drug,type:"mc",q:"アルファカルシドールの説明として正しいのはどれか。",ch:["肝臓で25位が水酸化されて活性型になるプロドラッグ","VDRに直接結合する誘導体","RANKLに対する抗体","破骨細胞に取り込まれてアポトーシスを起こす"],a:0,ex:"エルデカルシトールはVDRに直接結合するビタミンD₃誘導体で、破骨細胞機能の抑制作用が強い。"},
+{id:83,lec:3,t:T.drug,type:"tf",q:"閉経後骨粗鬆症は、骨吸収も骨形成も低下する低代謝回転型である。",a:false,fix:"低代謝回転 → 高代謝回転",ex:"エストロゲン欠乏で骨吸収が亢進する高代謝回転型。低代謝回転型は加齢性のほう。"},
+{id:84,lec:3,t:T.drug,type:"desc",q:"ビスホスホネートが骨吸収を抑制する機序を説明せよ。",kw:[{k:"ヒドロキシアパタイトに結合",a:["ヒドロキシアパタイト"]},{k:"破骨細胞に取り込まれる",a:["エンドサイトーシス","取り込ま"]},{k:"メバロン酸経路",a:["メバロン酸"]},{k:"FPPSの阻害",a:["FPPS","ファルネシルピロリン酸合成酵素"]},{k:"ファルネシルピロリン酸の減少",a:["ファルネシルピロリン酸","FPP"]},{k:"プレニル化の阻害",a:["プレニル化"]},{k:"低分子GTP結合タンパク質",a:["GTP結合","Rab","Rho","Ras"]},{k:"アポトーシス",a:["アポトーシス"]}],model:"ビスホスホネートは骨基質のヒドロキシアパタイトと結合して骨表面に沈着する。破骨細胞が骨吸収を行ってヒドロキシアパタイトを溶解すると、結合していたビスホスホネートが遊離し、破骨細胞にエンドサイトーシスによって取り込まれる。取り込まれたビスホスホネートはメバロン酸経路のファルネシルピロリン酸合成酵素(FPPS)を阻害し、ファルネシルピロリン酸の合成を抑制する。その結果、Rab・Rho・Rasなどの低分子GTP結合タンパク質のプレニル化修飾が阻害され、細胞骨格の構築やリソソーム小胞輸送が障害されて破骨細胞は骨表面への付着能を失い、最終的にアポトーシスに至る。破骨細胞数が減少して骨吸収が抑制されるため、骨形成が相対的に優位となり骨密度が上昇する。"},
+{id:85,lec:3,t:T.bone,type:"tf",q:"骨細胞は骨基質に埋め込まれた状態で存在し、骨に加わる機械的刺激を感知して骨芽細胞や破骨細胞の活動を調節する。",a:true,ex:"骨芽細胞由来で、突起とギャップジャンクションで互いに連結している。歩行や運動による荷重を感知して骨形成を促す。"},
+{id:86,lec:3,t:T.bone,type:"mc",q:"破骨細胞による骨吸収のマーカーとして用いられるのはどれか。",ch:["TRACP-5b","BAP(骨型アルカリホスファターゼ)","オステオカルシン","Ⅰ型コラーゲン"],a:0,ex:"BAPは骨形成マーカー。オステオカルシンとⅠ型コラーゲンは骨芽細胞が分泌する骨基質成分。"},
+{id:87,lec:3,t:T.drug,type:"tf",q:"エストラジオールは骨芽細胞でOPGの発現を誘導し、RANKL/OPG比を低下させて骨吸収を抑制する。",a:true,ex:"さらに破骨細胞前駆細胞にアポトーシスを誘導する。閉経でこれが失われるのが閉経後骨粗鬆症。"},
+{id:88,lec:3,t:T.drug,type:"mc",q:"加齢性骨粗鬆症の病態として正しいのはどれか。",ch:["骨芽細胞の機能低下に加え、ビタミンD₃の活性化能低下による腸管Ca²⁺吸収低下とPTH上昇","エストロゲン欠乏による破骨細胞の活性化が主体","RANKLの遺伝的欠損","ヒドロキシアパタイトの過剰形成"],a:0,ex:"加齢性は低代謝回転型、閉経後は高代謝回転型。2つの型を分けて覚える。"},
+{id:89,lec:3,t:T.vd,type:"tf",q:"腎臓の遠位尿細管でのCa²⁺再吸収にはTRPV5とカルバインディン-Dが関与し、活性型ビタミンD₃によって発現が誘導される。",a:true,ex:"小腸はTRPV6、腎遠位尿細管はTRPV5。輸送体の顔ぶれはほぼ同じなので並べて覚える。"},
+{id:90,lec:3,t:T.bone,type:"tf",q:"PTHは腎臓でリン酸の再吸収を促進し、血中リン酸濃度を上昇させる。",a:false,fix:"促進 → 抑制(尿中排泄を促進)",ex:"Ca²⁺を上げるときにリン酸まで溜まると困るので、リン酸は尿に捨てる。"},
+{id:91,lec:3,t:T.drug,type:"desc",q:"SERMが骨組織ではエストロゲン様に、乳腺組織では抗エストロゲン様に働く理由を説明せよ。",kw:[{k:"エストロゲン受容体α",a:["エストロゲン受容体","ERα","ER"]},{k:"立体構造の違い",a:["立体構造","構造変化","構造が異なる"]},{k:"コアクチベーター",a:["コアクチベーター"]},{k:"コリプレッサー",a:["コリプレッサー"]},{k:"組織による違い",a:["組織","細胞によって"]},{k:"骨ではアゴニスト",a:["アゴニスト","エストロゲン様"]},{k:"乳腺ではアンタゴニスト",a:["アンタゴニスト","抗エストロゲン"]}],model:"SERMがエストロゲン受容体αに結合すると、エストラジオールが結合した場合とは異なる立体構造の受容体が形成される。転写共役因子は受容体の立体構造を認識して結合するため、SERMによって構造変化したERαにリクルートされるコアクチベーターやコリプレッサーは、その細胞が発現している共役因子の種類によって異なる。その結果、骨組織ではコアクチベーターが結合して転写が活性化されエストロゲン様作用を示し、OPGの発現誘導を介してRANKL/OPG比を低下させて骨吸収を抑制する。一方、乳腺組織や子宮内膜ではコリプレッサーが優位に結合して転写が抑制されるため抗エストロゲン作用を示し、乳がんや子宮体がんのリスクを高めない。"},
+{id:92,lec:3,t:T.thy,type:"tf",q:"ヨードチロニン脱ヨード酵素1型(D1)は主に脳や下垂体でT₄をT₃に変換し、血中T₃濃度の維持に寄与する。",a:false,fix:"脳や下垂体 → 肝臓や腎臓",ex:"D1=肝臓・腎臓で血中T₃を維持、D2=脳・下垂体で局所のT₃を調節。入れ替える×問題が第3講課題に出ている。"},
+{id:93,lec:3,t:T.thy,type:"tf",q:"甲状腺ホルモン受容体は核内受容体であり、そのリガンドはトリヨードチロニン(T₃)である。",a:true,ex:"「細胞質受容体」「リガンドはチロキシン」と書き換える×問題が2問出ている。活性型はT₃。"},
+{id:94,lec:3,t:T.thy,type:"tf",q:"T₃が存在しない場合、甲状腺ホルモン受容体はRXRとヘテロ二量体を形成せず、甲状腺ホルモン応答配列からも外れている。",a:false,fix:"リガンド非存在下でもTRE に結合している",ex:"外れるのではなく、結合したままコリプレッサー+HDACで抑制している。RAR/RXRとまったく同じ構図。"},
+{id:95,lec:3,t:T.thy,type:"mc",q:"T₃により肝細胞で発現誘導されるPEPCKが関与する経路はどれか。",ch:["糖新生","解糖系","脂肪酸合成","コレステロール合成"],a:0,ex:"PEPCKもG6Paseも糖新生の酵素。「解糖系」と書き換える×問題が出ている。甲状腺ホルモンは糖新生を促して血糖を上げる。"},
+{id:96,lec:3,t:T.apl,type:"mc",q:"顆粒球-単球前駆細胞に作用して好中球への分化を促す因子はどれか。",ch:["G-CSF","M-CSF","エリスロポエチン","トロンボポエチン"],a:0,ex:"M-CSFが作用すると単球になる。G-CSFとM-CSFを入れ替える×問題が出ている。"},
+{id:97,lec:3,t:T.apl,type:"mc",q:"末梢血の白血球のうち、最も割合が高いのはどれか。",ch:["好中球(50〜60%)","リンパ球","単球","好酸球"],a:0,ex:"好中球が最多。「好中球は好酸球・好塩基球・単球より少ない」とする×問題が出ている。"},
+{id:98,lec:3,t:T.apl,type:"tf",q:"PML-RARA融合遺伝子は、15番染色体上のRARA遺伝子と17番染色体上のPML遺伝子との相互転座によって生じる。",a:false,fix:"RARAは17番、PMLは15番",ex:"番号を入れ替える×問題が出ている。RARA(レチノイン酸受容体α)が17番。"},
+{id:99,lec:3,t:T.apl,type:"tf",q:"APLでは白血病性前骨髄球は骨髄内だけで増殖し、血中には出現しない。",a:false,fix:"血中にも出現する",ex:"骨髄内で異常増殖し、末梢血にも出てくる。「血中で異常増殖する」と書くのも誤りで、増殖の場は骨髄内。"},
+{id:100,lec:3,t:T.apl,type:"mc",q:"一次止血に直接関わる組み合わせはどれか。",ch:["血小板とコラーゲン","フィブリンとトロンビン","プラスミンとt-PA","組織因子とアネキシンⅡ"],a:0,ex:"血管内皮の下層のコラーゲンが露出して血小板が凝集するのが一次止血。フィブリンで固めるのが二次止血。"},
+{id:101,lec:3,t:T.apl,type:"tf",q:"二次止血では、トロンビンの作用によりフィブリノーゲンからフィブリンが生成され、一次血栓が安定化される。",a:true,ex:"「プラスミンによりフィブリンが生成される」と書き換える×問題が出ている。プラスミンは分解する側。"},
+{id:102,lec:3,t:T.apl,type:"tf",q:"線溶系では、t-PAによりプラスミノーゲンからプラスミンが生成され、プラスミンがフィブリンを分解する。",a:true,ex:"ここをトロンビンに置き換える×問題が出ている。凝固=トロンビン、線溶=t-PAとプラスミン。"},
+{id:103,lec:3,t:T.apl,type:"mc",q:"APLが合併しやすいDICの型はどれか。",ch:["線溶亢進型","凝固亢進型","線溶抑制型","臓器障害型"],a:0,ex:"凝固系と線溶系の両方が亢進するが、線溶が著しく亢進するため出血傾向が前面に出る。"},
+{id:104,lec:3,t:T.apl,type:"tf",q:"APL細胞ではアネキシンⅡの発現が増加し、これが血液凝固因子と結合して凝固系を活性化する。",a:false,fix:"アネキシンⅡ → 組織因子(TF)",ex:"凝固系=組織因子、線溶系=アネキシンⅡ。2つを入れ替える×問題が課題に2問出ている。"},
+{id:105,lec:3,t:T.apl,type:"tf",q:"トレチノインで分化したPML-RARA陽性の好中球は、なお細胞増殖能を保っている。",a:false,fix:"増殖能はもたない",ex:"好中球まで分化すれば寿命を経て除去される。だから骨髄のAPL細胞が減り、正常造血が回復する。"},
+{id:106,lec:3,t:T.apl,type:"tf",q:"トレチノインによって分化した好中球は、PML-RARA陰性の好中球になる。",a:false,fix:"PML-RARA陽性のまま分化する",ex:"融合遺伝子がなくなるわけではない。陽性のまま成熟し、好中球としての寿命で消えていく。"},
+{id:107,lec:3,t:T.apl,type:"tf",q:"亜ヒ酸(ATO)は再発・難治例だけでなく、APLの初回治療でもトレチノインと併用される。",a:true,ex:"ATOはPML部分に結合してPML-RARAの分解を促進する。ATRAとは作用点が違うので併用が成り立つ。"},
+{id:108,lec:3,t:T.thy,type:"desc",q:"甲状腺ホルモンが血糖を上昇させる機序を、標的遺伝子の転写調節のレベルから説明せよ。",kw:[{k:"T₃がTRに結合",a:["T3","T₃","トリヨードチロニン"]},{k:"RXRとヘテロ二量体",a:["RXR"]},{k:"甲状腺ホルモン応答配列(TRE)",a:["TRE","甲状腺ホルモン応答配列"]},{k:"コアクチベーター",a:["コアクチベーター"]},{k:"PEPCK／G6Pase",a:["PEPCK","G6Pase","グルコース-6-ホスファターゼ"]},{k:"酵素量の増加",a:["発現誘導","タンパク質量","酵素量"]},{k:"糖新生の亢進",a:["糖新生"]},{k:"血糖上昇",a:["血糖"]}],model:"甲状腺ホルモン受容体は核内受容体であり、レチノイドX受容体とヘテロ二量体を形成して標的遺伝子の転写調節領域に存在する甲状腺ホルモン応答配列に結合している。リガンドであるトリヨードチロニンがTRに結合すると、TRは構造変化を起こしてコリプレッサーが解離し、ヒストンアセチル化酵素活性をもつコアクチベーターがリクルートされる。その結果クロマチンが弛緩して転写が活性化され、糖新生の律速酵素であるPEPCKやグルコース-6-ホスファターゼが発現誘導される。これらの酵素タンパク質量が増加して酵素活性の絶対量が上昇するため、肝臓での糖新生が亢進し、さらにグリコーゲン分解も促進されて血糖値が上昇する。"},
+// ---------- 第4講 ----------
+{id:109,lec:4,t:T.vd,type:"tf",q:"ビタミンD₃(コレカルシフェロール)は食事由来に加え、皮膚で7-デヒドロコレステロールから紫外線によって生成される。",a:true,ex:"体内で作れるので「食物のみ」は×。第4講課題の問1・2はここを崩した。"},
+{id:110,lec:4,t:T.vd,type:"tf",q:"皮膚細胞では、7-デヒドロコレステロールが紫外線照射により活性型ビタミンD₃(1,25(OH)₂D₃)に直接変換される。",a:false,fix:"活性型 → ビタミンD₃(まだ不活性)",ex:"紫外線で出来るのは<b>ビタミンD₃</b>まで。活性型にするには肝臓と腎臓での2回の水酸化が必要。"},
+{id:111,lec:4,t:T.vd,type:"tf",q:"活性型ビタミンD₃をコレカルシフェロールと呼ぶ。",a:false,fix:"コレカルシフェロール = ビタミンD₃(未変換型)",ex:"活性型は<b>カルシトリオール</b>。名前の入れ替えは課題で出ている。"},
+{id:112,lec:4,t:T.vd,type:"mc",q:"食事由来または皮膚で生成されたビタミンD₃が活性型になる経路として正しいのはどれか。",ch:["肝臓で25位が水酸化 → 腎臓の近位尿細管上皮細胞で1α位が水酸化", "腎臓の近位尿細管で1α位が水酸化 → 肝臓で25位が水酸化", "肝臓で25位が脱水酸化 → 腎臓の遠位尿細管で1位が脱水酸化", "皮膚で25位が水酸化 → 小腸で1α位が水酸化"],a:0,ex:"<b>肝臓(25位)→腎臓の近位尿細管(1α位)</b>の順。「脱水酸化」ではなく水酸化、遠位ではなく近位。問4・5は順序・部位・反応名を入れ替えている。"},
+{id:113,lec:4,t:T.vd,type:"tf",q:"活性型ビタミンD₃が結合したVDRはホモ二量体を形成して、ビタミンD応答配列(VDRE)に結合する。",a:false,fix:"ホモ二量体 → RXRとのヘテロ二量体",ex:"VDR/RXRヘテロ二量体。核内受容体はこの形が多い(第1・2講と共通)。"},
+{id:114,lec:4,t:T.vd,type:"tf",q:"VDR/RXRヘテロ二量体には、転写開始複合体の形成時にアクチベーターがリクルートされる。",a:false,fix:"アクチベーター → コアクチベーター",ex:"1語の違い。核内受容体にリクルートされるのは<b>コアクチベーター</b>。"},
+{id:115,lec:4,t:T.vd,type:"tf",q:"小腸上皮細胞のTRPV6は、VDRが別の遺伝子の転写を活性化し、そのタンパク質を介して二次的に発現誘導される。",a:false,fix:"二次的 → VDRの直接の標的",ex:"第2講スライドでVDRの直接の標的とされているのは<b>TRPV6とカルバインディン-D</b>。TRPV5・PMCA1b・NCX1・NaPi-IIbは二次的に誘導される。"},
+{id:116,lec:4,t:T.vd,type:"tf",q:"小腸上皮細胞のNaPi-IIbは、基底膜側の細胞膜からのリン酸の取り込みを促進する。",a:false,fix:"基底膜側 → 腸管内腔側",ex:"取り込みは内腔側(刷子縁)。基底膜側から出ていくのは血液側への排出。"},
+{id:117,lec:4,t:T.vd,type:"tf",q:"小腸上皮細胞の電位依存性カルシウムチャネルCav1.3は、活性型ビタミンD₃による発現誘導を受けず、基礎的なカルシウム吸収に寄与する。",a:true,ex:"誘導されるのはTRPV6の方。Cav1.3は誘導されないという対比が問われた。"},
+{id:118,lec:4,t:T.vd,type:"tf",q:"小腸上皮細胞では、活性型ビタミンD₃が結合したVDRがカルバインディン-Dの発現を誘導し、腸管内腔側から基底膜側へのCa²⁺移動を促進する。",a:true,ex:"Ca²⁺の流れは、内腔 → TRPV6で流入 → カルバインディン-Dで細胞内輸送 → PMCA1b・NCX1で間質へ排出。"},
+{id:119,lec:4,t:T.vd,type:"tf",q:"小腸上皮細胞のPMCA1bはGTP依存性のCa²⁺ポンプ、NCX1はK⁺/Ca²⁺交換輸送体である。",a:false,fix:"GTP → ATP、K⁺ → Na⁺",ex:"PMCA1b = ATP依存性Ca²⁺ポンプ、NCX1 = Na⁺/Ca²⁺交換輸送体。"},
+{id:120,lec:4,t:T.vd,type:"tf",q:"定常状態では少量のカルシトリオールが産生されており、TRPV6・カルバインディン-D・NCX1・NaPi-IIbの基礎的な発現に寄与している。",a:true,ex:"「少量だから無関係」は×(問15)。少量でも基礎発現を支えている。"},
+{id:121,lec:4,t:T.vd,type:"tf",q:"定常状態では、カルシトリオールの産生が少量のため、小腸のTRPV6やカルバインディン-Dの基礎的な発現はカルシトリオールと無関係に維持されている。",a:false,fix:"無関係 → カルシトリオールが基礎発現に寄与",ex:"問15と問16が表裏。1つにまとめて「少量でも寄与」と覚える。"},
+{id:122,lec:4,t:T.vd,type:"tf",q:"小腸上皮細胞から出たCa²⁺と無機リン酸は毛細血管に入り、肝静脈を経て肝臓に入り、心臓から全身へ運ばれる。",a:false,fix:"肝静脈 → 門脈",ex:"課題の解答は×。経路の途中の血管名を入れ替える形式。"},
+{id:123,lec:4,t:T.bone,type:"tf",q:"PTHは血中Ca²⁺濃度が上昇するときに、甲状腺の傍濾胞細胞(C細胞)から分泌される。",a:false,fix:"上昇 → 低下、甲状腺C細胞 → 副甲状腺の主細胞",ex:"PTHは低下で出る。甲状腺のC細胞から出るのはカルシトニンで、役割が別。"},
+{id:124,lec:4,t:T.bone,type:"tf",q:"血中のCa²⁺濃度が生理的範囲(約8.5〜10.5 mg/dL)にあるとき、PTHは副甲状腺の主細胞から全く分泌されていない。",a:false,fix:"全く分泌されない → 基礎分泌はある",ex:"基礎分泌があり、Ca²⁺が低下すると分泌が増える。「全く」「絶対」は引っかけの合図。"},
+{id:125,lec:4,t:T.bone,type:"tf",q:"PTHは腎臓の遠位尿細管上皮細胞に作用して、Ca²⁺の再吸収を抑制し、無機リン酸の再吸収を促進する。",a:false,fix:"Ca²⁺は再吸収を促進、リン酸は再吸収を抑制",ex:"<b>Ca↑・Pi↓</b>(尿へ捨てる)。この組み合わせの逆を書いてくる問題。"},
+{id:126,lec:4,t:T.bone,type:"tf",q:"血中Ca²⁺濃度が低下してPTHが分泌され、骨吸収と小腸吸収で血中Ca²⁺が上昇した後も、PTH分泌は維持されたままである。",a:false,fix:"維持 → 抑制される",ex:"ネガティブフィードバック。Caが戻れば分泌は止まる。"},
+{id:127,lec:4,t:T.vd,type:"tf",q:"PTHにより活性型ビタミンD₃の産生が亢進すると、小腸からのCa²⁺と無機リン酸の吸収が促進され、血中濃度が上昇する。",a:true,ex:"PTH → 腎臓の1α-水酸化酵素 → 活性型D₃ → 小腸吸収、の流れ。"},
+{id:128,lec:4,t:T.bone,type:"tf",q:"骨基質は有機成分が約65〜70%を占め、主成分はⅠ型コラーゲンである。",a:false,fix:"有機 → 約30〜35%、無機(ヒドロキシアパタイト)が約65〜70%",ex:"割合の入れ替え。問27・28は数字を逆にしている。"},
+{id:129,lec:4,t:T.bone,type:"tf",q:"骨基質の非コラーゲン性タンパク質には、オステオカルシンやオステオネクチンがある。",a:true,ex:""},
+{id:130,lec:4,t:T.bone,type:"tf",q:"海綿骨は緻密な骨単位から構成され、骨の外層を形成する。",a:false,fix:"海綿骨 → 皮質骨(緻密骨)",ex:"外層で緻密なのは皮質骨。海綿骨は内部の骨梁構造。"},
+{id:131,lec:4,t:T.bone,type:"tf",q:"海綿骨では、骨芽細胞や破骨細胞は骨梁の内部に存在している。",a:false,fix:"内部 → 表面",ex:"細胞は骨梁の<b>表面</b>にいて、組織液越しに血中ホルモンを受ける。"},
+{id:132,lec:4,t:T.bone,type:"mc",q:"血中のホルモンや無機イオンの影響を受けやすいのはどれか。",ch:["海綿骨", "皮質骨(緻密骨)", "骨単位(オステオン)の中心部", "どれも同じ"],a:0,ex:"海綿骨は骨梁表面の細胞が組織液に触れ、毛細血管とも近い。皮質骨は密で影響を受けにくい。"},
+{id:133,lec:4,t:T.bone,type:"tf",q:"海綿骨で破骨細胞による骨吸収が起きても、Ca²⁺やリン酸は毛細血管に移行しないので、血中濃度は変化しない。",a:false,fix:"変化しない → 血中濃度が上昇する",ex:"吸収窩 → 組織液 → 毛細血管。だからPTHは骨吸収で血中Caを上げられる(問64)。"},
+{id:134,lec:4,t:T.bone,type:"tf",q:"骨細胞は骨基質中に埋め込まれていて、荷重などの機械的刺激を感知し、骨芽細胞や破骨細胞の活動を調節している。",a:true,ex:""},
+{id:135,lec:4,t:T.bone,type:"tf",q:"歩行や運動で骨に荷重がかかると、骨芽細胞が機械的刺激を感知して骨形成を促進する。",a:false,fix:"骨芽細胞 → 骨細胞",ex:"感知するのは<b>骨細胞</b>。"},
+{id:136,lec:4,t:T.bone,type:"tf",q:"骨芽細胞から分泌されたATPは、細胞膜表面のALPによりピロリン酸(PPi)になり、続いてENPP1により無機リン酸(Pi)になる。",a:false,fix:"ALPとENPP1が逆",ex:"ATP → PPiが<b>ENPP1</b>、PPi → Piが<b>ALP</b>。"},
+{id:137,lec:4,t:T.bone,type:"tf",q:"基質小胞の膜にあるALPがピロリン酸から無機リン酸を生成し、それが基質小胞内に取り込まれる。",a:true,ex:""},
+{id:138,lec:4,t:T.bone,type:"tf",q:"基質小胞内に取り込まれるCa²⁺や無機リン酸は、類骨のヒドロキシアパタイトが分解されて生じたものに由来する。",a:false,fix:"類骨由来 → 毛細血管から組織液に出てきたもの",ex:"石灰化の材料は血液由来。骨を壊して材料にするのは吸収側の話。"},
+{id:139,lec:4,t:T.bone,type:"tf",q:"基質小胞の内部では、Ca²⁺とピロリン酸が結晶化してヒドロキシアパタイトが形成される。",a:false,fix:"ピロリン酸 → 無機リン酸",ex:"ヒドロキシアパタイトはCaとリン酸(Pi)。PPiは石灰化を抑える側。"},
+{id:140,lec:4,t:T.bone,type:"tf",q:"基質小胞内で形成されたヒドロキシアパタイトの結晶が類骨に沈着し、これを核として毛細血管由来のCa²⁺と無機リン酸が利用されて結晶が成長し、石灰化が進む。",a:true,ex:"小胞は「核」をつくる役。成長は血液由来の材料。"},
+{id:141,lec:4,t:T.bone,type:"tf",q:"類骨の石灰化は、基質小胞内で形成されたヒドロキシアパタイト結晶だけで進む。",a:false,fix:"だけ → 核になった後は毛細血管由来のCa²⁺・リン酸で成長",ex:"「だけ」が×の目印。"},
+{id:142,lec:4,t:T.bone,type:"tf",q:"血中のCa²⁺濃度と無機リン酸濃度が上昇すると、組織液中に移行する量が増え、類骨の石灰化が進む。",a:true,ex:""},
+{id:143,lec:4,t:T.bone,type:"tf",q:"血中に分泌されたPTHは、海綿骨の骨梁表面の破骨細胞の膜上にあるPTH受容体に結合する。",a:false,fix:"破骨細胞 → 骨芽細胞",ex:"PTH受容体は<b>骨芽細胞</b>。破骨細胞は間接的に動かされる。"},
+{id:144,lec:4,t:T.bone,type:"tf",q:"PTH受容体はGqタンパク質共役型受容体で、アデニル酸シクラーゼが活性化されてcAMPが増え、PKCが活性化される。",a:false,fix:"Gq・PKC → Gs・PKA",ex:"この講義の整理では <b>Gs → cAMP → PKA</b>。Gq/PKCと取り違える形。"},
+{id:145,lec:4,t:T.bone,type:"tf",q:"骨芽細胞のRANKは、破骨細胞前駆細胞のRANKLに結合して破骨細胞への分化を誘導する。",a:false,fix:"RANKとRANKLが逆",ex:"<b>骨芽細胞にRANKL、前駆細胞にRANK</b>。"},
+{id:146,lec:4,t:T.bone,type:"tf",q:"OPGは骨芽細胞が分泌するデコイ受容体で、RANKLに結合してRANKとの結合を阻害し、破骨細胞への分化を抑制する。",a:true,ex:"第3講スライドでOPGは「骨芽細胞から<b>分泌される</b>RANKLデコイ受容体」。第4講課題の問55が×なのは「骨芽細胞の細胞膜に存在する」の部分。"},
+{id:147,lec:4,t:T.bone,type:"tf",q:"PTH刺激を受けた骨芽細胞では、PKAの活性が低下してRANKL発現が低下し、OPG発現が上昇する。",a:false,fix:"PKA活性化、RANKL↑、OPG↓、RANKL/OPG比↑",ex:"分化が促進される方向なので、比は上がる。"},
+{id:148,lec:4,t:T.bone,type:"tf",q:"PTH刺激を受けた骨芽細胞ではPKAが活性化され、M-CSFが発現誘導される。M-CSFは破骨細胞前駆細胞の増殖・生存を促進し、RANKLによる分化を支える。",a:true,ex:"M-CSF = 増殖・生存、RANKL = 分化。"},
+{id:149,lec:4,t:T.bone,type:"tf",q:"M-CSFは破骨細胞前駆細胞の成熟破骨細胞への分化因子として働き、RANKLは前駆細胞の増殖・生存を促進する。",a:false,fix:"M-CSFとRANKLの役割が逆",ex:"M-CSF = 増える・生き残る、RANKL = 分化させる。"},
+{id:150,lec:4,t:T.bone,type:"tf",q:"破骨細胞のリソソーム膜にはプロトンポンプV-ATPaseが局在している。",a:true,ex:"分泌リソソームが骨側の膜と融合すると、V-ATPaseが骨吸収窩へH⁺を送る。"},
+{id:151,lec:4,t:T.bone,type:"tf",q:"破骨細胞のV-ATPaseにより骨吸収窩がアルカリ化され、ヒドロキシアパタイトが溶解する。",a:false,fix:"アルカリ化 → 酸性化",ex:"H⁺を出すので酸性。ヒドロキシアパタイトは酸で溶ける。"},
+{id:152,lec:4,t:T.bone,type:"tf",q:"骨吸収窩で破骨細胞のリソソーム酵素は、アルカリ条件下で活性化されてⅠ型コラーゲンなどを分解する。",a:false,fix:"アルカリ → 酸性",ex:"リソソーム酵素は酸性で働く。"},
+{id:153,lec:4,t:T.bone,type:"tf",q:"破骨細胞が形成した骨吸収窩で溶けたCa²⁺やリン酸は毛細血管に移行し、血中のCa²⁺濃度とリン酸濃度が上昇する。",a:true,ex:""},
+{id:154,lec:4,t:T.bone,type:"desc",q:"PTHが血中Ca²⁺濃度を上げる機序のうち、骨吸収の亢進を説明せよ。",kw:[{k:"骨芽細胞のPTH受容体",a:["骨芽細胞"]},{k:"Gs/cAMP/PKA",a:["PKA", "cAMP"]},{k:"RANKL発現の増加",a:["RANKL"]},{k:"OPG発現の低下",a:["OPG"]},{k:"M-CSFの産生",a:["M-CSF"]},{k:"破骨細胞前駆細胞が分化",a:["分化", "破骨細胞前駆"]},{k:"V-ATPaseで酸性化",a:["V-ATPase", "酸性", "プロトン"]},{k:"ヒドロキシアパタイトの溶解",a:["ヒドロキシアパタイト", "溶解"]},{k:"Ca²⁺・リン酸が血中へ",a:["血中", "毛細血管", "上昇"]}],model:"PTHは骨芽細胞のPTH受容体に結合し、Gsタンパク質を介したcAMP・PKAの活性化によってRANKLとM-CSFの発現を誘導し、OPGの発現を低下させる。RANKL/OPG比が上がることで、M-CSFで増殖・生存している破骨細胞前駆細胞がRANKによってRANKLを受け取り、成熟破骨細胞へ分化する。成熟した破骨細胞は分泌リソソームを骨側の膜と融合させ、V-ATPaseで骨吸収窩を酸性化してヒドロキシアパタイトを溶解し、リソソーム酵素でコラーゲンも分解する。遊離したCa²⁺とリン酸が組織液から毛細血管に移行して、血中濃度が上昇する。"},
+{id:155,lec:4,t:T.vd,type:"desc",q:"活性型ビタミンD₃が小腸からのCa²⁺吸収を促進する機序を説明せよ。",kw:[{k:"VDRに結合",a:["VDR", "ビタミンD受容体"]},{k:"RXRとのヘテロ二量体",a:["RXR"]},{k:"VDREに結合",a:["VDRE", "応答配列"]},{k:"コアクチベーター",a:["コアクチベーター"]},{k:"TRPV6",a:["TRPV6"]},{k:"カルバインディン-D",a:["カルバインディン"]},{k:"PMCA1b・NCX1",a:["PMCA", "NCX"]},{k:"内腔から間質へのCa²⁺の流れ",a:["内腔", "基底膜", "間質", "血液"]}],model:"活性型ビタミンD₃は小腸上皮細胞でVDRに結合し、RXRとのヘテロ二量体としてVDREに結合して、コアクチベーターを介して標的遺伝子の転写を活性化する。誘導されるのは、腸管内腔側のCa²⁺チャネルであるTRPV6、細胞内でCa²⁺を運ぶカルバインディン-D、基底膜側でCa²⁺を間質へ排出するPMCA1bとNCX1である。内腔からの取り込み、細胞内輸送、間質への排出が全て強まることで、Ca²⁺吸収が促進される。"},
+{id:156,lec:4,t:T.bone,type:"desc",q:"骨芽細胞が類骨を石灰化させる過程を、基質小胞の役割に注目して説明せよ。",kw:[{k:"基質小胞",a:["基質小胞"]},{k:"ENPP1でATPからPPi",a:["ENPP1"]},{k:"ALPでPPiからPi",a:["ALP", "アルカリホスファターゼ"]},{k:"毛細血管から組織液のCa²⁺・Pi",a:["毛細血管", "組織液"]},{k:"小胞内でヒドロキシアパタイト",a:["ヒドロキシアパタイト"]},{k:"結晶が類骨に沈着して核になる",a:["核"]},{k:"結晶が成長し石灰化",a:["成長", "石灰化"]}],model:"骨芽細胞はⅠ型コラーゲンから成る類骨を分泌し、あわせて基質小胞を放出する。ATPからENPP1がピロリン酸を作り、小胞膜のALPがピロリン酸を無機リン酸に変え、小胞内に取り込まれる。小胞内には毛細血管から組織液に出てきたCa²⁺も取り込まれ、ヒドロキシアパタイトの結晶が形成される。この結晶が小胞外へ出て類骨に沈着し、核となって、組織液中のCa²⁺と無機リン酸を利用して成長することで、類骨の石灰化が進む。"},
+{id:157,lec:4,t:T.vd,type:"desc",q:"食事由来のビタミンD₃が活性型になるまでと、PTHがこの経路に果たす役割を説明せよ。",kw:[{k:"肝臓で25位水酸化",a:["肝臓", "25"]},{k:"腎臓近位尿細管で1α位水酸化",a:["腎臓", "近位尿細管", "1α"]},{k:"カルシトリオール(活性型)",a:["カルシトリオール", "1,25", "活性型"]},{k:"PTHが1α-水酸化酵素を促進",a:["PTH", "パラトルモン"]},{k:"小腸でCa²⁺・Pi吸収が増加",a:["小腸", "吸収"]},{k:"少量は基礎状態でも産生",a:["基礎", "少量"]}],model:"ビタミンD₃は肝臓の25-ヒドロキシラーゼで25位が水酸化されて25(OH)D₃となり、腎臓の近位尿細管上皮細胞の1α-ヒドロキシラーゼで1α位が水酸化されて活性型の1α,25(OH)₂D₃(カルシトリオール)になる。血中Ca²⁺が低下するとPTHが分泌され、腎臓での活性型ビタミンD₃の産生が亢進し、小腸からのCa²⁺・リン酸吸収が促進される。PTHがない定常状態でも基礎的な1α-水酸化酵素活性により少量の活性型が作られ、小腸の基礎発現を支えている。"},
+// ---------- 穴埋めシート ----------
+{id:158,lec:1,t:T.horm,type:"cloze",src:"穴埋めシート 第1講 問1",q:"インスリンなどのペプチド性ホルモンは血管の{{血管内皮細胞間の隙間|血管内皮細胞間隙|内皮細胞間の隙間|内皮細胞間隙|血管内皮細胞間の間隙|内皮細胞の隙間}}を通過して間質に移動する。"},
+{id:159,lec:1,t:T.horm,type:"cloze",src:"穴埋めシート 第1講 問2",q:"ホルモンとは{{血流|血液|血液中}}を流れて標的臓器に行くもの。ホルモンの{{作用特異性|特異性}}は標的細胞がそのホルモンに対する受容体を発現しているかによる。"},
+{id:160,lec:1,t:T.horm,type:"cloze",src:"穴埋めシート 第1講 問3",q:"細胞外マトリックスには、{{コラーゲン}}、{{ラミニン}}、{{フィブロネクチン}}などの構造タンパク質が含まれている。これらは細胞の支持や接着、情報伝達に重要な役割を果たす。"},
+{id:161,lec:1,t:T.horm,type:"cloze",src:"穴埋めシート 第1講 問4",q:"オータコイド(局所ホルモン)とは局所で産生され局所で作用する生理活性分子である。分泌方法は{{傍分泌|パラクリン}}と{{自己分泌|オートクリン}}がある。前者は細胞がオータコイドを分泌し近くの細胞の受容体に作用するもの。後者は細胞がオータコイドを分泌し、自らの受容体に作用するもの。"},
+{id:162,lec:1,t:T.horm,type:"cloze",src:"穴埋めシート 第1講 問5",q:"インスリンは{{膵臓|膵|ランゲルハンス島}}で産生され{{肝臓}}や脂肪細胞、骨格筋細胞に作用する。このことからインスリンはホルモンである。"},
+{id:163,lec:1,t:T.nuc,type:"cloze",src:"穴埋めシート 第1講 問6",q:"細胞質受容体にはステロイドが結合する{{ステロイドホルモン受容体}}がある。核内受容体には{{レチノイン酸受容体}}、{{甲状腺ホルモン受容体}}がある。これらは核内で応答配列である{{エンハンサー}}に結合し{{転写活性化因子|転写因子}}として働く。それにより、転写が活性化し、{{RNA ポリメラーゼⅡ|RNAポリメラーゼ2|polII|pol2}}が mRNA を転写する。"},
+{id:164,lec:1,t:T.rec,type:"cloze",src:"穴埋めシート 第1講 問7",q:"G タンパク質共役型受容体は PKA、PKC、CaMK が CREB などを{{リン酸化}}することで転写活性化因子として働く。"},
+{id:165,lec:1,t:T.rec,type:"cloze",src:"穴埋めシート 第1講 問8",q:"血管透過性が上昇すると毛細血管の{{血管内皮細胞間の間隙|血管内皮細胞間隙|内皮細胞間の間隙|内皮細胞間隙|血管内皮細胞間の隙間|内皮細胞の隙間}}から血漿成分が間質に滲み出て、それが{{間質液(組織間液)|間質液|組織間液|組織液}}となる。"},
+{id:166,lec:1,t:T.rec,type:"cloze",src:"穴埋めシート 第1講 問9",q:"イオンチャネル型受容体は ATP を利用せずイオンを{{受動輸送|受動}}する。"},
+{id:167,lec:1,t:T.rec,type:"cloze",src:"穴埋めシート 第1講 問10",q:"Gs タンパク質共役型受容体にリガンドが結合すると{{アデニル酸シクラーゼ(AC)|アデニル酸シクラーゼ|AC}}が活性化され{{ATP}}から{{cAMP}}を合成する。cAMP によって活性化された{{プロテインキナーゼ A(PKA)|プロテインキナーゼ A|PKA}}が転写因子{{CREB}}をリン酸化し、それが標的遺伝子の応答配列に結合する。"},
+{id:168,lec:1,t:T.rec,type:"cloze",src:"穴埋めシート 第1講 問11",q:"Gq タンパク質共役型受容体にリガンドが結合すると、{{ホスホリパーゼ Cβ(PLC)|ホスホリパーゼ Cβ|PLC}}が活性化され{{イノシトール 1,4,5-トリスリン酸(IP₃)|イノシトール 1,4,5-トリスリン酸|IP₃|IP3}}が生成され{{CaM キナーゼ(CaMK)|CaM キナーゼ|CaMK|CaMキナーゼ}}が活性化される。"},
+{id:169,lec:1,t:T.tx,type:"cloze",src:"穴埋めシート 第1講 問12",q:"遺伝子の構造は{{転写調節領域}}と{{転写領域}}の二つに分けられる。"},
+{id:170,lec:1,t:T.basal,type:"cloze",src:"穴埋めシート 第1講 問13",q:"プロモーターに存在する CATT ボックスに転写因子である{{NF-Y}}、GC ボックスに転写因子である{{Sp1}}が結合する。その後、それを認識し、基本転写因子と RNAポリメラーゼⅡから構成される{{基本転写装置}}が構築され{{転写開始複合体}}が形成される。"},
+{id:171,lec:1,t:T.tx,type:"cloze",src:"穴埋めシート 第1講 問14",q:"転写開始複合体内で RNA ポリメラーゼⅡが{{リン酸化}}され、基本転写装置が崩壊し RNA ポリメラーゼⅡが DNA 上を{{5’→3’方向|5→3|5から3}}に移動しながら mRNA(ヘテロ核 RNA)が合成する。"},
+{id:172,lec:1,t:T.tx,type:"cloze",src:"穴埋めシート 第1講 問15",q:"一次転写産物であるヘテロ核 RNA には{{エクソン}}と{{イントロン}}がある。プロセシングの過程において、最初 5’末端に{{7-メチルグアノシン|m7G}}が結合し{{キャップ構造}}が形成される。続いて{{スプライシング}}においてイントロンが取り除かれエクソンが連結する。その後、3’末端に{{ポリ(A)鎖|ポリa|polya}}が付加され成熟 mRNA が産生される。"},
+{id:173,lec:1,t:T.basal,type:"cloze",src:"穴埋めシート 第1講 問16",q:"転写因子である{{NF-Y}}と{{Sp1}}が存在しない場合、基本転写装置の構築と基本転写装置の再構築の速さが単位時間当たりの mRNA の合成量を決める。"},
+{id:174,lec:1,t:T.nuc,type:"cloze",src:"穴埋めシート 第1講 問17",q:"脂溶性リガンドとして、ステロイドホルモン、レチノイン酸、甲状腺ホルモン、ビタミン D₃がある。ステロイドホルモンには{{グルココルチコイド}}、{{ミネラルコルチコイド}}、{{アンドロゲン}}、{{エストロゲン|エストラジオール}}がある。"},
+{id:175,lec:1,t:T.nuc,type:"cloze",src:"穴埋めシート 第1講 問18",q:"グルココルチコイドには{{コルチゾール}}、ミネラルコルチコイドには{{アルドステロン}}、アンドロゲンには{{テストステロン}}、エストロゲンには{{エストラジオール}}がある。"},
+{id:176,lec:1,t:T.nuc,type:"cloze",src:"穴埋めシート 第1講 問19",q:"レチノイン酸には、{{全 trans-レチノイン酸|全トランスレチノイン酸|ATRA|オールトランスレチノイン酸}}と{{9-cis-レチノイン酸|9シスレチノイン酸}}がある。甲状腺ホルモンには{{チロキシン}}、{{トリヨードチロニン}}がある。"},
+{id:177,lec:1,t:T.nuc,type:"cloze",src:"穴埋めシート 第1講 問20",q:"グルココルチコイドなどのステロイドホルモン受容体は{{ホモ二量体|ホモ2量体|ホモダイマー}}を形成し、{{転写因子|転写活性化因子}}として働く。レチノイン酸受容体、甲状腺ホルモン受容体、ビタミンD₃受容体はいずれも{{9-cis-レチノイン酸受容体|RXR|レチノイドX受容体}}と{{ヘテロ二量体|ヘテロ2量体|ヘテロダイマー}}を形成され{{転写活性化因子|転写因子}}として働く。 {{ヘテロ二量体|ヘテロ2量体|ヘテロダイマー}}は応答配列に結合したまま転写開始複合体が崩壊し、転写が開始する。"},
+{id:178,lec:1,t:T.nuc,type:"cloze",src:"穴埋めシート 第1講 問21",q:"細胞質に存在するステロイドホルモン受容体はリガンド非存在下において{{熱ショックタンパク質|HSP|Hsp90|熱ショック蛋白質|ヒートショックタンパク質}}と結合して不活性化されている。"},
+{id:179,lec:1,t:T.nuc,type:"cloze",src:"穴埋めシート 第1講 問22",q:"ステロイドホルモン受容体は{{ホモ二量体|ホモ2量体|ホモダイマー}}を形成し{{DNA 結合ドメイン}}を介して応答配列に結合する。さらに、{{転写活性化ドメイン}}を介して、転写共役因子である{{コアクチベーター}}に結合する。ステロイドホルモン受容体の DNA 結合ドメインには{{ジンクフィンガーモチーフ|ジンクフィンガー|Znフィンガー}}がある。"},
+{id:180,lec:1,t:T.horm,type:"cloze",src:"穴埋めシート 第1講 問23",q:"プロスタグランジン E2、D2 は{{血管平滑筋|血管平滑筋細胞}}に作用することで血管平滑筋細胞を{{弛緩}}させる。それにより、毛細血管の拡張による血流量の増加、{{発赤}}、{{熱感}}がおきる。"},
+{id:181,lec:1,t:T.horm,type:"cloze",src:"穴埋めシート 第1講 問24",q:"ロイコトリエン D4、C4 は{{血管内皮細胞|内皮細胞}}に作用し、血管内皮細胞間隙を{{拡大}}させる。それにより、毛細血管の透過性の増加がおき、軽い浮腫がおきる。"},
+{id:182,lec:1,t:T.horm,type:"cloze",src:"穴埋めシート 第1講 問25",q:"ダメージを受けた皮膚細胞から分泌された IL-1βや TNF-αは周囲の未損傷皮膚細胞に作用し、{{プロスタグランジン E2|PGE2}}の産生、分泌を促進し、炎症を拡大する。"},
+{id:183,lec:1,t:T.horm,type:"cloze",src:"穴埋めシート 第1講 問26",q:"ダメージを受けた皮膚細胞から分泌されたロイコトリエンが未損傷細胞に作用すると、{{プロスタグランジン E2|PGE2}}や{{炎症性サイトカイン|IL-1β|TNF-α|サイトカイン}}の産生、分泌を促進し、炎症を拡大する。"},
+{id:184,lec:2,t:T.ster,type:"cloze",src:"穴埋めシート 第2講 問1",q:"皮膚細胞に物理的刺激、化学物質刺激、細菌感染などが起きると転写活性化因子である{{NF-κB}}が活性化される。"},
+{id:185,lec:2,t:T.ster,type:"cloze",src:"穴埋めシート 第2講 問2",q:"IL-1βや TNF-αの遺伝子の転写調節領域には{{NF-κB 応答配列|NF-κB結合配列}}が存在し、{{NF-κB}}が活性化すると炎症性サイトカインの発現が誘導され、炎症が悪化する。"},
+{id:186,lec:2,t:T.ster,type:"cloze",src:"穴埋めシート 第2講 問3",q:"ベタメタゾン吉草酸エステルは{{合成副腎皮質ホルモン|副腎皮質ホルモン|合成グルココルチコイド|グルココルチコイド}}剤であり、ベタメタゾン吉草酸エステルはベタメタゾンの{{プロドラッグ}}である。"},
+{id:187,lec:2,t:T.ster,type:"cloze",src:"穴埋めシート 第2講 問4",q:"{{NF-κB}}は刺激を受けることで核内へ移行するが、ベタメタゾンが結合した{{グルココルチコイド受容体|GR}}が{{NF-κB}}に結合すると、核内に移行することができなくなる。このことにより、{{IL-1β}}や{{TNF-α}}の転写が抑制される。"},
+{id:188,lec:2,t:T.ster,type:"cloze",src:"穴埋めシート 第2講 問5",q:"皮膚細胞に取り込まれたベタメタゾンは細胞質で{{グルココルチコイド受容体|GR}}と結合し、{{ホモ二量体|ホモ2量体|ホモダイマー}}を形成する。{{IκB}}や{{リポコルチン|アネキシンA1}}遺伝子の転写調節領域には{{グルココルチコイド応答配列|GRE}}が存在しており、ホモ二量体化したグルココルチコイド受容体は{{転写活性化因子|転写因子}}として働く。"},
+{id:189,lec:2,t:T.ster,type:"cloze",src:"穴埋めシート 第2講 問6",q:"ベタメタゾンによって発現誘導された{{IκB}}は細胞質内で NF-κB と直接結合するため核内に入れなくなり{{IL-1β}}や{{TNF-α}}の転写が抑制される。"},
+{id:190,lec:2,t:T.ster,type:"cloze",src:"穴埋めシート 第2講 問7",q:"細胞膜を構成しているリン脂質はグリセロール骨格の 1 位の炭素には{{飽和脂肪酸}}がエステル結合し、2 位の炭素には{{不飽和脂肪酸}}がエステル結合していることが多い。3 位の炭素には{{リン酸基|リン酸}}が結合していることが多い。"},
+{id:191,lec:2,t:T.ster,type:"cloze",src:"穴埋めシート 第2講 問8",q:"皮膚に対し物理的刺激、アレルゲン刺激、細菌感染などが起こると、ダメージを受けた皮膚細胞が活性化され{{ホスホリパーゼ A₂|PLA2}}が強く活性化される。それにより、不飽和脂肪酸である{{アラキドン酸}}が遊離する。"},
+{id:192,lec:2,t:T.ster,type:"cloze",src:"穴埋めシート 第2講 問9",q:"シクロオキシゲナーゼ-2 は遊離アラキドン酸を基質とし、{{プロスタグランジン類|プロスタグランジン|PG}}を産生する。また、リポキシゲナーゼは遊離アラキドン酸を基質とし、{{ロイコトリエン類|ロイコトリエン|LT}}を産生する。"},
+{id:193,lec:2,t:T.ster,type:"cloze",src:"穴埋めシート 第2講 問10",q:"リポコルチンは{{ホスホリパーゼ A₂|PLA2}}の酵素活性を阻害し、プロスタグランジン E2やロイコトリエン D4 などの{{炎症性メディエーター|脂質メディエーター|メディエーター}}の産生を抑制する。"},
+{id:194,lec:2,t:T.ret,type:"cloze",src:"穴埋めシート 第2講 問11",q:"植物性食品由来のβ-カロテンは、小腸上皮細胞内でβ-カロテン15,15'-ジオキシゲナーゼによる{{酸化的開裂|開裂|酸化}}を受けてレチナールになり、さらにレチナール還元酵素により{{@還元|酸化|還元}}されてレチノールになる。",note:"シートは「レチナールがさらに酸化されて全trans-レチノイン酸になる」となっていたが、第2講スライドでは小腸上皮細胞内のレチナールは<b>還元</b>されてレチノールになる(レチノイン酸になるのは標的細胞内)。スライドに合わせて直した。"},
+{id:195,lec:2,t:T.ret,type:"cloze",src:"穴埋めシート 第2講 問12",q:"動物性食品由来のレチノールは{{レチノール結合タンパク質|RBP}}と複合体を形成し、血液を介して標的細胞まで運ばれる。そこでレチノール輸送担体により、細胞内に取り込まれ、{{@酸化|酸化|還元}}されレチナールになり、さらに{{@酸化|酸化|還元}}されレチノイン酸になる。"},
+{id:196,lec:2,t:T.ret,type:"cloze",src:"穴埋めシート 第2講 問13",q:"細胞内レチノイン酸結合タンパク質により、核内に輸送されレチノイン酸受容体に結合し標的遺伝子の転写を活性化するのは{{全 trans-レチノイン酸|全トランスレチノイン酸|ATRA|オールトランスレチノイン酸}}である。"},
+{id:197,lec:2,t:T.chr,type:"cloze",src:"穴埋めシート 第2講 問14",q:"ヒストンのリジン残基はヒストンアセチル化酵素活性を持つコアクチベーターが作用してアセチル化すると、ヒストンと DNA の静電的結合は{{@弱く|強く|弱く}}なる。ヒストン脱アセチル化酵素はアセチル化されたリジン残基からアセチル基を切り離すことで、ヒストンと DNA の静電的結合を{{@強く|強く|弱く}}する。"},
+{id:198,lec:2,t:T.chr,type:"cloze",src:"穴埋めシート 第2講 問15",q:"ヒストンのアセチル化が進むと{{ユークロマチン}}ができ、転写開始複合体が形成されやすくなり、転写が活性化する。"},
+{id:199,lec:2,t:T.chr,type:"cloze",src:"穴埋めシート 第2講 問16",q:"リガンドである全 trans-レチノイン酸(ATRA)が存在しない場合、ATRA の標的遺伝子の転写調節領域では{{ヒストン脱アセチル化酵素(HDAC)|ヒストン脱アセチル化酵素|HDAC}}の作用により、{{ヘテロクロマチン}}が形成される。"},
+{id:200,lec:2,t:T.chr,type:"cloze",src:"穴埋めシート 第2講 問17",q:"ATRA が RAR に結合するとコリプレッサーと HDAC が外れる。これにより、{{ヒストンアセチル化酵素活性|HAT|ヒストンアセチル化酵素}}を持つコアクチベーターが結合する。ヒストンアセチル化が起こった後、{{クロマチンリモデリング因子|リモデリング因子}}により、DNA とヒストンの解離が起き{{ユークロマチン}}が形成される。"},
+{id:201,lec:3,t:T.thy,type:"cloze",src:"穴埋めシート 第2講 問18",q:"細胞内において{{チロキシン(T4)|チロキシン|T4|サイロキシン}}はヨードチロニン脱ヨード酵素により、活性型の{{トリヨードチロニン(T3)|トリヨードチロニン|T3}}に変換される。"},
+{id:202,lec:3,t:T.thy,type:"cloze",src:"穴埋めシート 第2講 問19",q:"ヨードチロニン脱ヨード酵素 1 型は主に{{肝臓}}や{{腎臓}}で T4 を T3 に変換する。甲状腺ホルモン受容体のリガンドは T3 である。"},
+{id:203,lec:3,t:T.thy,type:"cloze",src:"穴埋めシート 第2講 問20",q:"リガンドが存在しない場合、甲状腺ホルモン受容体はレチノイド X 受容体と{{ヘテロ二量体|ヘテロ2量体|ヘテロダイマー}}を形成し、標的遺伝子の転写調節領域に存在する{{甲状腺ホルモン応答配列|TRE}}に結合している。この状態ではコリプレッサーが甲状腺ホルモン受容体に結合しており、{{ヘテロクロマチン}}が形成され転写抑制されている。"},
+{id:204,lec:3,t:T.thy,type:"cloze",src:"穴埋めシート 第2講 問21",q:"T3 が甲状腺ホルモン受容体に結合するとコリプレッサーと{{HDAC|ヒストン脱アセチル化酵素}}が外れる。その後、{{ヒストンアセチル化酵素活性|HAT|ヒストンアセチル化酵素}}を持つコアクチベーターが結合する。{{クロマチンリモデリング因子|リモデリング因子}}により、ヒストンと DNA が解離する。これにより、転写が{{@活性化|活性化|不活性化}}する。"},
+{id:206,lec:5,t:T.cancer,type:"cloze",src:"穴埋めシート 第3講 問1",q:"がんの発症には{{エピジェネティクス|エピジェネティック}}と{{ジェネティクス|遺伝的要因|遺伝子変異}}の両方が関与している。"},
+{id:207,lec:5,t:T.cancer,type:"cloze",src:"穴埋めシート 第3講 問2",q:"体細胞分裂の過程における遺伝子変異の蓄積は細胞周期の異常な亢進、DNA 損傷修復の{{@低下|上昇|低下}}、アポトーシスの{{@抑制|促進|抑制}}が生じ無限増殖能を有したがん細胞が形成される。"},
+{id:208,lec:5,t:T.cancer,type:"cloze",src:"穴埋めシート 第3講 問3",q:"突然変異には{{染色体異常|染色体変異}}と{{DNA 塩基配列の変異|塩基配列の変異|点変異|塩基配列変異}}の二つがある。前者には{{欠失}}、{{重複}}、{{逆位}}、{{転座}}の 4 つがあり、これらは細胞増殖を恒常的に促進する異常な染色体 DNA の形成につながる。後者には一塩基置換変異があり、{{ミスセンス変異}}、{{ナンセンス変異}}、{{フレームシフト変異}}、{{サイレント変異}}が含まれる。"},
+{id:209,lec:5,t:T.cancer,type:"cloze",src:"穴埋めシート 第3講 問4",q:"ミスセンス変異とは DNA の塩基配列が変化することで対応する{{mRNA}}の塩基配列に変異が起こることでアミノ酸をコードするコドンが変わる。それにより、タンパク質の構造が変わることをいう。"},
+{id:210,lec:5,t:T.cancer,type:"cloze",src:"穴埋めシート 第3講 問5",q:"ナンセンス変異とは mRNA においてもともとアミノ酸をコードするコドンが{{終止コドン|終止|ストップコドン}}に変化することでタンパク質合成が停止することをいう。"},
+{id:211,lec:5,t:T.cancer,type:"cloze",src:"穴埋めシート 第3講 問6",q:"フレームシフト変異とは DNA において 1 塩基の{{挿入}}または{{欠失}}が起こることで DNA から転写された mRNA のコドンの読み枠がずれ、タンパク質のアミノ酸配列がずれることをいう。"},
+{id:212,lec:5,t:T.cancer,type:"cloze",src:"穴埋めシート 第3講 問7",q:"サイレント変異とは mRNA においてコドンの{{3|三}}番目が異なる塩基に置換するがコードするアミノ酸は変わらないため、タンパク質の構造自体に変化が見られないことをいう。"},
+{id:213,lec:5,t:T.cancer,type:"cloze",src:"穴埋めシート 第3講 問8",q:"がん抑制遺伝子において{{機能喪失型変異|機能喪失}}が起こるとがん細胞の形成につながる。"},
+{id:214,lec:5,t:T.cancer,type:"cloze",src:"穴埋めシート 第3講 問9",q:"正常な体細胞においてがん抑制遺伝子では DNA 上の CpG 配列のシトシンが高度に{{メチル化}}されたり、DNA に巻き付くヌクレオソームのヒストンに対して{{脱アセチル化酵素|HDAC|ヒストン脱アセチル化酵素}}が作用することでヘテロクロマチン化する。これにより、がん抑制遺伝子の転写が{{@抑制|促進|抑制}}され発現が阻害されることにより、がん細胞の形成に寄与する。"},
+{id:216,lec:5,t:T.cancer,type:"cloze",src:"穴埋めシート 第3講 問11",q:"DNA 上の CpG 配列のメチル化が{{@低下|上昇|低下}}したり、ヌクレオソームのヒストンに対して{{アセチル化酵素|HAT|ヒストンアセチル化酵素}}が作用することでがん原遺伝子の{{ユークロマチン}}化が進む。がん原遺伝子の転写が活性化されることでがん細胞の形成につながる。"},
+{id:217,lec:5,t:T.cancer,type:"cloze",src:"穴埋めシート 第3講 問12",q:"がん原遺伝子で{{機能獲得型変異|機能獲得}}が起こるとがん細胞の形成につながる。"},
+{id:218,lec:5,t:T.cancer,type:"cloze",src:"穴埋めシート 第3講 問13",q:"がん細胞ではテロメラーゼの発現が{{@促進|促進|抑制}}されているため、テロメアの短縮が{{@抑制|促進|抑制}}され、{{無限増殖能}}を獲得する。テロメアの短縮は{{ラギング鎖}}において問題となる。"},
+{id:219,lec:5,t:T.cancer,type:"cloze",src:"穴埋めシート 第3講 問14",q:"テロメラーゼは{{RNA 依存性 DNA 合成|逆転写|RNA依存性DNAポリメラーゼ}}酵素であり、テロメア配列(TTAGGG)に対して相補的なRNA 配列を持つ。"},
+{id:220,lec:5,t:T.cancer,type:"cloze",src:"穴埋めシート 第3講 問15",q:"正常細胞は増殖が停止すると{{G1 期|G1}}から{{G0 期|G0}}に入り、細胞老化を経て最終的にアポトーシスに至る。"},
+{id:222,lec:3,t:T.apl,type:"cloze",src:"穴埋めシート 第3講 問17",q:"造血幹細胞が分化して{{骨髄系前駆細胞|骨髄系幹細胞}}になり、さらに分化を続けることで成熟な骨髄系の白血球になる。造血幹細胞が分化して{{リンパ系前駆細胞|リンパ系幹細胞}}になり、さらに分化を続けることで成熟なリンパ系の白血球になる。"},
+{id:223,lec:3,t:T.apl,type:"cloze",src:"穴埋めシート 第3講 問18",q:"多発性骨髄腫(MM)は{{B 細胞|Bリンパ球}}から分化した形質細胞が腫瘍化することで発症する。"},
+{id:224,lec:3,t:T.apl,type:"cloze",src:"穴埋めシート 第3講 問19",q:"成熟 T リンパ細胞が腫瘍化すると{{末梢性 T 細胞リンパ腫(PTCL)|末梢性 T 細胞リンパ腫|PTCL}}を発症する。また、成人 T 細胞白血病リンパ腫は{{悪性リンパ腫}}に分類される。成熟 B 細胞腫瘍に分類されるものとして{{濾胞性リンパ腫(FL)|濾胞性リンパ腫|FL}}がある。"},
+{id:225,lec:3,t:T.apl,type:"cloze",src:"穴埋めシート 第3講 問20",q:"急性前骨髄球性白血病は腫瘍化した{{好中球前骨髄球|前骨髄球}}が骨髄の中で増殖し、血中に放出される。腫瘍化した{{好中球前骨髄球|前骨髄球}}が骨髄内のスペースを占拠し、正常造血ができなくなり、{{赤血球}}、{{好中球}}、{{血小板}}の造血が抑制される。"},
+{id:226,lec:3,t:T.apl,type:"cloze",src:"穴埋めシート 第3講 問21",q:"急性前骨髄球性白血病は正常造血ができなくなることで感染症にかかりやすくなったり、{{出血}}傾向になる。また、異常前骨髄芽球から血液凝固を活性化する顆粒物質が放出され、血液凝固系が過剰に働き{{血小板}}や{{凝固因子}}が不足し出血傾向になる。"},
+{id:227,lec:3,t:T.apl,type:"cloze",src:"穴埋めシート 第3講 問22",q:"好中球は顆粒球-単球前駆細胞に{{顆粒球コロニー刺激因子(G-CSF)|顆粒球コロニー刺激因子|G-CSF}}が作用して好中球骨髄芽球が産生する。また、好酸球や好塩基球は顆粒球-単球前駆細胞に{{IL-5}}(好酸球)、{{IL-3}}(好塩基球)が作用することで分化が進む。"},
+{id:228,lec:3,t:T.apl,type:"cloze",src:"穴埋めシート 第3講 問23",q:"単球は顆粒球-単球前駆細胞に{{マクロファージコロニー刺激因子(M-CSF)|マクロファージコロニー刺激因子|M-CSF}}が作用することで単芽球、成熟単球に分化する。"},
+{id:229,lec:3,t:T.apl,type:"cloze",src:"穴埋めシート 第3講 問24",q:"B 細胞は{{骨髄}}で分化し、{{リンパ節}}、{{脾臓}}で成熟する。T 細胞は{{骨髄}}で分化し、{{胸腺}}で成熟する。"},
+{id:231,lec:3,t:T.apl,type:"cloze",src:"穴埋めシート 第3講 問26",q:"初発の APL の薬物治療はトレチノインと{{三酸化二ヒ素(As₂O₃)|三酸化二ヒ素|As₂O₃|亜ヒ酸|ATO|三酸化ヒ素}}の併用が有効である。また、再発、難治性の APL の場合、トレチノインよりも{{三酸化二ヒ素(As₂O₃)|三酸化二ヒ素|As₂O₃|亜ヒ酸|ATO|三酸化ヒ素}}が有効な薬物治療である。"},
+{id:232,lec:5,t:T.cancer,type:"cloze",src:"穴埋めシート 第4講 問1",q:"正常細胞の p53 遺伝子に機能喪失型変異が入ると、{{無限増殖能}}の獲得につながりがん細胞になる確率が上がる。"},
+{id:234,lec:5,t:T.cancer,type:"cloze",src:"穴埋めシート 第4講 問3",q:"正常細胞において p53 は DNA 損傷を感知すると細胞周期において{{G1 期|G1}}から{{S 期|S}}への移行を抑制し、DNA 修復を促す。"},
+{id:235,lec:5,t:T.cancer,type:"cloze",src:"穴埋めシート 第4講 問4",q:"P53 は{{p21}}遺伝子の転写調節領域に結合する転写因子である。"},
+{id:237,lec:5,t:T.cancer,type:"cloze",src:"穴埋めシート 第4講 問7",q:"がん細胞が増殖する過程で p21 遺伝子に機能喪失型変異が新たに入ることで細胞周期の進行が{{@促進|促進|抑制}}し、増殖の速さが{{@上昇|上昇|低下}}。"},
+{id:238,lec:5,t:T.cancer,type:"cloze",src:"穴埋めシート 第4講 問8",q:"MLH1 および MSH2 は{{DNA ミスマッチ修復|ミスマッチ修復}}因子であり、これら遺伝子の機能低下が起きると、遺伝性のがん症候群である{{リンチ症候群|Lynch症候群|HNPCC}}の原因となる。主に、大腸がんや子宮内膜がんの発症リスクが高まる。"},
+{id:239,lec:5,t:T.cancer,type:"cloze",src:"穴埋めシート 第4講 問9",q:"XPA および XPC は{{DNA ヌクレオチド除去修復|ヌクレオチド除去修復|NER}}に関与する因子であり、これらの遺伝子の塩基配列変異はこれら因子の機能を失わせ常染色体潜性遺伝症候群である{{色素性乾皮症|XP}}を引き起こす。それにより、紫外線誘発性の皮膚がんの発症リスクが高まる。"},
+{id:240,lec:3,t:T.apl,type:"cloze",src:"穴埋めシート 第4講 問10",q:"末梢性 T 細胞リンパ腫、皮膚 T 細胞リンパ腫、成人 T 細胞白血病/リンパ腫、は{{成熟 T 細胞|T細胞|Tリンパ球}}が腫瘍化した血液がんである。また、濾胞性リンパ腫は{{成熟 B 細胞|B細胞|Bリンパ球}}が腫瘍化した血液がんである。"},
+{id:241,lec:5,t:T.epi,type:"cloze",src:"穴埋めシート 第4講 問11",q:"アザシチジンは{{DNA 脱メチル化薬|脱メチル化薬|DNAメチル化阻害薬|DNMT阻害薬|脱メチル化剤}}であり、{{骨髄異形成症候群|MDS}}や{{急性骨髄性白血病|AML}}に適応される。"},
+{id:242,lec:5,t:T.epi,type:"cloze",src:"穴埋めシート 第4講 問12",q:"ボリノスタットは{{ヒストン脱アセチル化酵素阻害薬|HDAC阻害薬|HDAC阻害剤}}であり、{{皮膚 T 細胞リンパ腫|CTCL}}に適応される。"},
+{id:243,lec:5,t:T.epi,type:"cloze",src:"穴埋めシート 第4講 問13",q:"ロミデプシンは{{ヒストン脱アセチル化酵素阻害薬|HDAC阻害薬|HDAC阻害剤}}であり、{{再発又は難治性の末梢性 T 細胞リンパ腫|末梢性 T 細胞リンパ腫|末梢性T細胞リンパ腫|PTCL}}に適応される。"},
+{id:244,lec:5,t:T.epi,type:"cloze",src:"穴埋めシート 第4講 問14",q:"ツツジノスタットは{{ヒストン脱アセチル化酵素阻害薬|HDAC阻害薬|HDAC阻害剤}}であり、{{再発又は難治性の成人 T 細胞白血病/リンパ腫|成人 T 細胞白血病/リンパ腫|成人T細胞白血病|ATL}}及び{{再発又は難治性の末梢性 T 細胞リンパ腫|末梢性 T 細胞リンパ腫|末梢性T細胞リンパ腫|PTCL}}に適応される。"},
+{id:245,lec:5,t:T.epi,type:"cloze",src:"穴埋めシート 第4講 問15",q:"パノビノスタットは{{ヒストン脱アセチル化酵素阻害薬|HDAC阻害薬|HDAC阻害剤}}であり、{{多発性骨髄腫|MM}}に適応される。"},
+{id:246,lec:5,t:T.epi,type:"cloze",src:"穴埋めシート 第4講 問16",q:"タゼメスタットは{{EZH 阻害薬|EZH2阻害薬|EZH阻害剤|EZH1/2阻害薬}}であり、再発又は難治性の EZH2 遺伝子変異陽性の{{濾胞性リンパ腫|FL}}に適応される。"},
+{id:247,lec:5,t:T.epi,type:"cloze",src:"穴埋めシート 第4講 問17",q:"バレメトスタットは{{EZH 阻害薬|EZH2阻害薬|EZH阻害剤|EZH1/2阻害薬}}であり、{{再発又は難治性の成人 T 細胞白血病/リンパ腫|成人 T 細胞白血病/リンパ腫|成人T細胞白血病|ATL}}及び{{再発又は難治性の末梢性 T 細胞リンパ腫|末梢性 T 細胞リンパ腫|末梢性T細胞リンパ腫|PTCL}}に適応される。"},
+{id:248,lec:5,t:T.epi,type:"cloze",src:"穴埋めシート 第4講 問18",q:"がん抑制遺伝子の CpG アイランドが高度にメチル化されるとメチル化シトシンに{{メチル化 DNA 結合タンパク質(MeCP2)|メチル化 DNA 結合タンパク質|MeCP2}}が結合し、そこに{{ヒストン脱アセチル化酵素}}がリクルートされる。それにより、ヒストンタンパク質内に存在するリジン残基の正電荷が現れヒストンと DNA の結合が強くなり{{ヘテロクロマチン}}に傾き、転写が{{@抑制|促進|抑制}}される。"},
+{id:249,lec:5,t:T.epi,type:"cloze",src:"穴埋めシート 第4講 問19",q:"がん抑制遺伝子の CpG アイランドが高度にメチル化されるとメチル化シトシンに{{メチル化 DNA 結合タンパク質(MBD1)|メチル化 DNA 結合タンパク質|MBD1}}が結合し、そこに{{ヒストン H3-K9 メチル化酵素|H3K9メチル化酵素|ヒストンメチル化酵素}}がリクルートされる。その結果リジン残基がメチル化され{{ヘテロクロマチンタンパク質(HP1)|ヘテロクロマチンタンパク質|HP1}}が結合し凝集する。その結果{{ヘテロクロマチン}}に傾き、転写が{{@抑制|促進|抑制}}される。"},
+{id:250,lec:5,t:T.epi,type:"cloze",src:"穴埋めシート 第4講 問20",q:"{{維持型 DNA メチル化酵素(DNMT1)|維持型 DNA メチル化酵素|DNMT1}}はヘミメチル化 CpG に作用し完全なメチル化 CpG にする。"},
+{id:251,lec:5,t:T.epi,type:"cloze",src:"穴埋めシート 第4講 問21",q:"de novo DNA メチル化酵素である{{DNMT3A/3B|DNMT3}}は非メチル化 CpG に直接作用しヘミメチル化を経て完全メチル化 CpG を形成する。"},
+{id:252,lec:5,t:T.epi,type:"cloze",src:"穴埋めシート 第4講 問22",q:"がん抑制遺伝子の転写調節領域に非メチル化 CpG アイランドが存在する場合、正常細胞においてその領域は{{ユークロマチン}}化しておりエンハンサーに転写活性化因子が結合しやすく、転写が容易である。"},
+{id:253,lec:5,t:T.epi,type:"cloze",src:"穴埋めシート 第4講 問23",q:"がん抑制遺伝子の転写調節領域に高度メチル化 CpG が存在する場合、その領域が{{ヘテロクロマチン}}化しており、転写が{{@抑制|促進|抑制}}される。"},
+{id:254,lec:5,t:T.epi,type:"cloze",src:"穴埋めシート 第4講 問24",q:"がん細胞において{{DNMT1}}が活性上昇すると、細胞分裂をするたびに過剰メチル化 CpG が維持され、安定する。それにより、がん細胞の増殖が{{@促進|促進|抑制}}される。"},
+{id:255,lec:5,t:T.epi,type:"cloze",src:"穴埋めシート 第4講 問25",q:"アザシチジンは、シトシンの5位の炭素が{{窒素|N}}に置き換わった構造をもつ。DNAに取り込まれたアザシチジンに対してDNMT1が作用すると、DNMT1は{{5-aza-C|アザシチジン|5-アザシチジン}}と共有結合して不活化される。",note:"シートは「5位の炭素が酸素に置き換わった」となっていたが、アザシチジン(5-アザシチジン)は<b>窒素</b>に置き換わった構造。後半の文も意味が通らなかったので書き直した。"},
+{id:256,lec:5,t:T.epi,type:"cloze",src:"穴埋めシート 第4講 問26",q:"骨髄系腫瘍細胞や白血病細胞にアザシチジンが取り込まれると細胞内で 5-aza-CMP→5-aza-CDP→5-aza-dCDP→5-aza-dCTP となり、DNA ポリメラーゼの基質として DNAに取り込まれる。5-aza-CDP から 5-aza-dCDP になる際、{{リボヌクレオチドレダクターゼ|リボヌクレオチド還元酵素}}が作用する。"},
+{id:257,lec:5,t:T.epi,type:"cloze",src:"穴埋めシート 第4講 問27",q:"皮膚 T 細胞リンパ腫、末梢性 T 細胞リンパ腫、成人 T 細胞白血病/リンパ腫の腫瘍性リンパ球では{{ヒストン脱アセチル化酵素(HDAC)|ヒストン脱アセチル化酵素|HDAC}}の活性が亢進している。"},
+{id:258,lec:5,t:T.epi,type:"cloze",src:"穴埋めシート 第4講 問28",q:"ボリノスタット、ロミデプシン、ツツジノスタットはヒストン脱アセチル化酵素阻害薬であり、腫瘍性 T リンパ球において{{HDAC 活性|HDAC|ヒストン脱アセチル化酵素}}が阻害され相対的に{{HAT 活性|HAT|ヒストンアセチル化酵素}}が強くなる。"},
+{id:259,lec:5,t:T.epi,type:"cloze",src:"穴埋めシート 第4講 問29",q:"成人 T 細胞白血病/リンパ腫や末梢性 T 細胞リンパ腫の腫瘍性 T リンパ球におけるH3-K27 の{{トリメチル化|メチル化|H3K27me3}}はがん抑制遺伝子の転写を{{@抑制|促進|抑制}}する。"},
+{id:261,lec:4,t:T.vd,type:"cloze",src:"穴埋めシート 第4講 問31",q:"ビタミンD₃は食物から摂取されるほか、体内で{{コレステロール|7-デヒドロコレステロール}}を原料として合成される。皮膚では7-デヒドロコレステロールが紫外線B波による{{光化学反応|光反応}}を受け、ビタミンD₃(まだ活性型ではない)に変換される。",note:"シートは「紫外線で活性型ビタミンD₃に変換される」となっていたが、第4講課題の問2の解答は×。紫外線でできるのは不活性のビタミンD₃までなので直した。"},
+{id:262,lec:4,t:T.vd,type:"cloze",src:"穴埋めシート 第4講 問32",q:"体内に取り込まれたビタミン D3 はまず{{肝臓}}において 25-ヒドロキシビタミンD3 に変換されさらに{{腎臓}}において活性型ビタミン D3 となる。"},
+{id:263,lec:4,t:T.vd,type:"cloze",src:"穴埋めシート 第4講 問33",q:"活性型ビタミン D3 は{{細胞質|細胞質内}}においてビタミン D3 受容体に結合した後、{{レチノイド X 受容体|RXR}}とヘテロ二量体を形成する。ヘテロ二量体を形成した後、核内でVDRE に結合し、転写を活性化する。",note:"第2講スライドに「細胞質においてVDRに結合し、RXRとヘテロ二量体を形成して核内へ移行」とある。第4講課題の問6が×だった理由は「ホモ二量体」の部分で確定。"},
+{id:264,lec:4,t:T.vd,type:"cloze",src:"穴埋めシート 第4講 問34",q:"電位依存性カルシウムチャネルである{{Cav1.3 チャネル|Cav1.3}}は活性型ビタミン D3 による発現誘導を受けない。"},
+{id:265,lec:4,t:T.vd,type:"cloze",src:"穴埋めシート 第4講 問35",q:"カルバインディン-D はカルシウムイオンを基底膜側に輸送する。小腸上皮細胞膜上には{{ATP}}依存型ポンプである{{PMCA1b|PMCA}}と{{Na⁺/Ca²⁺交換輸送体|Na/Ca交換|ナトリウムカルシウム交換}}であるNCX1 が存在しており、基底膜側に現れている。また、Na⁺依存性リン酸共輸送体である NaPi-IIb は腸間腔から小腸上皮細胞内への{{リン酸|無機リン酸|Pi}}の取り込みを増加させる。"},
+{id:266,lec:5,t:T.epi,type:"cloze",src:"穴埋めシート 第5講 問1",q:"アザシチジンのタンパク質合成阻害の原理は 5-aza-CTP が{{RNA ポリメラーゼⅡ|RNAポリメラーゼ2|polII|pol2}}の基質として使用されることで、mRNA に 5-aza-CMP が取り込まれる。これにより、tRNA が mRNA のコドンを認識できなくなり{{翻訳|タンパク質合成}}が停止する。"},
+{id:267,lec:5,t:T.epi,type:"cloze",src:"穴埋めシート 第5講 問2",q:"5-aza-CTP が{{RNA ポリメラーゼⅢ|polIII|RNAポリメラーゼ3}}の基質として使用されると、{{tRNA}}内で相補的塩基対が形成できなくなり{{tRNA}}の立体構造が変化することでコドン認識が低下し、翻訳が抑制される。"},
+{id:269,lec:5,t:T.epi,type:"cloze",src:"穴埋めシート 第5講 問4",q:"mRNA や tRNA のシトシンをメチル化して m⁵C(5-メチルシトシン)を生成する RNAメチル化酵素として、{{DNMT2}}と{{NSUN2}}が存在し、これらは mRNA やtRNA の安定性とタンパク質合成効率に寄与する。"},
+{id:270,lec:5,t:T.epi,type:"cloze",src:"穴埋めシート 第5講 問5",q:"腫瘍性細胞においてアザシチジンが取り込まれた mRNA や tRNA、rRNA が合成されると、DNMT2 や NSUN2 が取り込まれている 5-aza-CMP と{{共有結合}}をする。これにより、mRNA や tRNA のメチル化が行われず安定性が{{@低下|上昇|低下}}する。その結果、翻訳が抑制され腫瘍性細胞は死滅する。"},
+{id:271,lec:4,t:T.bone,type:"cloze",src:"穴埋めシート 第5講 問6",q:"骨基質は大きく有機成分と無機成分に分けられる。有機成分は骨基質全体の{{30～35|3035}}%を占め主成分は{{Ⅰ型コラーゲン|1型コラーゲン|コラーゲン}}であり、骨のしなやかさと引張に対する強さを与える。また、非コラーゲン性タンパク質として{{オステオカルシン}}などが含まれる。無機成分は{{ヒドロキシアパタイト}}であり骨の硬さと圧縮に対する強さを与える。"},
+{id:272,lec:4,t:T.bone,type:"cloze",src:"穴埋めシート 第5講 問7",q:"骨は{{海綿骨}}と{{皮質骨}}に分けられ前者は骨梁からなる粗な構造をしており、骨梁の表面に存在する{{骨芽細胞}}や{{破骨細胞}}は毛細血管に近接している。そのため、骨のリモデリングが活発である。皮質骨は{{骨単位|オステオン|ハバース系}}から構成され緻密な構造を持つ。"},
+{id:273,lec:4,t:T.bone,type:"cloze",src:"穴埋めシート 第5講 問8",q:"骨質の劣化などを感知して{{破骨細胞}}が誘導される。骨吸収の起こった部位に{{骨芽細胞}}が誘導され骨基質を産生・分泌しながら埋入していく。{{類骨}}にカルシウムなどが沈着し石灰化する。埋入した骨芽細胞は類骨を石灰化しながら{{骨細胞}}に分化する。",note:"「骨芽細胞は類骨を石灰化しながら骨細胞に分化する」。第4講課題の問37(石灰化が起こってから分化する)が×だった理由はここ。"},
+{id:274,lec:4,t:T.bone,type:"cloze",src:"穴埋めシート 第5講 問9",q:"類骨の主成分は{{Ⅰ型コラーゲン|1型コラーゲン|コラーゲン}}であり、そこに{{オステオカルシン}}が加わる。"},
+{id:275,lec:4,t:T.bone,type:"cloze",src:"穴埋めシート 第5講 問10",q:"海綿骨の骨梁表面で骨芽細胞から分泌された ATP は基質小胞内で{{ヒドロキシアパタイト}}の形成に利用される。ATP は{{ENPP1}}によってピロリン酸になり、{{ALP|アルカリホスファターゼ}}によりリン酸となり、血中のリン酸とともに基質小胞内に取り込まれる。"},
+{id:276,lec:4,t:T.bone,type:"cloze",src:"穴埋めシート 第5講 問11",q:"基質小胞内において徐々に{{Ca²⁺|カルシウム|Ca}}と{{リン酸|無機リン酸|Pi}}が結晶化することでヒドロキシアパタイトを形成する。"},
+{id:277,lec:4,t:T.bone,type:"cloze",src:"穴埋めシート 第5講 問12",q:"類骨の石灰化は基質小胞が崩壊しその中に含まれていたヒドロキシアパタイトが{{Ⅰ型コラーゲン|1型コラーゲン|コラーゲン}}に付着することで初めて起こる。"},
+{id:278,lec:4,t:T.bone,type:"cloze",src:"穴埋めシート 第5講 問13",q:"海綿骨の骨梁間の毛細血管から遊離してきた{{Ca²⁺|カルシウム|Ca}}や{{リン酸|無機リン酸|Pi}}は類骨に沈着しているヒドロキシアパタイトに直接、付着して結晶化し、類骨の石灰化に関与する。"},
+{id:279,lec:4,t:T.vd,type:"cloze",src:"穴埋めシート 第5講 問14",q:"血中の{{活性型ビタミン D₃|カルシトリオール|活性型ビタミンD}}は海綿骨の骨梁間の毛細血管の内皮細胞を通過し、{{骨芽細胞}}内にある応答配列に結合する。これにより、骨形成に関与する{{オステオカルシン}}などの発現を誘導する。また、ヒドロキシアパタイトの形成を促進する{{アルカリホスファターゼ(ALP)|アルカリホスファターゼ|ALP}}を発現誘導する。"},
+{id:280,lec:4,t:T.vd,type:"cloze",src:"穴埋めシート 第5講 問15",q:"活性型ビタミン D₃は小腸における Ca²⁺とリン酸の吸収を{{@促進|促進|抑制}}し、血中の Ca²⁺とリン酸濃度が上昇する。その結果、海綿骨の骨梁間毛細血管内の Ca²⁺とリン酸濃度が上昇し骨芽細胞による類骨の石灰化が{{@促進|促進|抑制}}する。"},
+{id:281,lec:4,t:T.bone,type:"cloze",src:"穴埋めシート 第5講 問16",q:"血中 Ca²⁺濃度が低下した場合、副甲状腺から{{パラトルモン(PTH)|パラトルモン|PTH|副甲状腺ホルモン}}の分泌が促進され、骨芽細胞の PTH 受容体に結合し{{Gsαタンパク質|Gs|Gαs}}を介し PKA が{{@活性化|活性化|不活性化}}される。これにより、RANKL の発現が{{@上昇|上昇|低下}}し破骨細胞形成が{{@促進|促進|抑制}}される。これにより、骨吸収が{{@促進|促進|抑制}}され血中 Ca²⁺濃度が{{@上昇|上昇|低下}}し、血中リン酸濃度が{{@上昇|上昇|低下}}する。"},
+{id:282,lec:4,t:T.bone,type:"cloze",src:"穴埋めシート 第5講 問17",q:"パラトルモン(PTH)は副甲状腺の主細胞から分泌されるホルモンであり、骨吸収促進作用や腎臓での Ca²⁺の再吸収{{@促進|促進|抑制}}作用、腎臓でのリン酸の再吸収{{@抑制|促進|抑制}}作用、{{1α-ヒドロキシラーゼ|1α水酸化酵素|CYP27B1}}を活性化し{{活性型ビタミン D₃|カルシトリオール|活性型ビタミンD}}生成促進作用を有する。",note:"シートは「リン酸の再吸収を促進」となっていたが、PTHはリン酸の再吸収を<b>抑制</b>する(第4講課題 問22、シート第6講の問45とも一致)。直した。"},
+{id:283,lec:4,t:T.bone,type:"cloze",src:"穴埋めシート 第5講 問18",q:"パラトルモン(PTH)が活性型ビタミン D₃の産生を促進した直後で血中の Ca²⁺濃度低下が回復していない状況の場合、PTH と活性型ビタミン D₃は骨吸収に対して協調して、小腸における Ca²⁺とリン酸の取り込み{{@促進|促進|抑制}}作用と破骨細胞による骨吸収{{@促進|促進|抑制}}作用により、血中の Ca²⁺、リン酸濃度を上昇させる。その結果、PTHの分泌は{{@抑制|促進|抑制}}される。"},
+{id:284,lec:4,t:T.bone,type:"cloze",src:"穴埋めシート 第5講 問19",q:"空腹時や食後間隔が長い(食事由来の Ca²⁺が不足)場合、PTH の分泌が{{@促進|促進|抑制}}され血中の Ca²⁺濃度を維持する。また、PTH により活性型ビタミン D₃の産生が{{@促進|促進|抑制}}され、血中 Ca²⁺濃度を維持する。PTH とビタミン D₃が協調することにより、血中 Ca²⁺濃度が維持される。"},
+{id:285,lec:4,t:T.bone,type:"cloze",src:"穴埋めシート 第5講 問20",q:"激しい運動後(筋肉・骨への Ca²⁺取り込みが上昇した場合)は{{PTH|パラトルモン|副甲状腺ホルモン}}が一過性に分泌され腎臓での Ca²⁺再吸収を促進し血中 Ca²⁺濃度が上昇する。"},
+{id:287,lec:4,t:T.bone,type:"cloze",src:"穴埋めシート 第5講 問22",q:"妊娠後期(胎児骨形成で母体の血中 Ca²⁺濃度が低下している)の場合、PTH の分泌が{{@促進|促進|抑制}}し血中 Ca²⁺濃度を維持。PTH により活性型ビタミン D₃が産生され小腸のCa²⁺吸収を{{@促進|促進|抑制}}し血中 Ca²⁺濃度を維持。PTH とビタミン D₃が協調することにより母体の血中 Ca²⁺濃度を維持する。"},
+{id:288,lec:4,t:T.bone,type:"cloze",src:"穴埋めシート 第5講 問23",q:"授乳期(母乳への Ca²⁺供給)の場合、PTH は母体における骨吸収を{{@促進|促進|抑制}}することで血中 Ca²⁺濃度を上昇、腎臓での Ca²⁺再吸収の{{@促進|促進|抑制}}し、血中 Ca²⁺濃度を維持する。PTH により活性型ビタミン D₃が産生され小腸での Ca²⁺の吸収を{{@促進|促進|抑制}}する。PTH とビタミン D₃が協調することにより母体の血中 Ca²⁺濃度を調節し母乳中へのCa²⁺供給を可能にする。"},
+{id:289,lec:4,t:T.bone,type:"cloze",src:"穴埋めシート 第5講 問24",q:"骨芽細胞において PTH 刺激により、{{OPG}}発現を抑制、{{RANKL}}発現を促進する。また、{{M-CSF(マクロファージコロニー刺激因子)|M-CSF|マクロファージコロニー刺激因子}}を発現誘導する。これにより、{{破骨細胞前駆細胞|前駆細胞}}の分化を促進し、破骨細胞の産生を促す。これにより、骨吸収を{{@促進|促進|抑制}}する。"},
+{id:290,lec:4,t:T.bone,type:"cloze",src:"穴埋めシート 第5講 問25",q:"血中 Ca²⁺濃度が低下した場合、活性型ビタミン D₃が骨芽細胞内に取り込まれ{{細胞質内|細胞質}}に存在する VDR に結合し RXR とヘテロ二量体を形成する。ヘテロ二量体が核内に存在する{{VDRE(ビタミン D 応答配列)|VDRE|ビタミン D 応答配列}}に結合し{{RANKL}}の発現を上昇することで{{OPG}}の発現が相対的に低下することで{{RANKL/OPG 比|RANKL/OPG}}が上昇し破骨細胞の形成が促進される。"},
+{id:291,lec:4,t:T.bone,type:"cloze",src:"穴埋めシート 第5講 問26",q:"破骨細胞には{{リソソーム酵素|カテプシン}}を含む分泌リソソームが存在する。リソソーム膜には{{V-ATPase|プロトンポンプ|H+ATPase}}が局在しておりそれを用いて骨吸収窩を{{酸性化|酸性}}することでヒドロキシアパタイトを溶解させ{{Ca²⁺|カルシウム|Ca}}と{{リン酸|無機リン酸|Pi}}を遊離する。また、{{酸性}}条件下においてリソソーム酵素は活性化され、骨の有機成分である{{Ⅰ型コラーゲン|1型コラーゲン|コラーゲン}}や{{オステオカルシン}}を分解する。",note:"シートは「酸化」となっていたが、意味は<b>酸性化</b>(V-ATPaseがH⁺を送り込む)。"},
+{id:292,lec:3,t:T.drug,type:"cloze",src:"穴埋めシート 第6講 問1",q:"骨粗鬆症は{{破骨細胞}}による骨吸収が{{骨芽細胞}}による骨形成が上回り骨密度の低下と骨質の劣化が進み、骨強度が低下する疾患である。"},
+{id:293,lec:3,t:T.drug,type:"cloze",src:"穴埋めシート 第6講 問2",q:"骨粗鬆症の兆候が出やすいのは{{海綿骨}}である。理由として、{{表面積}}の大きさや{{血流量|血流}}、{{骨梁}}の薄さ、{{リモデリングサイクル|リモデリング周期|代謝回転}}の短さなどが挙げられる。"},
+{id:294,lec:3,t:T.drug,type:"cloze",src:"穴埋めシート 第6講 問3",q:"骨量が低下する主な原因に閉経と加齢がある。閉経により、{{エストロゲン|エストラジオール}}が欠乏し破骨細胞への分化が{{@促進|促進|抑制}}されると骨吸収が{{@上昇|上昇|低下}}する。加齢により、骨芽細胞の機能{{@低下|上昇|低下}}と{{アポトーシス}}の促進により、骨形成が{{@抑制|促進|抑制}}される。"},
+{id:295,lec:3,t:T.drug,type:"cloze",src:"穴埋めシート 第6講 問4",q:"加齢に伴い、{{腎臓}}におけるビタミン D₃の活性化能が低下し、小腸からの Ca²⁺吸収が低下することで副甲状腺からの{{パラトルモン|PTH|副甲状腺ホルモン}}分泌が{{@上昇|上昇|低下}}することで破骨細胞への分化が促進し骨吸収が促進されることも要因となる。"},
+{id:296,lec:3,t:T.drug,type:"cloze",src:"穴埋めシート 第6講 問5",q:"男性において精巣のライディッヒ細胞から分泌される{{テストステロン}}が皮下脂肪や内臓脂肪に発現する{{アロマターゼ}}によって{{エストラジオール}}となり血中に放出される。男性の血中エストラジオール濃度は女性より{{@低い|高い|低い}}が骨代謝の維持には十分である。"},
+{id:297,lec:3,t:T.drug,type:"cloze",src:"穴埋めシート 第6講 問6",q:"{{骨芽細胞}}にもアロマターゼが発現しており局所的に生成されるエストラジオールは骨代謝を調節する。"},
+{id:298,lec:3,t:T.kid,type:"cloze",src:"穴埋めシート 第6講 問7",q:"ネフロンは糸球体とボーマン嚢からなる{{腎小体|マルピーギ小体}}およびそこに連続する{{尿細管系|尿細管}}からなる。"},
+{id:299,lec:3,t:T.kid,type:"cloze",src:"穴埋めシート 第6講 問8",q:"原尿中にはグルコース、Na⁺、Ca²⁺、リン酸、水が含まれるが、これらの大部分は{{近位尿細管}}で再吸収される。",note:"シート前半の「輸入細動脈の濃度は輸出細動脈より低い」は根拠を確認できないので省いた。"},
+{id:300,lec:3,t:T.kid,type:"cloze",src:"穴埋めシート 第6講 問10",q:"アルドステロンは{{集合管}}でのNa⁺再吸収を促進し、それに伴って水の再吸収も{{@促進|促進|抑制}}する。",note:"シート後半の「バソプレシンは遠位尿細管」は、第3講スライドでは「集合管でバソプレシンによる水の再吸収」。省いた。"},
+{id:301,lec:3,t:T.kid,type:"cloze",src:"穴埋めシート 第6講 問11",q:"腎臓の尿細管で再吸収されなかった老廃物は集合管を通って{{腎髄質}}を経て{{腎盂}}に集められ尿として排泄される。"},
+{id:302,lec:3,t:T.drug,type:"cloze",src:"穴埋めシート 第6講 問12",q:"活性型ビタミン D₃製剤である{{カルシトリオール}}と{{アルファカルシドール}}とビタミン D₃誘導体である{{エルデカルシトール}}は骨芽細胞内に存在するビタミン D 受容体に結合し{{レチノイド X 受容体|RXR}}とヘテロ二量体を形成する。その二量体が遺伝子発現を制御することでビタミン D₃の生理反応が起こる。"},
+{id:303,lec:3,t:T.drug,type:"cloze",src:"穴埋めシート 第6講 問13",q:"アルファカルシドールは肝臓において{{25|25位}}位の水酸化を受けて活性化されるため{{活性型ビタミン D₃製剤|活性型ビタミンD製剤|活性型}}に分類される。"},
+{id:304,lec:3,t:T.drug,type:"cloze",src:"穴埋めシート 第6講 問14",q:"ビタミン D₃製剤は{{小腸}}からの Ca²⁺吸収の促進と{{腎臓}}での Ca²⁺再吸収を促進し血中 Ca²⁺濃度を上昇させる。"},
+{id:305,lec:3,t:T.drug,type:"cloze",src:"穴埋めシート 第6講 問15",q:"カルシトリオールは小腸上皮細胞で Ca²⁺チャネルや Na⁺/Ca²⁺交換輸送体、Na⁺依存性リン酸共輸送体の発現を{{@促進|促進|抑制}}し、血中 Ca²⁺濃度を{{@上昇|上昇|低下}}させる。"},
+{id:306,lec:3,t:T.drug,type:"cloze",src:"穴埋めシート 第6講 問16",q:"カルシトリオール、アルファカルシドールは破骨細胞機能抑制作用が{{@弱く|強く|弱く}}、エルデカルシトールは破骨細胞機能抑制作用が{{@強い|強い|弱い}}。"},
+{id:307,lec:3,t:T.vd,type:"cloze",src:"穴埋めシート 第6講 問17",q:"遠位尿細管上皮細胞に存在する{{TRPV5}}や{{Calbindin-D|カルバインディン|カルビンディン}}、PMCA、NCX、Claudin-12、{{NaPi-IIc|NaPi2c}}は VDRE を持つため活性型ビタミン D₃により、発現誘導される。"},
+{id:308,lec:3,t:T.vd,type:"cloze",src:"穴埋めシート 第6講 問18",q:"TRPV5 は遠位尿細管上皮細胞の{{尿細管管腔側|管腔側}}に存在し Ca²⁺を{{尿細管管腔側|管腔側}}から{{細胞内}}に移行させる。"},
+{id:309,lec:3,t:T.vd,type:"cloze",src:"穴埋めシート 第6講 問19",q:"Calbindin-D は細胞内 Ca²⁺を{{尿細管管腔側|管腔側}}から{{間質側|間質|基底膜側|血管側}}へ移行するのを中継する。"},
+{id:310,lec:3,t:T.vd,type:"cloze",src:"穴埋めシート 第6講 問20",q:"PMCA、NCX は{{間質側|間質|基底膜側|血管側}}に存在し Ca²⁺を{{細胞内}}から{{間質側|間質|基底膜側|血管側}}へ移行する。"},
+{id:311,lec:3,t:T.vd,type:"cloze",src:"穴埋めシート 第6講 問21",q:"Claudin-12 は遠位尿細管細胞同士の{{タイトジャンクション|密着結合|TJ}}に存在しており Ca²⁺が細胞間を通過し間質に放出される経路も存在する。"},
+{id:312,lec:3,t:T.vd,type:"cloze",src:"穴埋めシート 第6講 問22",q:"NaPi-IIc は遠位尿細管だけでなく{{近位尿細管}}にも存在し腎臓におけるリン酸の再吸収に寄与している。"},
+{id:313,lec:3,t:T.drug,type:"cloze",src:"穴埋めシート 第6講 問23",q:"エルデカルシトールによる血中 Ca²⁺濃度の上昇は{{ネガティブフィードバック|負のフィードバック}}を介してパラトルモン分泌{{@抑制|促進|抑制}}を起こし骨吸収抑制を起こす。"},
+{id:314,lec:3,t:T.drug,type:"cloze",src:"穴埋めシート 第6講 問24",q:"ビタミン D₃製剤は{{副甲状腺|副甲状腺の主細胞|主細胞}}の主細胞に直接作用し{{パラトルモン|PTH|副甲状腺ホルモン}}の基礎分泌を{{@抑制|促進|抑制}}し骨吸収を抑制する。"},
+{id:315,lec:3,t:T.drug,type:"cloze",src:"穴埋めシート 第6講 問25",q:"ビタミン D₃製剤は{{骨芽細胞}}に作用することで RANKL の発現を{{@低下|上昇|低下}}しOPG の発現を{{@上昇|上昇|低下}}させ、破骨細胞への分化を{{@抑制|促進|抑制}}し骨吸収を{{@抑制|促進|抑制}}させる。また、{{Ⅰ型コラーゲン|1型コラーゲン|コラーゲン}}や{{オステオカルシン}}の発現を促進し骨の形成を{{@促進|促進|抑制}}する。さらに、{{アルカリホスファターゼ|ALP}}の発現を誘導し類骨の石灰化を促進する。"},
+{id:316,lec:3,t:T.drug,type:"cloze",src:"穴埋めシート 第6講 問26",q:"骨の形成には{{成長ホルモン|GH}}と{{インスリン様成長因子-1|IGF-1|ソマトメジンC}}がある。これらは骨芽細胞に作用することで RANKL/OPG を{{@低下|上昇|低下}}させることで破骨細胞への分化を{{@抑制|促進|抑制}}させ骨吸収を{{@抑制|促進|抑制}}させる。",note:"シートの記載のまま。GH/IGF-1の主な作用は骨芽細胞の増殖・骨形成の促進なので、RANKL/OPG比の部分はスライドで要確認。"},
+{id:317,lec:3,t:T.drug,type:"cloze",src:"穴埋めシート 第6講 問27",q:"エストラジオールは骨芽細胞に入ると{{細胞質内|細胞質}}に存在する{{エストロゲン受容体|ER|ERα}}に結合し{{ホモ二量体|ホモ2量体|ホモダイマー}}を形成する。"},
+{id:318,lec:3,t:T.drug,type:"cloze",src:"穴埋めシート 第6講 問28",q:"エストラジオールは骨芽細胞に作用し RANKL/OPG を{{@低下|上昇|低下}}させることで破骨細胞への分化を{{@抑制|促進|抑制}}し骨吸収を{{@抑制|促進|抑制}}する。また、エストラジオールは破骨細胞に直接作用し、{{アポトーシス}}を促進し骨吸収を{{@抑制|促進|抑制}}させる。"},
+{id:319,lec:3,t:T.drug,type:"cloze",src:"穴埋めシート 第6講 問29",q:"エストラジオールは骨芽細胞に作用し{{Ⅰ型コラーゲン|1型コラーゲン|コラーゲン}}や{{オステオカルシン}}、{{アルカリホスファターゼ|ALP}}の発現を誘導して骨形成を促進する。"},
+{id:320,lec:3,t:T.drug,type:"cloze",src:"穴埋めシート 第6講 問30",q:"エストラジオールは{{子宮内膜腺上皮細胞|子宮内膜}}や{{乳腺上皮細胞|乳腺}}に対してエストロゲン受容体を介して細胞増殖を{{@促進|促進|抑制}}する。これによりがん化のリスクが{{@上昇|上昇|低下}}する。それを解消するために{{SERM(選択的エストロゲンモジュレーター)|SERM|選択的エストロゲンモジュレーター|選択的エストロゲン受容体モジュレーター}}が用いられる。{{SERM}}はエストロゲン受容体に対して{{アンタゴニスト|拮抗薬|遮断薬}}として作用し血中エストラジオールと{{拮抗|競合}}し、細胞増殖を{{@抑制|促進|抑制}}することでがん化のリスクを{{@低下|上昇|低下}}させる。"},
+{id:321,lec:3,t:T.drug,type:"cloze",src:"穴埋めシート 第6講 問31",q:"SERM(選択的エストロゲンモジュレーター)は{{骨芽細胞}}内に存在するエストロゲン受容体に対して{{アゴニスト|作動薬}}として作用することで骨形成を{{@促進|促進|抑制}}する。"},
+{id:322,lec:3,t:T.drug,type:"cloze",src:"穴埋めシート 第6講 問32",q:"SERM(選択的エストロゲンモジュレーター)は{{ラロキシフェン塩酸塩|ラロキシフェン}}と{{バゼドキシフェン酢酸塩|バゼドキシフェン|バセドキシフェン}}の 2 種類が存在する。",note:"シートは「バセドキシフェン」。正しい表記は<b>バゼドキシフェン</b>(どちらでも正解にしています)。"},
+{id:323,lec:3,t:T.drug,type:"cloze",src:"穴埋めシート 第6講 問33",q:"抗 RANKL 抗体薬である{{デノスマブ}}は{{RANKL}}と結合することで破骨細胞前駆細胞の RANK 受容体と結合するのを阻害し破骨細胞への分化を{{@抑制|促進|抑制}}さらに破骨細胞数の増加を{{@抑制|促進|抑制}}することで骨吸収を{{@抑制|促進|抑制}}する。デノスマブによって骨吸収が{{@抑制|促進|抑制}}されると血中の Ca²⁺濃度が{{@低下|上昇|低下}}するため{{低 Ca²⁺血症|低カルシウム血症|低Ca血症}}に注意が必要となる。"},
+{id:324,lec:3,t:T.drug,type:"cloze",src:"穴埋めシート 第6講 問34",q:"ビスホスホネート製剤は骨粗鬆症の薬物治療において{{第一選択薬|第一選択}}である。{{イバンドロン酸}}や{{リセドロン酸}}、{{アレンドロン酸}}、{{ゾレドロン酸}}などが存在する。",note:"シートは「ゾゼドロン酸」。正しくは<b>ゾレドロン酸</b>。"},
+{id:325,lec:3,t:T.drug,type:"cloze",src:"穴埋めシート 第6講 問35",q:"ビスホスホネート製剤は骨基質において{{ヒドロキシアパタイト}}と強固に結合する。遊離した薬剤が{{破骨細胞}}に取り込まれアポトーシスを起こすことで骨吸収を{{@低下|上昇|低下}}させる。"},
+{id:326,lec:3,t:T.drug,type:"cloze",src:"穴埋めシート 第6講 問36",q:"取り込まれたビスホスホネート製剤は{{FPPS(ファルネシルピロリン酸合成酵素)|FPPS|ファルネシルピロリン酸合成酵素}}を阻害することで{{FPP(ファルネシルピロリン酸)|FPP|ファルネシルピロリン酸}}の合成を抑制する。その結果、低分子 GTP 結合タンパク質のプレニル化修飾が阻害される。"},
+{id:327,lec:3,t:T.drug,type:"cloze",src:"穴埋めシート 第6講 問37",q:"低分子 GTP 結合タンパク質には Rho、Rab、Ras の 3 種類がある。Rho は細胞骨格制御や{{骨付着|付着|接着}}、Rab はリソソーム小胞輸送や{{骨吸収窩形成|骨吸収窩|波状縁}}、Ras は{{細胞生存|生存}}に寄与している。"},
+{id:328,lec:3,t:T.drug,type:"cloze",src:"穴埋めシート 第6講 問38",q:"ビスホスホネート製剤を取り込んだ破骨細胞では、FPPSが阻害されることで{{DMAPP}}と{{IPP}}が蓄積し細胞内の AMP と反応し ATP 類似体が形成され{{ミトコンドリア損傷|ミトコンドリア}}を起こすことで破骨細胞のアポトーシスを誘導する。"},
+{id:329,lec:5,t:T.meta,type:"cloze",src:"穴埋めシート 第6講 問39",q:"他の臓器に発生したがん細胞が{{血液}}にのって骨に転移した疾患を{{転移性骨腫瘍|骨転移|転移性骨髄腫}}という。",note:"シートは「転移性骨髄腫」と書いているが、多発性骨髄腫とは別の病気。正しくは<b>転移性骨腫瘍(骨転移)</b>。"},
+{id:330,lec:5,t:T.meta,type:"cloze",src:"穴埋めシート 第6講 問40",q:"日本における転移性骨腫瘍(骨転移)の主な原発部位は{{肺・気管支|肺}}が最多であり次いで乳房、腎臓、前立腺である。"},
+{id:331,lec:5,t:T.meta,type:"cloze",src:"穴埋めシート 第6講 問41",q:"主な転移先は{{脊椎|椎骨|背骨}}が最多であり{{骨盤(仙骨)|骨盤|仙骨}}も多い。"},
+{id:332,lec:5,t:T.meta,type:"cloze",src:"穴埋めシート 第6講 問42",q:"骨転移の症状として疼痛や病的骨折、{{脊髄圧迫|脊髄}}、{{高 Ca²⁺血症|高カルシウム血症|高Ca血症}}があげられる。"},
+{id:333,lec:5,t:T.meta,type:"cloze",src:"穴埋めシート 第6講 問43",q:"{{局所性骨溶解性高カルシウム血症|局所性骨溶解性高Ca血症|LOH}}は骨転移した肺がん細胞、乳がん細胞、腎臓がん細胞、前立腺がん細胞から分泌される{{副甲状腺ホルモン関連ペプチド(PTHrP)|副甲状腺ホルモン関連ペプチド|PTHrP}}が骨芽細胞のパラトルモン受容体に結合して、RANKL/OPG を{{@上昇|上昇|低下}}させ破骨細胞前駆細胞の分化を促進、または破骨細胞数を{{@上昇|上昇|低下}}させ骨吸収を{{@促進|促進|抑制}}させることにより血中 Ca²⁺濃度が上昇し症状が出る。"},
+{id:334,lec:5,t:T.meta,type:"cloze",src:"穴埋めシート 第6講 問44",q:"{{体液性悪性腫瘍高カルシウム血症|体液性悪性腫瘍高Ca血症|HHM}}は進行がんの{{末期|終末期}}に多く見られ、肺扁平上皮がんや腎がん、膀胱がん、卵巣がんのがん細胞から{{副甲状腺ホルモン関連ペプチド(PTHrP)|副甲状腺ホルモン関連ペプチド|PTHrP}}が骨吸収及び、腎臓における{{Ca²⁺再吸収|カルシウム再吸収|Ca再吸収|再吸収}}を促進することで、血中 Ca²⁺濃度が上昇することで発症する。"},
+{id:335,lec:5,t:T.meta,type:"cloze",src:"穴埋めシート 第6講 問45",q:"副甲状腺ホルモン関連ペプチド(PTHrP)は{{近位尿細管}}での Na⁺/リン酸共輸送体(NaPi-IIa)を抑えることでリン酸の再吸収を{{@抑制|促進|抑制}}することで骨形成に必要なリン酸の血中濃度が{{@低下|上昇|低下}}し、骨形成の{{@抑制|促進|抑制}}につながる。また、{{リン酸尿}}をもたらす。"},
+{id:336,lec:5,t:T.meta,type:"cloze",src:"穴埋めシート 第6講 問46",q:"転移性骨腫瘍(骨転移)の薬物治療には原発巣のがん細胞に対する{{抗がん剤|抗悪性腫瘍薬|化学療法}}を投与しつつ骨修飾(骨を強くする)薬として{{ビスホスホネート製剤|ビスホスホネート}}や{{抗 RANKL 抗体薬|デノスマブ|抗RANKL抗体}}を併用する。"},
+{id:337,lec:5,t:T.gpcr,type:"cloze",src:"穴埋めシート 第6講 問47",q:"G タンパク質共役型受容体は膜を{{7|七}}回貫通する。G タンパク質にはαサブユニットの種類によって{{Gs}}、{{Gi}}、{{Gq}}、{{Gt}}の 4 種類が存在する。β、γサブユニットは種類が共通である。"},
+{id:338,lec:5,t:T.gpcr,type:"cloze",src:"穴埋めシート 第6講 問48",q:"Gs タンパク質共役型受容体が活性化されるとアデニル酸シクラーゼ活性が{{@促進|促進|抑制}}されるため細胞内 cAMP 濃度が{{@上昇|上昇|低下}}する。それにより、プロテインキナーゼ A活性が{{@促進|促進|抑制}}される。"},
+{id:339,lec:5,t:T.gpcr,type:"cloze",src:"穴埋めシート 第6講 問49",q:"Gi タンパク質共役型受容体が活性化されるとアデニル酸シクラーゼ活性が{{@抑制|促進|抑制}}されるため細胞内 cAMP 濃度が{{@低下|上昇|低下}}する。それにより、プロテインキナーゼ A活性が{{@抑制|促進|抑制}}される。"},
+{id:340,lec:5,t:T.gpcr,type:"cloze",src:"穴埋めシート 第6講 問50",q:"Gq タンパク質共役型受容体が活性化されると{{ホスホリパーゼ Cβ|PLCβ|PLC|ホスホリパーゼC}}が活性化され、{{ジアシルグリセロール|DAG|DG}}、{{イノシトール 1,4,5-トリスリン酸|IP3}}が生成される。前者はプロテインキナーゼ C が活性化しする。後者は{{小胞体|ER}}から Ca²⁺を放出させ Ca²⁺/CaM プロテインキナーゼを活性化させる。"},
+{id:341,lec:5,t:T.gpcr,type:"cloze",src:"穴埋めシート 第6講 問51",q:"Gs タンパク質共役型受容体として{{心筋細胞|心筋}}に存在するアドレナリンβ1 受容体と{{気管支平滑筋細胞|気管支平滑筋}}に存在するアドレナリンβ2 受容体がある。"},
+{id:342,lec:5,t:T.gpcr,type:"cloze",src:"穴埋めシート 第6講 問52",q:"Gi タンパク質共役型受容体として神経細胞に存在する{{γ-アミノ酪酸 GABAB 受容体|GABAB|GABA受容体}}がある。"},
+{id:343,lec:5,t:T.gpcr,type:"cloze",src:"穴埋めシート 第6講 問53",q:"Gq タンパク質共役型受容体として{{血管平滑筋細胞|血管平滑筋}}に存在するアドレナリンα1受容体がある。"},
+{id:344,lec:5,t:T.gpcr,type:"cloze",src:"穴埋めシート 第6講 問54",q:"リガンドが G タンパク質共役型受容体に結合するとαサブユニットに結合していた{{GDP}}は{{GTP}}に置換されαサブユニットはβγサブユニットと解離する。{{GTP 結合型αサブユニット|GTP結合型α|αサブユニット}}は細胞膜上を拡散して不活性型エフェクター(アデニル酸シクラーゼなど)に結合してエフェクターの活性を制御(調節)する。その後、αサブユニットは自身の{{GTPase 活性|GTPアーゼ|GTPase}}により GTP を加水分解しαサブユニットはGDP 結合型となり、再びβγサブユニットと結合して不活性型に戻る。"},
+{id:345,lec:5,t:T.gpcr,type:"cloze",src:"穴埋めシート 第6講 問55",q:"αサブユニットが脂質二重膜への結合様式としてシステイン残基に{{パルミチン酸}}が付加される{{パルミトイル化}}と N 末端のグリシン残基に{{ミリスチン酸}}が結合する{{ミリストイル化}}がある。"},
+{id:346,lec:5,t:T.gpcr,type:"cloze",src:"穴埋めシート 第6講 問56",q:"γサブユニットが脂質二重膜への結合様式は C 末端のシステイン残基に{{ファルネシル基|ファルネシル}}または{{ゲラニル基|ゲラニル}}が結合してプレニル化を受けることで膜に結合される。"},
+{id:347,lec:5,t:T.gpcr,type:"cloze",src:"穴埋めシート 第6講 問57",q:"アデニル酸シクラーゼは ATP のリン酸結合を開裂し{{cAMP}}と{{ピロリン酸|PPi}}を生成する。{{ホスホジエステラーゼ|PDE}}は cAMP を基質として活性部位においてホスホジエステル結合を加水分解し、{{5’-AMP|AMP}}を生成する。",note:"シートは「cAMPホスホリラーゼ」となっていたが、cAMPを5'-AMPに分解するのは<b>ホスホジエステラーゼ(PDE)</b>。"},
+{id:348,lec:5,t:T.gpcr,type:"cloze",src:"穴埋めシート 第6講 問58",q:"アデニル酸シクラーゼの三次構造には{{αヘリックス}}と{{βシート}}の配置が寄与している。"},
+{id:349,lec:5,t:T.gpcr,type:"cloze",src:"穴埋めシート 第6講 問59",q:"不活性型 PKA は 2 つの触媒サブユニットと 2 つの調節サブユニットから構成されており、cAMP が{{調節サブユニット}}に結合し触媒サブユニットは三次構造が変化することでセリン/トレオニンキナーゼ活性を持つようになる。"},
+{id:350,lec:5,t:T.gpcr,type:"cloze",src:"穴埋めシート 第6講 問60",q:"Gs タンパク質共役型受容体の活性化によりアデニル酸シクラーゼが活性化し生成された{{cAMP}}が PKA を活性化する。活性化された PKA が{{細胞質|細胞質内}}で標的タンパク質をリン酸化するか核内に移行する。このことから、PKA は{{cAMP 依存性プロテインキナーゼ A|cAMP依存性プロテインキナーゼ|Aキナーゼ}}という。"},
+{id:351,lec:5,t:T.gpcr,type:"cloze",src:"穴埋めシート 第6講 問61",q:"核内に移行した活性型 PKA は転写活性化因子である{{CREB}}をリン酸化し三次構造を変化させることにより DNA に結合できる形になることにより標的遺伝子の転写が促進される。"},
+{id:352,lec:5,t:T.gpcr,type:"cloze",src:"穴埋めシート 第6講 問62",q:"また、活性型 PKA は PP-1-I をリン酸化し、三次構造が変化することによりその活性を{{@促進|促進|抑制}}する。これにより PP-1 の活性を{{@抑制|促進|抑制}}し、{{CREB}}の{{脱リン酸化}}を抑制することで持続的に CREB の活性を上昇させる。"},
+{id:354,lec:5,t:T.gpcr,type:"cloze",src:"穴埋めシート 第6講 問64",q:"PKA の触媒サブユニットの活性部位において ATP のリン酸基を基質タンパク質の{{セリン}}または{{トレオニン|スレオニン}}残基の OH 基に転移する反応が起きる。"},
+{id:356,lec:5,t:T.epi,type:"desc",src:"穴埋めシートの記述問題から",q:"アザシチジンがDNAの脱メチル化によって骨髄異形成症候群(MDS)の腫瘍細胞の増殖を抑える機序を説明せよ。",kw:[{k:"がん抑制遺伝子の異常メチル化",a:["メチル化"]},{k:"リン酸化されて5-aza-dCTP",a:["5-aza-dCTP", "dCTP", "リン酸化"]},{k:"リボヌクレオチドレダクターゼ",a:["リボヌクレオチドレダクターゼ", "リボヌクレオチド還元酵素"]},{k:"DNAポリメラーゼの基質としてDNAに取り込まれる",a:["DNAポリメラーゼ", "DNAに取り込"]},{k:"DNMT1が誤認識",a:["DNMT1"]},{k:"共有結合して不活化",a:["共有結合"]},{k:"メチル化の阻害・維持できない",a:["阻害", "維持されない", "脱メチル化"]},{k:"がん抑制遺伝子の転写が回復",a:["がん抑制遺伝子", "転写"]}],model:"MDSでは、がん抑制遺伝子の転写調節領域のCpGアイランドが異常に高度メチル化され、メチル化DNA結合タンパク質とHDACなどが集まってヘテロクロマチン化し、転写が抑制されている。アザシチジンは細胞内でリン酸化され、5-aza-CMP、5-aza-CDPを経て、リボヌクレオチドレダクターゼにより5-aza-dCDPとなり、さらに5-aza-dCTPとなって、DNA複製の際にDNAポリメラーゼの基質としてDNAに取り込まれる。維持型DNAメチル化酵素DNMT1は、取り込まれたアザシチジンの塩基をシトシンと誤認識して作用するが、そのまま共有結合して不活化される。その結果、細胞分裂のたびにメチル化が維持されなくなって脱メチル化が進み、がん抑制遺伝子の転写が回復して腫瘍細胞の増殖が抑制される。"},
+{id:357,lec:5,t:T.epi,type:"desc",src:"穴埋めシートの記述問題から",q:"アザシチジンがRNAに取り込まれることでタンパク質合成を阻害する機序を説明せよ。",kw:[{k:"5-aza-CTP",a:["5-aza-CTP", "CTP"]},{k:"RNAポリメラーゼの基質",a:["RNAポリメラーゼ"]},{k:"mRNA・tRNAに取り込まれる",a:["mRNA", "tRNA"]},{k:"DNMT2・NSUN2",a:["DNMT2", "NSUN2"]},{k:"共有結合",a:["共有結合"]},{k:"RNAのメチル化ができない",a:["メチル化"]},{k:"安定性・コドン認識の低下",a:["安定性", "コドン"]},{k:"翻訳の抑制",a:["翻訳"]}],model:"アザシチジンは細胞内で5-aza-CTPとなり、RNAポリメラーゼⅡやⅢの基質として使われて、mRNAやtRNAに5-aza-CMPとして取り込まれる。通常、RNAメチル化酵素のDNMT2やNSUN2がmRNAやtRNAのシトシンをメチル化して5-メチルシトシンを作り、mRNAの安定性やリボソームの結合、tRNAの二次構造やアミノアシル化、コドン認識の正確性を支えている。アザシチジンが取り込まれたRNAでは、これらの酵素が5-aza-CMPと共有結合して働けなくなり、メチル化が行われない。その結果、mRNAやtRNAの安定性が低下し、tRNAの立体構造が変わってコドン認識も低下するため、翻訳が抑制されて腫瘍細胞は死滅する。"},
+{id:358,lec:5,t:T.meta,type:"desc",src:"穴埋めシートの記述問題から",q:"局所性骨溶解性高カルシウム血症と体液性悪性腫瘍高カルシウム血症の違いを、PTHrPの作用部位に注目して説明せよ。",kw:[{k:"PTHrP",a:["PTHrP", "副甲状腺ホルモン関連ペプチド"]},{k:"骨転移したがん細胞",a:["骨転移", "転移"]},{k:"骨芽細胞のPTH受容体",a:["骨芽細胞", "PTH受容体"]},{k:"RANKL/OPG比の上昇",a:["RANKL"]},{k:"破骨細胞の分化・骨吸収促進",a:["破骨細胞", "骨吸収"]},{k:"体液性は全身に作用",a:["全身", "血中", "体液"]},{k:"腎臓でのCa²⁺再吸収促進",a:["腎臓", "再吸収"]},{k:"進行がん・末期",a:["末期", "進行"]}],model:"どちらもがん細胞が分泌する副甲状腺ホルモン関連ペプチド(PTHrP)が原因である。局所性骨溶解性高カルシウム血症では、骨に転移した肺がん・乳がん・腎臓がん・前立腺がんなどの細胞がPTHrPを分泌し、骨に限局して骨芽細胞のPTH受容体に結合する。RANKL/OPG比が上昇して破骨細胞前駆細胞の分化と破骨細胞数の増加が起こり、骨吸収が促進されて血中Ca²⁺濃度が上昇する。体液性悪性腫瘍高カルシウム血症は進行がんの末期に多く、肺扁平上皮がん・腎がん・膀胱がん・卵巣がんなどの腫瘍組織から分泌されたPTHrPが血流で全身に運ばれ、骨吸収を促進するとともに腎臓でのCa²⁺再吸収も促進して血中Ca²⁺濃度を上昇させる。"},
+// ---------- 第1〜3講スライドから ----------
+{id:359,lec:1,t:T.rec,type:"mc",src:"第1講スライドから",q:"スライドで「リガンドが結合すると、細胞内でセカンドメッセンジャーを産生する」受容体として挙げられていないのはどれか。",ch:["イオンチャネル型受容体", "Gタンパク質共役型受容体", "酵素内蔵型受容体", "酵素共役型受容体"],a:0,ex:"スライドでは「Gタンパク質共役型・酵素内蔵型・酵素共役型」の3つがセカンドメッセンジャー → プロテインキナーゼ → 転写因子、とまとめられている。イオンチャネル型はリガンド結合で特定のイオンを細胞内に取り込む型。"},
+{id:360,lec:1,t:T.tx,type:"tf",src:"第1講スライドから",q:"成熟mRNA上をリボソームが3'→5'方向に移動しながら、タンパク質が合成される。",a:false,fix:"3'→5' → 5'→3'",ex:"リボソームもRNAポリメラーゼⅡと同じく<b>5'→3'</b>方向に動く。アミノ酸の連結はN末端→C末端。方向をずらす引っかけはこの先生の定番。"},
+{id:361,lec:1,t:T.basal,type:"tf",src:"第1講スライドから",q:"基本転写活性がない遺伝子では、基本転写装置が崩壊するたびに、転写活性化因子とコアクチベーターもエンハンサーから外れて結合し直す。",a:false,fix:"活性化因子とコアクチベーターはそのまま",ex:"スライドの表現は「転写活性化因子とコアクチベーターはそのままで、再び基本転写装置が再構築される」。外れて組み直すのは基本転写装置だけ。"},
+{id:362,lec:1,t:T.basal,type:"tf",src:"第1講スライドから",q:"基本転写活性がある遺伝子では、「基本転写装置の構築」と「基本転写装置の崩壊」がRNAポリメラーゼⅡの放出回数を決め、ひいてはRNAポリメラーゼⅡが転写領域を移動する回数を決める。",a:true,ex:"スライドの「基本転写活性の概念」5)の文。1回移動するとmRNA1本、だから放出回数=合成量。"},
+{id:363,lec:1,t:T.ster,type:"tf",src:"第1講スライドから",q:"細胞膜リン脂質のリン酸基を含む部分は疎水性尾部として水を避け、脂肪酸鎖の部分は親水性頭部として水に親和性を示す。",a:false,fix:"頭部と尾部が逆",ex:"リン酸基側が<b>親水性頭部</b>、脂肪酸鎖が<b>疎水性尾部</b>。この性質で脂質二重層ができる。"},
+{id:364,lec:2,t:T.ret,type:"tf",src:"第2講スライドから",q:"市販のビタミンAサプリメントに含まれるパルミチン酸レチノールは、小腸上皮細胞内でβ-カロテン15,15'-ジオキシゲナーゼにより開裂されてレチノールになる。",a:false,fix:"小腸管腔で加水分解されてレチノールになる",ex:"開裂されるのはβ-カロテン。パルミチン酸レチノールは<b>小腸管腔で加水分解</b>されるだけ。第2講スライドで追加された内容。"},
+{id:365,lec:2,t:T.ret,type:"mc",src:"第2講スライドから",q:"小腸上皮細胞内でレチナールがレチノールに変換される反応はどれか。",ch:["還元(レチナール還元酵素)", "酸化(レチノール脱水素酵素)", "酸化的開裂(15,15'-ジオキシゲナーゼ)", "加水分解"],a:0,ex:"小腸上皮では β-カロテン →(酸化的開裂)→ レチナール →(<b>還元</b>)→ レチノール。標的細胞に入ってからは逆向きに、RDHとRALDHによる<b>酸化</b>でレチノイン酸まで進む。"},
+{id:366,lec:2,t:T.ster,type:"tf",src:"第2講スライドから",q:"ステロイド剤が結合したGRの二量体は、核内でIL-1β遺伝子などに結合しているNF-κBと相互作用し、コアクチベーターを引き寄せて転写を抑制する。",a:false,fix:"コアクチベーター → コリプレッサー",ex:"転写を抑制する転写共役因子は<b>コリプレッサー</b>。第2講スライドの「A経路」。"},
+{id:367,lec:2,t:T.apl,type:"tf",src:"第2講スライドから",q:"レチノイン酸受容体にはα・β・γの3つのサブタイプがあり、前骨髄球の分化に関わり、APLでPMLと融合するのはRARα(RARA)である。",a:true,ex:"RARA = retinoic acid receptor alpha。"},
+{id:368,lec:2,t:T.apl,type:"mc",src:"第2講スライドから",q:"G-CSFの刺激から成熟好中球ができるまでの分化の順序として正しいのはどれか。",ch:["骨髄芽球 → 前骨髄球 → 骨髄球 → 成熟好中球", "前骨髄球 → 骨髄芽球 → 骨髄球 → 成熟好中球", "骨髄球 → 前骨髄球 → 骨髄芽球 → 成熟好中球", "単芽球 → 前骨髄球 → 骨髄球 → 成熟好中球"],a:0,ex:"APLは<b>前骨髄球</b>の段階で止まる病気。ATRAで分化すると前骨髄球 → 骨髄球 → 好中球と進む。単芽球はM-CSF側(単球系)。"},
+{id:369,lec:2,t:T.apl,type:"tf",src:"第2講スライドから",q:"APLで貧血が起こるのは、APL細胞が骨髄内で赤芽球系前駆細胞の成長・分化する領域を占拠し、赤血球が十分に作られなくなるためである。",a:true,ex:"感染症(好中球系の場の占拠)、貧血(赤芽球系)、出血傾向(巨核球系)を、それぞれ「どの前駆細胞の場を奪ったか」で説明するのがスライドの形。"},
+{id:370,lec:2,t:T.apl,type:"mc",src:"第2講スライドから",q:"APLの出血傾向のうち、スライドで「一次止血不良」とされているものの原因はどれか。",ch:["巨核球前駆細胞の場が占拠され、血小板が十分に作られない", "アネキシンⅡによって線溶系が亢進する", "組織因子によって凝固因子が消費される", "トロンビンの産生が低下する"],a:0,ex:"血小板が足りないのは<b>一次止血</b>の問題。DICによる凝固因子の消費や線溶亢進は二次止血・線溶の話。"},
+{id:371,lec:2,t:T.apl,type:"tf",src:"第2講スライドから",q:"亜ヒ酸(ATO)を投与すると、APL細胞からPML-RARA融合遺伝子そのものが消失する。",a:false,fix:"融合遺伝子は残る。タンパク質の分解が促進される",ex:"スライド: 「PML-RARA融合遺伝子そのものは残っているため、新たなPML-RARAタンパク質は合成されるが、ATOの存在下では分解が促進される」。"},
+{id:372,lec:2,t:T.apl,type:"tf",src:"第2講スライドから",q:"トレチノインによる組織因子とアネキシンⅡの発現抑制は、RARを介した転写調節の回復に伴って二次的に起こる現象と考えられている。",a:true,ex:"トレチノインが直接TF遺伝子を抑えるわけではない、という含み。DIC抑制の理由として記述で使える。"},
+{id:373,lec:2,t:T.thy,type:"tf",src:"第2講スライドから",q:"甲状腺から分泌される甲状腺ホルモンは、大部分がトリヨードチロニン(T₃)である。",a:false,fix:"T₄が約93%、T₃は約5%",ex:"分泌量はT₄が圧倒的。活性型のT₃は主に末梢でD1・D2によってT₄から作られる。"},
+{id:374,lec:2,t:T.thy,type:"tf",src:"第2講スライドから",q:"血中の甲状腺ホルモンは、血漿タンパク質と結合した型が末梢細胞に取り込まれる。",a:false,fix:"遊離型のみが取り込まれる",ex:"血中では大部分が血漿タンパク質と結合して循環し、<b>遊離型だけ</b>が細胞に入る。"},
+{id:375,lec:2,t:T.vd,type:"tf",src:"第2講スライドから",q:"小腸上皮細胞のTRPV6は、活性型ビタミンD₃が存在しないと全く発現していない。",a:false,fix:"基礎的にも発現して働いている",ex:"スライド: 「TRPV6は基礎的にも発現して働いているが、1α,25(OH)₂D₃によって強く発現誘導される」。TRPV5も同様。"},
+{id:376,lec:2,t:T.vd,type:"tf",src:"第2講スライドから",q:"NaPi-IIbは、活性型ビタミンD₃が結合したVDR/RXRがNaPi-IIb遺伝子のVDREに結合して直接発現誘導される。",a:false,fix:"直接 → 二次的に発現誘導",ex:"スライドで直接誘導とされるのは<b>TRPV6とカルバインディン-D</b>だけ。TRPV5・PMCA1b・NCX1・NaPi-IIbは二次的。第4講課題の問10が×なのも、この点と取り込み側の取り違え。"},
+{id:377,lec:2,t:T.vd,type:"tf",src:"第2講スライドから",q:"PTHは腎臓の近位尿細管細胞で、既存の1α-ヒドロキシラーゼをリン酸化して活性を上げることで、活性型ビタミンD₃の産生を促進する。",a:false,fix:"リン酸化 → 1α-ヒドロキシラーゼの発現を誘導",ex:"スライドの書き方は「1α-ヒドロキシラーゼの<b>発現を誘導</b>する」。第4講課題の問23が×だった理由はここ。"},
+{id:378,lec:3,t:T.bone,type:"tf",src:"第3講スライドから",q:"海綿骨では、Ca²⁺と無機リン酸は「血管 ⇔ 組織液 ⇔ 骨梁表面のヒドロキシアパタイト」の間を双方向に移行する。",a:true,ex:"ホルモン・栄養成分・薬剤は血管 → 組織液 → 骨梁表面の細胞へ一方向。Ca²⁺とリン酸だけが双方向。"},
+{id:379,lec:3,t:T.bone,type:"mc",src:"第3講スライドから",q:"骨粗鬆症で海綿骨の骨量が皮質骨より早く減る理由として、スライドに挙げられていないのはどれか。",ch:["骨細胞の数が皮質骨より多いから", "骨梁の表面積が大きく、破骨細胞が作用しやすいから", "血流が豊富で、PTHやエストロゲン低下の影響を受けやすいから", "骨梁が細く、少しの吸収で強度が急に落ちるから"],a:0,ex:"スライドの4つの理由は、表面積依存性・血流とホルモンの影響・骨梁の薄さ・リモデリングサイクルの短さ。"},
+{id:380,lec:3,t:T.drug,type:"tf",src:"第3講スライドから",q:"骨粗鬆症で骨折しやすいのは、皮質骨の割合が多い長管骨の骨幹部である。",a:false,fix:"海綿骨の割合が多い脊椎椎体や大腿骨近位部",ex:"海綿骨から先に減るので、骨折も海綿骨の多い部位に起こる。"},
+{id:381,lec:3,t:T.drug,type:"tf",src:"第3講スライドから",q:"骨粗鬆症は、初期から強い疼痛を伴って進行する。",a:false,fix:"基本的に無症状で進行する",ex:"痛みが出たら骨折を疑う、というのがスライドの書き方。"},
+{id:382,lec:3,t:T.bone,type:"tf",src:"第3講スライドから",q:"骨芽細胞が産生するRANKLには、遊離型と膜結合型の2つのタイプがある。",a:true,ex:"PTH刺激で両方の発現が増える。デノスマブはどちらにも結合する。"},
+{id:383,lec:3,t:T.bone,type:"tf",src:"第3講スライドから",q:"M-CSFは、破骨細胞前駆細胞の増殖と生存を支えるとともに、RANKの発現を維持してRANKLに応答できる状態にする。",a:true,ex:"M-CSF = 増殖・生存・RANK発現の維持、RANKL = 分化。"},
+{id:384,lec:3,t:T.drug,type:"tf",src:"第3講スライドから",q:"ビスホスホネート製剤は、2つのホスホネート基が解離してヒドロキシアパタイトのCa²⁺と結合する。",a:true,ex:"だから骨に強固に結合して沈着し、破骨細胞が骨を溶かしたときにだけ遊離して取り込まれる。"},
+{id:385,lec:3,t:T.drug,type:"tf",src:"第3講スライドから",q:"プレニル化修飾とは、低分子GTP結合タンパク質のセリン残基のOH基にファルネシル基が共有結合する翻訳後修飾である。",a:false,fix:"セリン残基のOH基 → システイン残基のSH基",ex:"ビスホスホネートはFPPSを阻害してFPPを減らし、このプレニル化を妨げる。"},
+{id:386,lec:3,t:T.drug,type:"tf",src:"第3講スライドから",q:"エルデカルシトールは、アルファカルシドールよりも骨吸収抑制作用が弱い。",a:false,fix:"弱い → 強い",ex:"カルシトリオールとアルファカルシドールは破骨細胞機能抑制作用が弱く、エルデカルシトールは強い。"},
+{id:387,lec:3,t:T.drug,type:"tf",src:"第3講スライドから",q:"エストラジオールは、破骨細胞前駆細胞ではアポトーシスを起こすタンパク質因子を発現誘導し、成熟破骨細胞にも直接作用してアポトーシスを起こす。",a:true,ex:"骨芽細胞ではOPGを誘導してRANKL/OPG比を下げ、破骨細胞系にはアポトーシス。両方向から骨吸収を抑える。"},
+{id:388,lec:3,t:T.kid,type:"tf",src:"第3講スライドから",q:"ネフロンは、腎髄質に位置する腎小体と、それに連続する尿細管系からなる。",a:false,fix:"腎髄質 → 腎皮質",ex:"腎小体(糸球体+ボーマン嚢)は腎皮質にある。"},
+{id:389,lec:3,t:T.kid,type:"tf",src:"第3講スライドから",q:"集合管では、バソプレシンによる水の再吸収とアルドステロンによるNa⁺の再吸収が起こる。",a:true,ex:"原尿の水・グルコース・Na⁺・Ca²⁺・リン酸の大部分は近位尿細管、遠位尿細管ではCa²⁺とNa⁺の再吸収。"},
+{id:390,lec:3,t:T.bone,type:"tf",src:"第3講スライドから",q:"類骨の中に埋没した骨芽細胞は骨細胞へと分化し、類骨の石灰化が進むと骨梁内の骨細胞ネットワークを形成する。",a:true,ex:"「石灰化が起こってから骨細胞になる」ではない。第4講課題の問37が×だった理由。"},
+{id:391,lec:3,t:T.bone,type:"desc",src:"第3講スライドから",q:"骨粗鬆症で、皮質骨に比べて海綿骨の骨量減少が早い理由を4つ挙げて説明せよ。",kw:[{k:"表面積が大きい",a:["表面積"]},{k:"破骨細胞が作用しやすい",a:["破骨細胞"]},{k:"血流が豊富",a:["血流"]},{k:"ホルモンの影響",a:["PTH", "エストロゲン", "ホルモン"]},{k:"骨梁が細い",a:["骨梁"]},{k:"少しの吸収で強度低下",a:["強度", "強さ"]},{k:"リモデリングサイクルが短い",a:["リモデリング"]}],model:"海綿骨は骨梁の表面積が大きく、破骨細胞が作用しやすいため骨吸収が早く進む。また血流が豊富で、PTHの上昇やエストロゲンの低下といった骨代謝ホルモンの変化の影響を受けやすい。さらに骨梁は細いので、わずかな骨吸収でも構造的な強度が急速に低下する。加えて皮質骨よりリモデリングサイクルが短いため、骨吸収が骨形成より優位になると骨量の減少が加速する。そのため、海綿骨の割合が多い脊椎椎体や大腿骨近位部で骨折が起こりやすい。"},
+{id:392,lec:3,t:T.drug,type:"desc",src:"第3講スライドから",q:"エストラジオールが骨量を維持する機序を、骨芽細胞と破骨細胞系の細胞に分けて説明せよ。",kw:[{k:"ERに結合してホモ二量体",a:["エストロゲン受容体", "ER", "ホモ二量体"]},{k:"OPGの発現誘導",a:["OPG"]},{k:"RANKL/OPG比の低下",a:["RANKL"]},{k:"分化の抑制",a:["分化"]},{k:"Ⅰ型コラーゲン・オステオカルシン",a:["コラーゲン", "オステオカルシン"]},{k:"ALP",a:["アルカリホスファターゼ", "ALP"]},{k:"前駆細胞のアポトーシス",a:["前駆細胞"]},{k:"破骨細胞のアポトーシス",a:["アポトーシス"]}],model:"エストラジオールは骨芽細胞に入ると細胞質でエストロゲン受容体に結合してホモ二量体を形成し、核内でOPGの発現を誘導する。RANKL/OPG比が低下するため、破骨細胞前駆細胞から破骨細胞への分化が抑制され骨吸収が抑えられる。さらに骨芽細胞でⅠ型コラーゲンやオステオカルシン、類骨の石灰化に関わるアルカリホスファターゼの発現を誘導し、骨芽細胞の生存も維持して骨形成を促進する。一方、破骨細胞前駆細胞ではER依存的にアポトーシスを起こすタンパク質因子を発現誘導して分化する破骨細胞の数を減らし、成熟破骨細胞にも直接作用してアポトーシスを起こす。閉経でエストロゲンが減るとこれらが失われ、骨吸収が亢進する。"},
+{id:393,lec:2,t:T.apl,type:"desc",src:"第2講スライドから",q:"APLで感染症・貧血・出血傾向が起こる理由を、骨髄内の造血の場との関係から説明せよ。",kw:[{k:"腫瘍性前骨髄球が骨髄で増殖",a:["前骨髄球", "APL細胞"]},{k:"場を占拠",a:["占拠"]},{k:"顆粒球-単球前駆細胞",a:["顆粒球"]},{k:"成熟好中球が減り感染症",a:["感染"]},{k:"赤芽球系前駆細胞",a:["赤芽球"]},{k:"貧血",a:["貧血"]},{k:"巨核球前駆細胞",a:["巨核球"]},{k:"血小板減少・出血傾向",a:["血小板", "出血"]}],model:"APLでは腫瘍性前骨髄球が骨髄内で大量に増殖し、正常な造血前駆細胞が成長・分化する領域を占拠する。顆粒球-単球前駆細胞の場が奪われると成熟好中球が十分に作られず、感染症にかかりやすくなる。赤芽球系前駆細胞の場が奪われると赤血球が作られず貧血が生じる。巨核球前駆細胞の場が奪われると血小板が十分に作られず、一次止血不良による出血傾向が高まる。さらにAPLでは線溶亢進型のDICを併発しやすく、凝固因子や血小板の消費とフィブリンの過剰分解によって出血傾向が一層顕著になる。"}
+];
+
+// ===================== SLIDE LINKS =====================
+const SLIDE={"1":["l1-01","第1講スライド p.1","",[0.6978,0.5179,0.2162,0.0857,[[0.7038,0.5406,0.1925,0.0202],[0.7038,0.5608,0.1925,0.0202]]],[0.0718,0.0455,0.6022,0.3384]],"2":["l1-09","第1講スライド p.9","さらに、ロイコトリエンやTNF-α・ IL-1βが血管内皮細胞に作用して血管内皮細胞間の隙間を広げ、血管透過性が亢進する。",[0.3402,0.7327,0.565,0.0961,[[0.3462,0.7896,0.5523,0.0185]]],[0.0599,0.727,0.2898,0.1763]],"4":["l1-01","第1講スライド p.1","",[0.6978,0.5179,0.2162,0.126,[[0.7038,0.5406,0.1925,0.0202],[0.7038,0.5809,0.1925,0.0202],[0.7038,0.6011,0.1925,0.0202]]],[0.0718,0.0455,0.6022,0.3384]],"5":["l2-02","第2講スライド p.2","さらに、ダメージを受けた皮膚細胞で産生・分泌されたTNF-αやIL-1βは、パラクリン因子として近傍の皮膚細胞に作用し、NF-κBを介するシグナル伝達経路を活性化する。",[0.0913,0.795,0.3189,0.0961,[[0.0972,0.8156,0.3017,0.0185],[0.0972,0.8338,0.2162,0.0185],[0.0972,0.8519,0.3017,0.0185]]],null],"6":["l1-09","第1講スライド p.9","",[0.0685,0.0717,0.2195,0.0598,[[0.0744,0.0742,0.1413,0.0185]]],[0.0599,0.727,0.2898,0.1763]],"8":["l1-02","第1講スライド p.2","",[0.6893,0.4294,0.2353,0.087,[[0.6952,0.4723,0.213,0.022]]],[0.068,0.0497,0.61,0.5929]],"9":["l3-14","第3講スライド p.14","",[0.5881,0.0747,0.3349,0.0598,[[0.594,0.0954,0.323,0.0185]]],null],"10":["l1-02","第1講スライド p.2","",[0.6893,0.1888,0.2353,0.0454,[[0.6952,0.1913,0.2184,0.0202]]],null],"11":["l1-07","第1講スライド p.7","",[0.6844,0.0873,0.2173,0.0417,[[0.6903,0.0899,0.1948,0.0185]]],null],"13":["l1-07","第1講スライド p.7","",[0.6844,0.3777,0.2173,0.0602,[[0.6903,0.3976,0.1995,0.0196],[0.6903,0.4158,0.1941,0.0196]]],null],"14":["l1-03","第1講スライド p.3","続いて、プロセシングにより、5’末端には7-メチルグアノシンが結合してキャップ構造が形成される。",[0.4992,0.2103,0.4181,0.0865,[[0.5051,0.2539,0.3944,0.0202]]],[0.0867,0.0516,0.4181,0.4549]],"15":["l1-03","第1講スライド p.3","続いて、スプライシングにより、イントロンが取り除かれエキソンが連結する。",[0.4992,0.1587,0.4181,0.1587,[[0.5051,0.1934,0.3885,0.0202],[0.5051,0.2329,0.3845,0.0214],[0.5051,0.2741,0.4063,0.0202]]],[0.0867,0.0516,0.4181,0.4549]],"16":["l1-03","第1講スライド p.3","最終的に、3’末端にポリ(A)鎖が付加されて、成熟mRNAが産生される。",[0.4992,0.2716,0.4181,0.0659,[[0.5051,0.2934,0.384,0.0214]]],null],"18":["l1-07","第1講スライド p.7","",[0.6844,0.3051,0.2173,0.078,[[0.6903,0.3257,0.2001,0.0185],[0.6903,0.3439,0.1948,0.0185]]],null],"19":["l1-03","第1講スライド p.3","エンハンサーには転写活性化因子が結合する。",[0.4992,0.1183,0.4181,0.0978,[[0.5051,0.141,0.4063,0.0202],[0.5051,0.1612,0.24,0.0202]]],null],"20":["l1-03","第1講スライド p.3","1）プロモーターに存在するCAATボックスに転写因子であるNF-Yが結合したり、GCボックスに転写因子であるSp1が結合する。",[0.5414,0.4865,0.3647,0.0656,[[0.5474,0.489,0.3527,0.0202],[0.5474,0.5091,0.3172,0.0202]]],null],"21":["l1-03","第1講スライド p.3","2）プロモーターのコアプロモーター上で、NF-YやSp1に結合する形で、基本転写因子とRNAポリメラーゼⅡから構成される基本転写装置が構築され、転写開始複合体が形成される。",[0.5414,0.6881,0.3647,0.126,[[0.5474,0.7107,0.3528,0.0202],[0.5474,0.7309,0.234,0.0202],[0.5474,0.7511,0.3468,0.0202],[0.5474,0.7712,0.3469,0.0202]]],[0.0867,0.0516,0.4181,0.4549]],"22":["l1-03","第1講スライド p.3","6） RNAポリメラーゼⅡが転写領域を１回移動することで、１本のmRNAが合成されることになり、単位時間あたりのmRNAの合成量が基本転写活性となる。",[0.5414,0.8494,0.3647,0.0656,[[0.5474,0.872,0.3528,0.0202]]],[0.0867,0.0516,0.4181,0.4549]],"23":["l1-04","第1講スライド p.4","7)この過程で、「基本転写装置の構築」と「基本転写装置の再構築」の速さが、単位時間あたりのmRNAの合成量を決めることになる",[0.5326,0.3143,0.335,0.0454,[[0.5386,0.337,0.3112,0.0202]]],null],"24":["l1-04","第1講スライド p.4","4)コアクチベーターに結合する形で、プロモーター上に基本転写装置が構築され、転写開始複合体が形成される。",[0.5326,0.3949,0.335,0.1059,[[0.5386,0.4176,0.3112,0.0202],[0.5386,0.4378,0.3112,0.0202]]],null],"26":["l1-05","第1講スライド p.5","",[0.0728,0.656,0.2208,0.0857,[[0.0795,0.6787,0.145,0.0202],[0.0795,0.6989,0.1925,0.0202]]],[0.2148,0.0687,0.6642,0.4263]],"27":["l1-05","第1講スライド p.5","",[0.0728,0.4102,0.2208,0.0454,[[0.0788,0.4328,0.1687,0.0202]]],null],"28":["l1-05","第1講スライド p.5","",[0.0728,0.4102,0.2208,0.0454,[[0.0788,0.4127,0.1568,0.0202]]],null],"30":["l1-07","第1講スライド p.7","",[0.6844,0.1055,0.2173,0.078,[[0.6903,0.1262,0.2001,0.0185]]],null],"31":["l1-06","第1講スライド p.6","",[0.1404,0.7116,0.7387,0.0857,[[0.1464,0.7544,0.7269,0.0202]]],[0.2451,0.0619,0.6716,0.2961]],"33":["l1-06","第1講スライド p.6","そして、リガンドが結合したステロイドホルモン受容体はホモ二量体を形成して、核内に移行して、標的遺伝子の転写調節領域に存在するステロイドホルモン応答配列（SHRE：steroid hormone response element）に結合する。",[0.1404,0.7116,0.7387,0.126,[[0.1464,0.7544,0.7269,0.0202],[0.1464,0.7746,0.7269,0.0202],[0.1464,0.7947,0.7269,0.0202]]],[0.2451,0.0619,0.6716,0.2961]],"34":["l2-01","第2講スライド p.1","ベタメタゾン吉草酸エステルは、皮膚外用のステロイド剤である。",[0.0757,0.3648,0.3349,0.078,[[0.0817,0.3673,0.3124,0.0185],[0.0817,0.3854,0.3124,0.0185]]],[0.0687,0.0507,0.8484,0.4711]],"35":["l2-01","第2講スライド p.1","",[0.0757,0.3648,0.3349,0.1324,[[0.0817,0.4036,0.3124,0.0185],[0.0817,0.4217,0.3124,0.0185]]],[0.0687,0.0507,0.8484,0.4711]],"36":["l3-01","第3講スライド p.1","NF-κB結合配列 NF-κB結合配列 NF-κB結合配列GR応答配列",[0.5922,0.5569,0.1995,0.0235,[[0.5982,0.5594,0.1876,0.0185]]],null],"37":["l2-01","第2講スライド p.1","",[0.0757,0.8184,0.3349,0.078,[[0.0924,0.8572,0.3017,0.0185]]],[0.3706,0.4949,0.5465,0.3845]],"38":["l2-02","第2講スライド p.2","炎症誘導刺激によってIκBキナーゼが活性化され、IκBがリン酸化されると、IκBが分解される。",[0.4119,0.5395,0.4952,0.0598,[[0.4179,0.5602,0.4727,0.0185]]],[0.1003,0.1068,0.3101,0.6359]],"39":["l2-01","第2講スライド p.1","さらに、IκBは、細胞質でNF-κBに直接結合して、その核内移行を阻止する因子であり、IκB遺伝子の転写調節領域にもGREが存在する。",[0.0757,0.8184,0.3349,0.0961,[[0.0924,0.8572,0.3017,0.0185],[0.0817,0.8753,0.307,0.0185]]],[0.0687,0.0507,0.8484,0.4711]],"40":["l2-03","第2講スライド p.3","",[0.6147,0.3869,0.2922,0.078,[[0.6313,0.4257,0.2696,0.0185]]],[0.2125,0.4894,0.4825,0.3621]],"41":["l2-03","第2講スライド p.3","PLA2は、リン脂質のグリセロール骨格の2位に結合している不飽和脂肪酸を切り離し、不飽和脂肪酸であるアラキドン酸が大量に産生される。",[0.6147,0.2377,0.2922,0.078,[[0.6206,0.2584,0.2749,0.0185],[0.6206,0.2766,0.2696,0.0185]]],[0.2622,0.0585,0.3626,0.4421]],"42":["l2-03","第2講スライド p.3","",[0.6147,0.2559,0.2922,0.1163,[[0.6206,0.2766,0.2696,0.0185],[0.6206,0.2947,0.2696,0.0185],[0.6206,0.3116,0.2774,0.0201],[0.6206,0.3312,0.2625,0.0202]]],[0.2125,0.4894,0.4825,0.3621]],"43":["l3-01","第3講スライド p.1","",null,null],"44":["l2-03","第2講スライド p.3","",[0.6147,0.2922,0.2922,0.1183,[[0.6206,0.3116,0.2774,0.0201],[0.6206,0.3695,0.2796,0.0202]]],[0.2125,0.4894,0.4825,0.3621]],"45":["l2-03","第2講スライド p.3","リポコルチンは、ホスホリパーゼA2の活性を抑制して、細胞膜におけるアラキドン酸産生を低下させ、その結果として、PGE2やLTD4などの炎症性脂質メディエーターの産生が低下し、抗炎症作用がもたらされる。",[0.6147,0.3869,0.2922,0.0961,[[0.6313,0.4257,0.2696,0.0185],[0.6206,0.4439,0.2696,0.0185]]],[0.2622,0.0585,0.3626,0.4421]],"46":["l2-05","第2講スライド p.5","パルミチン酸レチノールは小腸で加水分解されてレチノールとなり、β-カロテンは小腸上皮細胞でレチナールを経てレチノールとなる。",[0.5362,0.3421,0.383,0.1142,[[0.5422,0.3627,0.3337,0.0185],[0.5422,0.399,0.3605,0.0185],[0.5422,0.4172,0.3658,0.0185]]],[0.0882,0.031,0.7973,0.2941]],"47":["l2-05","第2講スライド p.5","血中ではレチノールは、レチノール結合タンパク質（RBP）と複合体を形成して標的細胞に運ばれる。",[0.5362,0.4147,0.383,0.0961,[[0.5422,0.4353,0.2856,0.0185],[0.5528,0.4535,0.3498,0.0185],[0.5422,0.4716,0.3605,0.0185]]],[0.0836,0.3324,0.3782,0.1306]],"49":["l2-05","第2講スライド p.5","",[0.5362,0.4872,0.383,0.0598,[]],[0.0882,0.031,0.7973,0.2941]],"50":["l1-14","第1講スライド p.14","一方、ヒストンタンパク質はリジンやアルギニンなど塩基",[0.651,0.3363,0.2708,0.078,[[0.6569,0.357,0.2482,0.0185],[0.6569,0.3751,0.2482,0.0185]]],null],"51":["l1-14","第1講スライド p.14","",[0.651,0.5722,0.2708,0.1324,[[0.6569,0.611,0.2482,0.0185],[0.6569,0.6654,0.2429,0.0185]]],[0.0674,0.3323,0.5967,0.6277]],"52":["l2-07","第2講スライド p.7","",[0.6551,0.5622,0.2648,0.078,[[0.661,0.5829,0.2376,0.0185],[0.661,0.601,0.2448,0.0185]]],null],"53":["l1-14","第1講スライド p.14","レオソームは、DNAにヒストン八量体（H2A, H2B,H3, H4が各2分子）に巻き付くことで構成される。",[0.651,0.0823,0.2708,0.078,[[0.6569,0.103,0.2429,0.0185],[0.6569,0.1211,0.2429,0.0185]]],null],"54":["l2-13","第2講スライド p.13","その結果、ヒストンアセチル化酵素活性（HAT）を持つコアクチベーター（coactivator）がPML-RARAに結合し、クロマチン構造が緩み、ユークロマチン化が進み、続いて、クロマチンリモデリング因子が働き、標的遺伝子の転写が起こるようになる。",[0.6142,0.4823,0.282,0.148,[[0.6201,0.5063,0.2659,0.0202],[0.6201,0.5252,0.2649,0.022],[0.6201,0.5453,0.2591,0.022],[0.6201,0.5668,0.264,0.0202]]],null],"55":["l1-14","第1講スライド p.14","染色体DNAは、ヒストンと結合してヌクレオソームを基本単位とするクロマチンを形成している。",[0.651,0.3363,0.2708,0.1505,[[0.6569,0.357,0.2482,0.0185],[0.6569,0.3751,0.2482,0.0185],[0.6569,0.3933,0.2429,0.0185],[0.6569,0.4114,0.2429,0.0185],[0.6569,0.4296,0.2162,0.0185]]],[0.0674,0.3323,0.5967,0.6277]],"56":["l2-08","第2講スライド p.8","末梢細胞内では、T4はヨードチロニン脱ヨード酵素によって活性型のT3に変換される。",[0.6111,0.5525,0.2984,0.0615,[[0.617,0.5731,0.281,0.0201]]],[0.1017,0.1731,0.5112,0.6716]],"57":["l2-08","第2講スライド p.8","核内でT3がTRに結合すると、TRは構造変化を起こし、コリプレッサーが解離して、ヒストンアセチル化酵素活性を有するコアクチベーターがリクルートされる。",[0.6111,0.6613,0.2984,0.0973,[[0.617,0.682,0.2836,0.0201],[0.617,0.7013,0.2798,0.0185],[0.617,0.7195,0.2865,0.0185]]],[0.1017,0.1731,0.5112,0.6716]],"58":["l2-08","第2講スライド p.8","",[0.6111,0.7883,0.2984,0.1505,[[0.617,0.8283,0.2828,0.0185],[0.617,0.8465,0.2743,0.0185],[0.617,0.8997,0.2851,0.0201]]],null],"59":["l2-11","第2講スライド p.11","急性前骨髄性白血病（APL）は、前骨髄球へ分化する前の造血前駆細胞において、「RARA遺伝子が存在する17番染色体」と「PML遺伝子が存在する15番染色体」との間で相互転座が起こり、PML-RARA融合遺伝子が形成されることによって発症する。",[0.6876,0.0793,0.167,0.0233,[[0.6935,0.0819,0.1519,0.0182]]],null],"60":["l2-13","第2講スライド p.13","",[0.6142,0.2606,0.282,0.0674,[[0.6201,0.2832,0.2639,0.022]]],null],"61":["l2-12","第2講スライド p.12","しかし、ATRAを経口投与して、血中のATRA濃度を薬理学的レベルまで高めると、PML-RARAからコリプレッサー複合体が解離する。",[0.0889,0.5581,0.3884,0.1142,[[0.0949,0.6332,0.3765,0.0185]]],null],"62":["l2-10","第2講スライド p.10","",[0.0966,0.8692,0.7785,0.078,[]],null],"63":["l2-12","第2講スライド p.12","ATO は、PML-RARA融合タンパク質のPML部分に結合し、その分解を促進する。",[0.0889,0.794,0.3884,0.078,[[0.0949,0.8146,0.3711,0.0185],[0.0949,0.8328,0.3711,0.0185]]],null],"64":["l2-11","第2講スライド p.11","前骨髄球では、レチノイン酸がRARα（RARA）に結合していない時は、RXRとヘテロ二量体を形成して、標的遺伝子の転写調節領域に存在するレチノイン酸応答配列に結合している。",[0.6876,0.0793,0.167,0.0233,[[0.6935,0.0819,0.1519,0.0182]]],null],"65":["l2-10","第2講スライド p.10","まず、APL細胞では細胞膜に存在する組織因子（TF）の発現が増加しており、TFが血液凝固因子と結合することで凝固系が活性化され、トロンビンの産生が促進される。",[0.0966,0.7422,0.7785,0.1324,[[0.1132,0.7628,0.7559,0.0185],[0.1026,0.781,0.617,0.0185],[0.1026,0.7991,0.7666,0.0185],[0.1026,0.8173,0.7666,0.0185],[0.1026,0.8354,0.1413,0.0185]]],null],"67":["l2-14","第2講スライド p.14","活性型ビタミンD₃が結合したVDRは細胞質でRXRとヘテロ二量体を形成し、核内に移行し、小腸上皮細胞を介したカルシウムやリン酸の吸収に関与するタンパク質因子の遺伝子に存在するビタミンD応答配列（VDRE）に結合する。",[0.5419,0.6677,0.3551,0.078,[[0.5479,0.6883,0.3337,0.0185],[0.5479,0.7065,0.3391,0.0185]]],[0.1653,0.3729,0.3266,0.4969]],"68":["l3-08","第3講スライド p.8","",[0.1314,0.6692,0.1143,0.0185,[[0.1489,0.6717,0.0816,0.0134]]],null],"69":["l2-15","第2講スライド p.15","なお、Cav1.3は1α,25(OH)₂D₃による発現誘導を受けず、基礎的なCa²⁺取り込みに関与している。",[0.6265,0.3321,0.3029,0.0598,[[0.6324,0.3528,0.2749,0.0185]]],null],"70":["l2-14","第2講スライド p.14","特に皮膚では、コレステロール由来のプロビタミンD3（7-デヒドロコレステロール）が紫外線B波の照射により光化学反応を受け、プロビタミンD3を経てビタミンD3へと異性化される。",[0.5419,0.3592,0.3551,0.078,[[0.5479,0.3799,0.3325,0.0185],[0.5479,0.398,0.3391,0.0185]]],[0.1653,0.3729,0.3266,0.4969]],"71":["l3-11","第3講スライド p.11","有機成分は骨基質全体の約30〜35％を占め、その主成分はI型コラーゲンである。",[0.5322,0.245,0.3663,0.0615,[[0.5382,0.2657,0.3542,0.0201]]],null],"72":["l3-14","第3講スライド p.14","この融合に伴い、リソソーム膜上のV-ATPaseも骨吸収膜に組み込まれ、骨吸収窩を酸性化する。",[0.5881,0.3832,0.3349,0.0961,[[0.594,0.4039,0.323,0.0185],[0.594,0.422,0.323,0.0185],[0.594,0.4402,0.3177,0.0185]]],[0.0639,0.3313,0.3585,0.4067]],"73":["l3-14","第3講スライド p.14","",[0.5881,0.0564,0.3349,0.06,[[0.594,0.0773,0.3177,0.0185]]],[0.0639,0.3313,0.3585,0.4067]],"74":["l3-14","第3講スライド p.14","",[0.0771,0.8653,0.4685,0.078,[[0.083,0.886,0.2375,0.0185],[0.083,0.9042,0.4567,0.0185],[0.083,0.9223,0.323,0.0185]]],null],"75":["l3-13","第3講スライド p.13","",[0.5791,0.8739,0.349,0.057,[[0.5865,0.9107,0.3306,0.0177]]],[0.1665,0.0953,0.4673,0.4042]],"76":["l3-13","第3講スライド p.13","ピロリン酸はCa²⁺との結合が強いため、ヒドロキシアパタイトの結晶化を阻害する。",[0.5791,0.6602,0.349,0.0741,[[0.5865,0.6799,0.3306,0.0177]]],[0.5952,0.0832,0.2883,0.3544]],"77":["l3-12","第3講スライド p.12","",[0.6799,0.3886,0.228,0.0417,[[0.6858,0.4093,0.2162,0.0185]]],null],"78":["l3-14","第3講スライド p.14","血中のCa2＋濃度が低下した時、副甲状腺からパラトニン（PTH)が分泌され、骨芽細胞膜上に存在するPTH受容体に結合すると、Gsαタンパク質を介してアデニル酸シクラーゼが活性化され、細胞内cAMP濃度の上昇に伴いプロテインキナーゼA（PKA）が活性化される。",[0.5881,0.0747,0.3349,0.1324,[[0.594,0.0954,0.323,0.0185],[0.594,0.1136,0.323,0.0185],[0.594,0.1317,0.3177,0.0185],[0.594,0.1498,0.323,0.0185],[0.594,0.168,0.3177,0.0185]]],[0.0639,0.3313,0.3585,0.4067]],"79":["l3-19","第3講スライド p.19","破骨細胞内に取り込まれたビスホスホネートは、メバロン酸経路におけるFPPS（Farnesyl pyrophosphate synthase：ファルネシルピロリン酸合成酵素）を阻害し、FPP（Farnesyl pyrophosphate：ファルネシルピロリン酸）の合成を抑制する。",[0.3394,0.503,0.0875,0.016,[[0.3473,0.5056,0.0736,0.0109]]],null],"80":["l3-19","第3講スライド p.19","",[0.6217,0.3272,0.3087,0.0379,[[0.6277,0.3297,0.2874,0.0168]]],null],"81":["l3-18","第3講スライド p.18","その結果、SERMは、骨組織ではエストロゲン様の作用を示す一方、乳腺組織や子宮内膜では抗エストロゲン作用を示す。",[0.4958,0.7022,0.4151,0.078,[[0.5017,0.7229,0.3979,0.0185],[0.5017,0.7411,0.3979,0.0185]]],null],"82":["l3-16","第3講スライド p.16","アルファカルシドールは肝臓で25位が水酸化され、1α,25(OH)₂D₃として作用するのに対し、エルデカルシトールはVDRに直接結合することによりホルモン活性型ビタミンD₃として機能する。",[0.0841,0.8612,0.4242,0.0702,[[0.0901,0.8959,0.3729,0.0168]]],null],"84":["l3-19","第3講スライド p.19","骨吸収の際、破骨細胞がヒドロキシアパタイトを溶解すると、そこに結合していたビスホスホネートが遊離し、破骨細胞によりエンドサイトーシスによって細胞内へ取り込まれる。",[0.6217,0.5772,0.3087,0.1347,[[0.6277,0.5959,0.2873,0.0168],[0.6277,0.612,0.2873,0.0168],[0.6277,0.6281,0.1353,0.0168],[0.6277,0.6604,0.2873,0.0168],[0.6277,0.6765,0.2826,0.0168]]],null],"85":["l3-12","第3講スライド p.12","骨細胞は骨基質中に埋め込まれた状態で存在し、骨に加わる機械的刺激を感知して、骨芽細胞や破骨細胞の活動を調節している。",[0.0968,0.7119,0.2973,0.0541,[[0.1028,0.7144,0.2764,0.0168],[0.1028,0.7305,0.2854,0.0168]]],null],"87":["l3-17","第3講スライド p.17","また、特にビタミンD₃誘導体であるエルデカルシトールは、VDRを介して骨芽細胞におけるRANKL発現を低下させ、加えてOPG発現を上昇させることで、RANKL/OPG比を低下させる。",[0.5225,0.4422,0.3466,0.0598,[[0.5284,0.4628,0.3298,0.0201]]],[0.105,0.0823,0.393,0.3867]],"88":["l3-15","第3講スライド p.15","加齢性骨粗鬆症は、「骨芽細胞の機能低下・アポトーシス促進」によって骨形成が抑制され、同時に「ビタミンD3活性化能の低下→小腸からのCa²⁺吸収の低下→パラトルモン分泌増加」によって骨吸収が増加して発症する。",[0.4886,0.7025,0.383,0.0598,[[0.5052,0.7051,0.3551,0.0185],[0.4945,0.7232,0.3646,0.0185]]],null],"89":["l3-16","第3講スライド p.16","遠位尿細管におけて、TRPV5、Calbindin-D、PMCA、NCXなどのCa²⁺輸送関連タンパク質が活性化型ビタミンD3/VDR依存的に発現誘導されるため、遠位尿細管でのCa²⁺の再吸収が促進される。",[0.5299,0.8387,0.399,0.0541,[[0.5359,0.8573,0.3807,0.0168]]],[0.2798,0.3383,0.2449,0.3175]],"90":["l3-10","第3講スライド p.10","一方、PTHは腎臓での無機リン酸の再吸収を抑制し、無機リン酸の尿中への排泄を促進する。",[0.5963,0.2865,0.3135,0.0961,[[0.6022,0.3072,0.291,0.0185],[0.6022,0.3253,0.2856,0.0185],[0.6022,0.3435,0.291,0.0185]]],null],"91":["l3-18","第3講スライド p.18","この構造の違いによって、SERMによって構造変化したERαに結合するコアクチベーターやコリプレッサーなどの転写共役因子の種類や働きが、細胞によって異なる。",[0.4958,0.793,0.4151,0.0961,[[0.5124,0.8136,0.3872,0.0185],[0.5017,0.8318,0.3979,0.0185],[0.5017,0.8499,0.3979,0.0185]]],[0.0942,0.0691,0.3585,0.4067]],"92":["l1-16","第1講スライド p.16","ヨードチロニン脱ヨード酵素1型（D1）は主に肝臓や腎臓でT4をT3に変換し、血中の循環T3濃度を維持し、ヨードチロニン脱ヨード酵素2型（D2）は脳や下垂体などで局所的にT3を生成して細胞内濃度を調節する。",[0.6111,0.5607,0.2882,0.0876,[[0.617,0.5833,0.2682,0.022],[0.617,0.6035,0.2724,0.022]]],[0.1017,0.1731,0.5112,0.6716]],"93":["l3-02","第3講スライド p.2","甲状腺ホルモン受容体（TR: thyroid hormone receptor）は核内受容体であり、そのリガンドはトリヨードチロニン（T3）である。",[0.6111,0.3186,0.2984,0.0615,[[0.617,0.3393,0.2787,0.0201]]],[0.1017,0.1731,0.5112,0.6716]],"94":["l3-02","第3講スライド p.2","リガンドが存在しない場合では、TRはレチノイドX受容体（RXR）とヘテロ二量体を形成し、標的遺伝子の転写調節領域に存在する甲状腺ホルモン応答配列（TRE: thyroid hormone responsiveelement）に結合している。",[0.6111,0.3186,0.2984,0.1159,[[0.617,0.3393,0.2787,0.0201],[0.617,0.3574,0.286,0.0201],[0.617,0.3767,0.2781,0.0185],[0.617,0.3937,0.2693,0.0201]]],null],"96":["l3-03","第3講スライド p.3","",[0.081,0.4556,0.397,0.0541,[[0.0869,0.4582,0.3491,0.0168]]],null],"98":["l3-05","第3講スライド p.5","急性前骨髄性白血病（APL）は、前骨髄球へ分化する前の造血前駆細胞において、「RARA遺伝子が存在する17番染色体」と「PML遺伝子が存在する15番染色体」との間で相互転座が起こり、PML-RARA融合遺伝子が形成されることによって発症する。",[0.6876,0.0793,0.167,0.0233,[[0.6935,0.0819,0.1519,0.0182]]],null],"99":["l3-03","第3講スライド p.3","",[0.081,0.8822,0.397,0.0394,[[0.0911,0.9009,0.3735,0.0182]]],[0.051,0.5191,0.4507,0.3535]],"101":["l3-04","第3講スライド p.4","その結果、フィブリノーゲンからフィブリンが形成されるとともに、凝固因子や血小板が消費され、DICが進行する。",[0.0966,0.7422,0.7785,0.078,[[0.1026,0.781,0.617,0.0185]]],null],"102":["l3-04","第3講スライド p.4","これにより、t-PAによるプラスミノーゲンからプラスミンへの変換が促進される。",[0.0966,0.7966,0.7785,0.0598,[[0.1026,0.8173,0.7666,0.0185]]],null],"104":["l3-04","第3講スライド p.4","まず、APL細胞では細胞膜に存在する組織因子（TF）の発現が増加しており、TFが血液凝固因子と結合することで凝固系が活性化され、トロンビンの産生が促進される。",[0.0966,0.7422,0.7785,0.0961,[[0.1132,0.7628,0.7559,0.0185],[0.1026,0.7991,0.7666,0.0185]]],null],"105":["l3-06","第3講スライド p.6","PML-RARA陽性の白血病性前骨髄球 （APL細胞）PML-RARA陽性の好中球",[0.0889,0.667,0.3884,0.078,[[0.0949,0.6876,0.3711,0.0185]]],[0.4763,0.4704,0.4633,0.3221]],"106":["l3-06","第3講スライド p.6","PML-RARA陽性の白血病性前骨髄球 （APL細胞）PML-RARA陽性の好中球",[0.0889,0.667,0.3884,0.078,[[0.0949,0.6876,0.3711,0.0185]]],[0.4763,0.4704,0.4633,0.3221]],"108":["l3-02","第3講スライド p.2","核内でT3がTRに結合すると、TRは構造変化を起こし、コリプレッサーが解離して、ヒストンアセチル化酵素活性を有するコアクチベーターがリクルートされる。",[0.6111,0.6613,0.2984,0.0973,[[0.617,0.682,0.2836,0.0201],[0.617,0.7013,0.2798,0.0185],[0.617,0.7195,0.2865,0.0185]]],[0.1017,0.1731,0.5112,0.6716]],"109":["l2-14","第2講スライド p.14","ビタミンD3（コレカルシフェロール）は、食物から摂取される場合と、体内でコレステロールを前駆体として合成される場合がある。",[0.5419,0.3411,0.3551,0.078,[[0.5585,0.3436,0.3218,0.0185],[0.5479,0.3617,0.3337,0.0185],[0.5479,0.3799,0.3325,0.0185]]],[0.1653,0.3729,0.3266,0.4969]],"110":["l2-14","第2講スライド p.14","特に皮膚では、コレステロール由来のプロビタミンD3（7-デヒドロコレステロール）が紫外線B波の照射により光化学反応を受け、プロビタミンD3を経てビタミンD3へと異性化される。",[0.5419,0.3592,0.3551,0.078,[[0.5479,0.3799,0.3325,0.0185],[0.5479,0.398,0.3391,0.0185]]],[0.1653,0.3729,0.3266,0.4969]],"111":["l2-14","第2講スライド p.14","",[0.5419,0.3411,0.3551,0.0417,[[0.5585,0.3436,0.3218,0.0185]]],null],"112":["l2-14","第2講スライド p.14","",[0.5419,0.3592,0.3551,0.0598,[[0.5479,0.3799,0.3325,0.0185]]],[0.1155,0.095,0.5182,0.1552]],"113":["l2-14","第2講スライド p.14","活性型ビタミンD₃が結合したVDRは細胞質でRXRとヘテロ二量体を形成し、核内に移行し、小腸上皮細胞を介したカルシウムやリン酸の吸収に関与するタンパク質因子の遺伝子に存在するビタミンD応答配列（VDRE）に結合する。",[0.5419,0.6677,0.3551,0.078,[[0.5479,0.6883,0.3337,0.0185],[0.5479,0.7065,0.3391,0.0185]]],[0.1653,0.3729,0.3266,0.4969]],"114":["l2-08","第2講スライド p.8","",[0.6111,0.7351,0.2984,0.0784,[[0.617,0.7546,0.2859,0.0201],[0.617,0.7739,0.2836,0.0185]]],null],"115":["l3-08","第3講スライド p.8","一方、後者では、転写調節領域にVDREを有する別の遺伝子の発現が活性型ビタミンD3によって誘導され、その遺伝子がコードするタンパク質が働くことで、その結果として二次的にタンパク質因子の遺伝子の発現が誘導される。",[0.5629,0.7222,0.3551,0.1324,[[0.5688,0.8154,0.3325,0.0185]]],null],"116":["l2-15","第2講スライド p.15","",[0.6265,0.441,0.3029,0.078,[[0.6431,0.4798,0.2643,0.0185]]],[0.0747,0.0466,0.5626,0.5341]],"117":["l2-15","第2講スライド p.15","なお、Cav1.3は1α,25(OH)₂D₃による発現誘導を受けず、基礎的なCa²⁺取り込みに関与している。",[0.088,0.7985,0.5327,0.0598,[[0.0939,0.8192,0.5208,0.0185]]],null],"118":["l2-15","第2講スライド p.15","",[0.6265,0.4047,0.3029,0.0961,[[0.6324,0.4253,0.2803,0.0185],[0.6324,0.4435,0.2696,0.0185]]],[0.0747,0.0466,0.5626,0.5341]],"119":["l2-15","第2講スライド p.15","さらに、小腸上皮細胞の基底膜側の細胞膜には、ATP依存的な機構で基底膜側へCa²⁺を排出するPMCA1b（ATP依存性Ca²⁺ポンプ）や、ナトリウム勾配を利用して基底膜側へCa²⁺を排出するNCX1（Na⁺/Ca²⁺交換輸送体）がある。",[0.6265,0.441,0.3029,0.1324,[[0.6431,0.4798,0.2643,0.0185],[0.6324,0.4979,0.2749,0.0185],[0.6324,0.5342,0.2589,0.0185]]],null],"120":["l2-15","第2講スライド p.15","また、TRPV5は、基礎的にも発現して働いているが、",[0.6265,0.3502,0.3029,0.078,[[0.6324,0.3709,0.291,0.0185],[0.6324,0.389,0.2268,0.0185]]],[0.0747,0.0466,0.5626,0.5341]],"121":["l2-15","第2講スライド p.15","また、TRPV5は、基礎的にも発現して働いているが、",[0.6265,0.3502,0.3029,0.078,[[0.6324,0.389,0.2268,0.0185]]],[0.0747,0.0466,0.5626,0.5341]],"123":["l3-17","第3講スライド p.17","また、血中のCa²⁺濃度の上昇により、ネガティブフィードバックにより副甲状腺の主細胞からのパラトルモンの分泌が抑制されて、骨吸収が抑制される。",[0.5225,0.2244,0.3466,0.0796,[[0.5284,0.2645,0.3277,0.0185]]],[0.105,0.0823,0.393,0.3867]],"124":["l2-16","第2講スライド p.16","血中のカルシウム濃度は、一定の範囲内（8.5〜10.5mg/dL）に保たれている。",[0.5963,0.1232,0.3135,0.0961,[[0.6129,0.162,0.2589,0.0185],[0.6022,0.1802,0.2856,0.0185]]],null],"125":["l3-10","第3講スライド p.10","一方、PTHは腎臓での無機リン酸の再吸収を抑制し、無機リン酸の尿中への排泄を促進する。",[0.5963,0.3047,0.3135,0.078,[[0.6022,0.3253,0.2856,0.0185],[0.6022,0.3435,0.291,0.0185]]],null],"127":["l3-10","第3講スライド p.10","活性型ビタミンD₃は小腸上皮細胞に作用して、カルシウムと無機リン酸の吸収を促進する。",[0.5963,0.4498,0.3135,0.1142,[[0.6022,0.4705,0.291,0.0185],[0.6022,0.4886,0.291,0.0185],[0.6022,0.5068,0.291,0.0185],[0.6022,0.5249,0.291,0.0185]]],null],"128":["l3-11","第3講スライド p.11","有機成分は骨基質全体の約30〜35％を占め、その主成分はI型コラーゲンである。",[0.5322,0.245,0.3663,0.0615,[[0.5382,0.2657,0.3542,0.0201]]],null],"129":["l3-12","第3講スライド p.12","",[0.6799,0.5157,0.228,0.0598,[[0.6858,0.5363,0.2162,0.0185]]],[0.0674,0.047,0.5431,0.4402]],"130":["l3-11","第3講スライド p.11","",[0.5322,0.372,0.3663,0.0792,[[0.5382,0.412,0.3542,0.0185]]],[0.0552,0.4914,0.4969,0.2258]],"131":["l3-11","第3講スライド p.11","骨芽細胞や破骨細胞は、主に骨梁の表面に存在している。",[0.5322,0.372,0.3663,0.0961,[[0.5382,0.4302,0.3532,0.0185]]],[0.0715,0.039,0.4541,0.3003]],"132":["l3-15","第3講スライド p.15","海綿骨は血流が豊富で、PTHやエストロゲン低下などの骨代謝ホルモンの影響を受けやすい",[0.0859,0.7723,0.4044,0.0598,[[0.0918,0.8111,0.3925,0.0185]]],null],"134":["l3-12","第3講スライド p.12","骨細胞は骨基質中に埋め込まれた状態で存在し、骨に加わる機械的刺激を感知して、骨芽細胞や破骨細胞の活動を調節している。",[0.0968,0.7119,0.2973,0.0541,[[0.1028,0.7144,0.2764,0.0168],[0.1028,0.7305,0.2854,0.0168]]],null],"135":["l3-12","第3講スライド p.12","例えば、歩行や運動によって骨に荷重がかかると、骨はわずかに変形し、骨細胞は機械的刺激を感知する。",[0.0968,0.728,0.2973,0.0702,[[0.1028,0.7467,0.2786,0.0168],[0.1028,0.7628,0.2732,0.0168]]],null],"136":["l3-13","第3講スライド p.13","・骨芽細胞から分泌されたATPは、基質小胞の小胞膜や骨芽細胞の細胞膜に存在しているENPP1によって加水分解され、ピロリン酸とAMPが生成される。",[0.5791,0.7882,0.349,0.0913,[[0.5865,0.825,0.3306,0.0177],[0.5865,0.8422,0.3256,0.0177]]],[0.1665,0.0953,0.4673,0.4042]],"137":["l3-13","第3講スライド p.13","同時に、血液由来のCa²⁺が基質小胞内に取り込まれる。",[0.5791,0.6259,0.349,0.057,[[0.5865,0.6456,0.3307,0.0177]]],[0.1665,0.0953,0.4673,0.4042]],"138":["l3-13","第3講スライド p.13","同時に、血液由来のCa²⁺が基質小胞内に取り込まれる。",[0.5791,0.506,0.349,0.0741,[[0.5865,0.5256,0.3256,0.0177],[0.5865,0.5428,0.3256,0.0177]]],[0.5952,0.0832,0.2883,0.3544]],"139":["l3-13","第3講スライド p.13","その結果、Ca²⁺とリン酸が結晶化してヒドロキシアパタイト（Ca₁₀(PO₄)₆(OH)₂）が形成される。",[0.5791,0.5231,0.349,0.057,[[0.5865,0.5428,0.3256,0.0177]]],[0.5952,0.0832,0.2883,0.3544]],"140":["l3-13","第3講スライド p.13","さらに、沈着したヒドロキシアパタイトに、血液由来のCa²⁺とリン酸が追加されることにより、石灰化が進行する。",[0.5791,0.5745,0.349,0.0913,[[0.5865,0.5942,0.3256,0.0177],[0.5865,0.6113,0.3256,0.0177],[0.5865,0.6284,0.2953,0.0177]]],[0.5952,0.0832,0.2883,0.3544]],"141":["l3-13","第3講スライド p.13","さらに、沈着したヒドロキシアパタイトに、血液由来のCa²⁺とリン酸が追加されることにより、石灰化が進行する。",[0.5791,0.506,0.349,0.0741,[[0.5865,0.5256,0.3256,0.0177],[0.5865,0.5428,0.3256,0.0177]]],[0.5952,0.0832,0.2883,0.3544]],"142":["l3-17","第3講スライド p.17","",[0.5225,0.2063,0.3466,0.0615,[[0.5284,0.227,0.3253,0.0201]]],null],"143":["l3-15","第3講スライド p.15","",[0.0859,0.736,0.4044,0.0961,[[0.0918,0.7748,0.3551,0.0185]]],null],"144":["l3-14","第3講スライド p.14","",[0.5881,0.0747,0.3349,0.0598,[[0.594,0.0954,0.323,0.0185]]],null],"145":["l3-14","第3講スライド p.14","",[0.0771,0.7928,0.4685,0.078,[[0.083,0.8316,0.4513,0.0185]]],[0.0639,0.3313,0.3585,0.4067]],"146":["l3-14","第3講スライド p.14","",[0.0771,0.8835,0.4685,0.0598,[[0.083,0.9042,0.4567,0.0185],[0.083,0.9223,0.323,0.0185]]],null],"147":["l3-14","第3講スライド p.14","",[0.5881,0.1473,0.3349,0.0598,[[0.594,0.168,0.3177,0.0185]]],null],"148":["l3-14","第3講スライド p.14","さらに、PTH刺激により骨芽細胞からのマクロファージコロニー刺激因子（M-CSF）の産生・分泌も亢進し、破骨細胞前駆細胞の生存維持、増殖促進、および分化準備過程（RANK発現の維持）が助長される。",[0.0771,0.7383,0.4685,0.0598,[[0.083,0.759,0.4513,0.0185]]],[0.0639,0.3313,0.3585,0.4067]],"149":["l3-14","第3講スライド p.14","",[0.0771,0.7383,0.4685,0.0598,[[0.083,0.759,0.4513,0.0185]]],null],"150":["l3-14","第3講スライド p.14","破骨細胞には、リソソーム酵素を含む分泌リソソームが存在し、リソソーム膜にはV-ATPase（プロトンポンプ）が局在している。",[0.5881,0.3106,0.3349,0.0598,[[0.594,0.3313,0.323,0.0185]]],[0.0639,0.3313,0.3585,0.4067]],"151":["l3-13","第3講スライド p.13","",[0.5791,0.5402,0.349,0.057,[[0.5865,0.5599,0.3306,0.0177]]],[0.5952,0.0832,0.2883,0.3544]],"152":["l3-14","第3講スライド p.14","",[0.5881,0.4558,0.3349,0.0598,[[0.594,0.4764,0.323,0.0185]]],[0.0639,0.3313,0.3585,0.4067]],"153":["l3-14","第3講スライド p.14","その結果、骨吸収の亢進によって、骨吸収領域からCa²⁺とリン酸（HPO₄²⁻/H₂PO₄⁻）が組織液に放出されて、毛細血管内に移行し、血中のCa²⁺ 濃度とリン酸濃度が上昇することになる。",[0.5881,0.5284,0.3349,0.078,[[0.594,0.5672,0.3177,0.0185]]],[0.0639,0.3313,0.3585,0.4067]],"154":["l3-14","第3講スライド p.14","結果としてRANKL/OPG比が上昇し、破骨細胞前駆細胞膜上のRANKにRANKLが優位に結合できるようになり、破骨細胞前駆細胞は分化を進めて、骨吸収能を有する成熟破骨細胞へと誘導される。",[0.5881,0.3288,0.3349,0.1324,[[0.594,0.3494,0.323,0.0185],[0.594,0.3676,0.323,0.0185],[0.594,0.3857,0.323,0.0185],[0.594,0.4039,0.323,0.0185],[0.594,0.422,0.323,0.0185]]],[0.0639,0.3313,0.3585,0.4067]],"155":["l2-15","第2講スライド p.15","活性型ビタミンD₃製剤であるカルシトリオールは、小腸上皮細胞でビタミンD₃応答遺伝子の転写調節領域に存在するVDRに結合して、ビタミンD₃応答遺伝子を発現誘導し、小腸からCa²⁺とリン酸の取り込みを促進して、その結果として、血中のCa²⁺濃度とリン酸濃度の上昇をもたらすことから、骨粗鬆症の治療薬として適応されている。",[0.6265,0.4047,0.3029,0.1324,[[0.6324,0.4253,0.2803,0.0185],[0.6324,0.4435,0.2696,0.0185],[0.6431,0.4798,0.2643,0.0185],[0.6324,0.4979,0.2749,0.0185]]],[0.0747,0.0466,0.5626,0.5341]],"156":["l3-13","第3講スライド p.13","ヒドロキシアパタイトが形成された基質小胞が類骨を構成しているコラーゲン繊維の隙間に埋まっていき、基質小胞からのヒドロキシアパタイトがコラーゲン繊維に沈着して、類骨が石灰化される。",[0.5791,0.5574,0.349,0.1255,[[0.5865,0.577,0.3256,0.0177],[0.5865,0.5942,0.3256,0.0177],[0.5865,0.6113,0.3256,0.0177],[0.5865,0.6284,0.2953,0.0177],[0.5865,0.6456,0.3307,0.0177]]],[0.1665,0.0953,0.4673,0.4042]],"157":["l2-14","第2講スライド p.14","体内に取り込まれたビタミンD3は、まず肝臓において25-ヒドロキシラーゼの作用により25-ヒドロキシビタミンD3［25(OH)ビタミンD3］に変換され、さらに腎臓において1α-ヒドロキシラーゼの作用を受けて、活性型ビタミンD3である1α,25-ジヒドロキシビタミンD3［1α,25(OH)2ビタミンD3］（カルシトリオール）が産生される。",[0.5419,0.4136,0.3551,0.1324,[[0.5479,0.4343,0.3325,0.0185],[0.5479,0.4525,0.3313,0.0185],[0.5479,0.4706,0.3325,0.0185],[0.5479,0.4887,0.3409,0.0185],[0.5479,0.5069,0.3367,0.0185]]],[0.1653,0.3729,0.3266,0.4969]],"158":["l1-01","第1講スライド p.1","",[0.6978,0.4373,0.2162,0.1059,[[0.7038,0.46,0.1925,0.0202],[0.7038,0.4801,0.1925,0.0202]]],[0.0672,0.357,0.5691,0.3178]],"159":["l1-01","第1講スライド p.1","",[0.6978,0.1349,0.2162,0.0857,[[0.7038,0.1575,0.1925,0.0202],[0.7038,0.1777,0.1925,0.0202],[0.7038,0.1979,0.1925,0.0202]]],null],"160":["l1-01","第1講スライド p.1","",[0.6978,0.3163,0.2162,0.1462,[[0.7038,0.339,0.1925,0.0202],[0.7038,0.3591,0.1925,0.0202],[0.7038,0.3793,0.2043,0.0202],[0.7038,0.3995,0.1925,0.0202],[0.7038,0.4196,0.1925,0.0202]]],null],"161":["l1-01","第1講スライド p.1","",[0.6978,0.5179,0.2162,0.126,[[0.7038,0.5406,0.1925,0.0202],[0.7038,0.5608,0.1925,0.0202],[0.7038,0.5809,0.1925,0.0202],[0.7038,0.6011,0.1925,0.0202]]],[0.0718,0.0455,0.6022,0.3384]],"162":["l1-01","第1講スライド p.1","",[0.6978,0.4373,0.2162,0.1664,[[0.7038,0.46,0.1925,0.0202],[0.7038,0.5406,0.1925,0.0202],[0.7038,0.5608,0.1925,0.0202]]],[0.0718,0.0455,0.6022,0.3384]],"163":["l1-02","第1講スライド p.2","",[0.6893,0.2694,0.2353,0.126,[[0.6952,0.272,0.2174,0.0202],[0.6952,0.2921,0.2176,0.0202],[0.6952,0.3123,0.2217,0.0202],[0.6952,0.3324,0.2134,0.0202],[0.6952,0.3526,0.2199,0.0202]]],[0.068,0.6157,0.61,0.14]],"164":["l1-02","第1講スライド p.2","",[0.6893,0.4294,0.2353,0.087,[[0.6952,0.4723,0.213,0.022]]],[0.068,0.0497,0.61,0.5929]],"165":["l1-01","第1講スライド p.1","",[0.6978,0.8203,0.2162,0.0656,[[0.7038,0.843,0.1925,0.0202],[0.7038,0.8632,0.1925,0.0202]]],[0.0672,0.357,0.5691,0.3178]],"166":["l1-02","第1講スライド p.2","",[0.6893,0.1888,0.2353,0.0454,[[0.6952,0.1913,0.2184,0.0202]]],null],"167":["l1-02","第1講スライド p.2","",[0.6893,0.5517,0.2353,0.1064,[[0.6952,0.5744,0.2198,0.0202],[0.6952,0.5945,0.2137,0.0202],[0.6952,0.6147,0.2124,0.0202]]],[0.068,0.0497,0.61,0.5929]],"168":["l1-02","第1講スライド p.2","",[0.6893,0.4294,0.2353,0.1072,[[0.6952,0.4723,0.213,0.022],[0.6952,0.4937,0.2196,0.0202]]],[0.068,0.0497,0.61,0.5929]],"169":["l1-03","第1講スライド p.3","遺伝子の構造は、転写調節領域と転写領域の二つがある。",[0.4992,0.078,0.4181,0.0454,[[0.5051,0.0805,0.3112,0.0202]]],null],"170":["l1-03","第1講スライド p.3","2）プロモーターのコアプロモーター上で、NF-YやSp1に結合する形で、基本転写因子とRNAポリメラーゼⅡから構成される基本転写装置が構築され、転写開始複合体が形成される。",[0.5414,0.4865,0.3647,0.126,[[0.5474,0.489,0.3527,0.0202],[0.5474,0.5091,0.3172,0.0202],[0.5474,0.5293,0.3469,0.0202],[0.5474,0.5495,0.3528,0.0202],[0.5474,0.5696,0.2638,0.0202]]],[0.0659,0.5202,0.4921,0.2021]],"171":["l1-03","第1講スライド p.3","3）転写開始複合体内で、RNAポリメラーゼⅡがリン酸化されて、基本転写装置が崩壊して、RNAポリメラーゼⅡが5’→3’方向に動き始め、転写領域のDNA上を5’→3’方向に移動しながら、mRNA（ヘテロ核RNA）を合成する。",[0.5414,0.5671,0.3647,0.1264,[[0.5474,0.5898,0.3469,0.0202],[0.5474,0.6091,0.3464,0.0214],[0.5474,0.6293,0.3464,0.0214]]],[0.0659,0.5202,0.4921,0.2021]],"172":["l1-03","第1講スライド p.3","続いて、プロセシングにより、5’末端には7-メチルグアノシンが結合してキャップ構造が形成される。",[0.4992,0.2103,0.4181,0.1272,[[0.5051,0.2329,0.3845,0.0214],[0.5051,0.2539,0.3944,0.0202],[0.5051,0.2741,0.4063,0.0202],[0.5051,0.2934,0.384,0.0214]]],[0.0867,0.0516,0.4181,0.4549]],"173":["l1-04","第1講スライド p.4","7)この過程で、「基本転写装置の構築」と「基本転写装置の再構築」の速さが、単位時間あたりのmRNAの合成量を決めることになる",[0.5326,0.7578,0.335,0.1059,[[0.5386,0.7805,0.3112,0.0202],[0.5386,0.8007,0.3112,0.0202]]],null],"174":["l1-05","第1講スライド p.5","",[0.0728,0.4102,0.2208,0.0454,[[0.0788,0.4127,0.1568,0.0202],[0.0788,0.4328,0.1687,0.0202]]],[0.2148,0.0687,0.6642,0.4263]],"175":["l1-05","第1講スライド p.5","",[0.0728,0.4102,0.2208,0.0454,[[0.0788,0.4127,0.1568,0.0202],[0.0788,0.4328,0.1687,0.0202]]],null],"176":["l1-16","第1講スライド p.16","",[0.6111,0.4813,0.2882,0.0656,[[0.617,0.5027,0.2671,0.022]]],[0.1017,0.1731,0.5112,0.6716]],"177":["l1-05","第1講スライド p.5","",[0.0728,0.656,0.2208,0.1059,[[0.0795,0.6585,0.1687,0.0202],[0.0795,0.6787,0.145,0.0202],[0.0795,0.6989,0.1925,0.0202],[0.0795,0.719,0.1272,0.0202]]],[0.2148,0.0687,0.6642,0.4263]],"178":["l1-06","第1講スライド p.6","",[0.1404,0.7116,0.7387,0.0857,[[0.1464,0.7544,0.7269,0.0202]]],[0.2451,0.0619,0.6716,0.2961]],"179":["l1-07","第1講スライド p.7","",[0.6844,0.0873,0.2173,0.0961,[[0.6903,0.0899,0.1948,0.0185],[0.6903,0.108,0.1948,0.0185],[0.6903,0.1262,0.2001,0.0185]]],null],"180":["l1-09","第1講スライド p.9","その結果、毛細血管では、プロスタグランジンが血管平滑筋細胞に作用して血管が拡張し、局所の血流が増えることで皮膚が赤くなり、熱をもつ。",[0.3402,0.7327,0.565,0.0602,[[0.3462,0.7534,0.5527,0.0185]]],[0.0599,0.727,0.2898,0.1763]],"181":["l1-09","第1講スライド p.9","さらに、ロイコトリエンやTNF-α・ IL-1βが血管内皮細胞に作用して血管内皮細胞間の隙間を広げ、血管透過性が亢進する。",[0.215,0.857,0.6885,0.0262,[[0.2209,0.8595,0.6766,0.0212]]],null],"182":["l1-09","第1講スライド p.9","なお、ダメージを受けた皮膚細胞から分泌された IL-1β や TNF-α は、周囲の未損傷皮膚細胞に作用し、COX-2 の誘導を介してプロスタグランジンの産生・分泌を促進する。",[0.3402,0.8234,0.565,0.078,[[0.3462,0.8429,0.5531,0.0201]]],[0.0599,0.727,0.2898,0.1763]],"183":["l1-09","第1講スライド p.9","また、ロイコトリエンが未損傷細胞に作用すると、プロスタグランジンや炎症性サイトカインの産生が亢進する。",[0.215,0.857,0.6885,0.0262,[[0.2209,0.8595,0.6766,0.0212]]],[0.0599,0.727,0.2898,0.1763]],"184":["l1-10","第1講スライド p.10","皮膚細胞において物理的刺激（擦過）、化学物質刺激、細菌感染などが起こると、転写因子であるNF-κBが活性化される。",[0.0841,0.6269,0.3189,0.086,[[0.0901,0.6557,0.291,0.0185],[0.0901,0.6738,0.3017,0.0185]]],[0.0687,0.0507,0.8484,0.4711]],"185":["l1-10","第1講スライド p.10","IL-1β（interleukin-1β）やTNF-α（Tumor NecrosisFactor-α）の遺伝子の転写調節領域にはNF-κB応答配列が存在するため、NF-κBが活性化すると、これらの炎症性サイトカインの発現が誘導され、炎症が悪化する。",[0.0841,0.6713,0.3189,0.1142,[[0.0901,0.692,0.2696,0.0185],[0.0901,0.7101,0.2963,0.0185],[0.0901,0.7282,0.291,0.0185],[0.0901,0.7464,0.2162,0.0185]]],null],"186":["l2-01","第2講スライド p.1","ベタメタゾン吉草酸エステルは、皮膚外用のステロイド剤である。",[0.0757,0.3648,0.3349,0.0598,[[0.0817,0.3673,0.3124,0.0185]]],[0.0687,0.0507,0.8484,0.4711]],"187":["l2-01","第2講スライド p.1","そのため、ステロイド剤はグルココルチコイド受容体に結合して、IκBを発現誘導し、結果的にNF-κBを介したIL-1βやTNF-αの発現誘導を抑制し、皮膚の炎症を抑える。",[0.0757,0.7276,0.3349,0.1687,[[0.0924,0.7665,0.3124,0.0185],[0.0817,0.7846,0.3124,0.0185],[0.0817,0.8027,0.3124,0.0185],[0.0817,0.8209,0.3124,0.0185],[0.0924,0.8572,0.3017,0.0185]]],[0.0687,0.0507,0.8484,0.4711]],"188":["l2-01","第2講スライド p.1","その後、ステロイド剤が結合して二量体化した受容体は、抗炎症タンパク質をコードする遺伝子の転写調節領域に存在するグルココルチコイド応答配列（GRE: glucocorticoidresponsive element）に結合する。",[0.0757,0.8547,0.3349,0.078,[[0.0817,0.8753,0.307,0.0185],[0.0817,0.8935,0.3124,0.0185]]],[0.0687,0.0507,0.8484,0.4711]],"189":["l2-01","第2講スライド p.1","",[0.0757,0.7639,0.3349,0.1324,[[0.0817,0.7846,0.3124,0.0185],[0.0817,0.8027,0.3124,0.0185],[0.0924,0.8572,0.3017,0.0185]]],[0.0687,0.0507,0.8484,0.4711]],"190":["l2-03","第2講スライド p.3","細胞膜を構成しているリン脂質は、グリセロール骨格の1位の炭素には飽和脂肪酸がエステル結合し、2位の炭素には不飽和脂肪酸がエステル結合していることが多く、3位の炭素にリン酸基が結合した構造を持つ。",[0.6147,0.0563,0.2922,0.078,[[0.6313,0.0588,0.2589,0.0185],[0.6206,0.077,0.2696,0.0185],[0.6206,0.0951,0.2803,0.0185]]],[0.2622,0.0585,0.3626,0.4421]],"191":["l2-03","第2講スライド p.3","皮膚に対して、物理的刺激（擦過）・アレルゲン（化学物質、ほこり）刺激・細菌感染などが起こると、ダメージを受けた皮膚細胞では、ホスホリパーゼA2",[0.6147,0.1652,0.2922,0.0961,[[0.6313,0.1858,0.2589,0.0185],[0.6206,0.204,0.2589,0.0185],[0.6206,0.2221,0.2364,0.0185]]],[0.2622,0.0585,0.3626,0.4421]],"192":["l2-03","第2講スライド p.3","",[0.6147,0.2922,0.2922,0.1183,[[0.6206,0.3116,0.2774,0.0201],[0.6206,0.3312,0.2625,0.0202],[0.6206,0.3695,0.2796,0.0202]]],[0.2125,0.4894,0.4825,0.3621]],"193":["l2-03","第2講スライド p.3","リポコルチンは、ホスホリパーゼA2の活性を抑制して、細胞膜におけるアラキドン酸産生を低下させ、その結果として、PGE2やLTD4などの炎症性脂質メディエーターの産生が低下し、抗炎症作用がもたらされる。",[0.6147,0.3091,0.2922,0.1558,[[0.6206,0.3312,0.2625,0.0202],[0.6206,0.3695,0.2796,0.0202],[0.6206,0.3895,0.2779,0.0185],[0.6313,0.4257,0.2696,0.0185]]],[0.2125,0.4894,0.4825,0.3621]],"194":["l2-05","第2講スライド p.5","生成したレチナールは、小腸上皮細胞内で、レチナール還元酵素（retinal reductase）により還元されてレチノールとなる。",[0.5362,0.3236,0.383,0.1327,[[0.5422,0.3446,0.3605,0.0185],[0.5422,0.3627,0.3337,0.0185],[0.5422,0.3809,0.3605,0.0185],[0.5422,0.399,0.3605,0.0185],[0.5422,0.4172,0.3658,0.0185]]],[0.0882,0.031,0.7973,0.2941]],"195":["l2-05","第2講スライド p.5","血中ではレチノールは、レチノール結合タンパク質（RBP）と複合体を形成して標的細胞に運ばれる。",[0.5362,0.4147,0.383,0.1324,[[0.5422,0.4353,0.2856,0.0185],[0.5528,0.4535,0.3498,0.0185],[0.5422,0.4716,0.3605,0.0185],[0.5422,0.4898,0.3658,0.0185],[0.5422,0.5079,0.3605,0.0185]]],[0.0882,0.031,0.7973,0.2941]],"196":["l2-05","第2講スライド p.5","レチノイン酸には全trans-レチノイン酸と9-cis-レチノイン酸の二つの異性体があり、生成したレチノイン酸は細胞内レチノイン酸結合タンパク質（CRABP）に結合して核内へ輸送される。",[0.5362,0.5417,0.383,0.0961,[[0.5422,0.5623,0.3658,0.0185],[0.5422,0.5805,0.2001,0.0185],[0.5528,0.5986,0.3498,0.0185]]],[0.0836,0.6436,0.3782,0.1306]],"197":["l2-06","第2講スライド p.6","ゼ：histone deacetylase：HDAC）は、アセチル化されたリジン残基に対して水（H₂O）を利用した加水分解反応を行い、アセチル基を切り離して、酢酸",[0.651,0.6811,0.2708,0.1142,[[0.6569,0.7017,0.2482,0.0185],[0.6569,0.738,0.2429,0.0185],[0.6569,0.7562,0.2482,0.0185]]],[0.0755,0.052,0.4175,0.3072]],"198":["l2-07","第2講スライド p.7","",[0.6551,0.5804,0.2648,0.0598,[[0.661,0.601,0.2448,0.0185]]],null],"199":["l2-07","第2講スライド p.7","リガンドである全trans-レチノイン酸（all trans- retinoic acid：ATRA）が存在しない場合では、RAR/RXR複合体は標的遺伝子のプロモーター領域に存在するレチノイン酸応答配列（RARE: retinoic acid response element）に結合しているが、このときはコリプレッサーがRAR/RXRに結合しており、コリプレッサーを介してヒストン脱アセチル化酵素（ヒストンデアセチラーゼ：HDAC）が呼び寄せられて結合している。",[0.6551,0.1086,0.2648,0.0961,[[0.661,0.1293,0.2384,0.0185],[0.661,0.1474,0.2149,0.0185],[0.661,0.1656,0.2418,0.0185]]],[0.0812,0.4318,0.5434,0.29]],"200":["l2-07","第2講スライド p.7","これにより、ヒストンアセチル化酵素（ヒストンアセチルトランスフェラーゼ：HAT）活性を有するコアクチベーターが結合し、HAT活性によりヒストンタンパク質のリジン残基のNH₃＋基がアセチル化されて正電荷が消失する。",[0.6551,0.3808,0.2648,0.1324,[[0.661,0.4014,0.2314,0.0185],[0.661,0.4377,0.2432,0.0185],[0.661,0.4559,0.2401,0.0185],[0.661,0.474,0.2372,0.0185]]],[0.0812,0.4318,0.5434,0.29]],"201":["l3-02","第3講スライド p.2","末梢細胞内では、T4はヨードチロニン脱ヨード酵素によって活性型のT3に変換される。",[0.6111,0.5343,0.2984,0.0796,[[0.617,0.555,0.2775,0.0201],[0.617,0.5731,0.281,0.0201]]],[0.1017,0.1731,0.5112,0.6716]],"202":["l1-16","第1講スライド p.16","ヨードチロニン脱ヨード酵素1型（D1）は主に肝臓や腎臓でT4をT3に変換し、血中の循環T3濃度を維持し、ヨードチロニン脱ヨード酵素2型（D2）は脳や下垂体などで局所的にT3を生成して細胞内濃度を調節する。",[0.6111,0.5607,0.2882,0.0876,[[0.617,0.5833,0.2682,0.022],[0.617,0.6035,0.2724,0.022]]],[0.1017,0.1731,0.5112,0.6716]],"203":["l3-02","第3講スライド p.2","リガンドが存在しない場合では、TRはレチノイドX受容体（RXR）とヘテロ二量体を形成し、標的遺伝子の転写調節領域に存在する甲状腺ホルモン応答配列（TRE: thyroid hormone responsiveelement）に結合している。",[0.6111,0.3367,0.2984,0.1155,[[0.617,0.3574,0.286,0.0201],[0.617,0.3767,0.2781,0.0185],[0.617,0.3937,0.2693,0.0201],[0.617,0.4118,0.2761,0.0201]]],[0.1017,0.1731,0.5112,0.6716]],"204":["l3-07","第3講スライド p.7","その結果、ヒストンアセチル化酵素活性（HAT）を持つコアクチベーター（coactivator）がPML-RARAに結合し、クロマチン構造が緩み、ユークロマチン化が進み、続いて、クロマチンリモデリング因子が働き、標的遺伝子の転写が起こるようになる。",[0.6142,0.4622,0.282,0.1475,[[0.6201,0.4848,0.2489,0.022],[0.6201,0.5063,0.2659,0.0202],[0.6201,0.5252,0.2649,0.022],[0.6201,0.5453,0.2591,0.022],[0.6201,0.5668,0.264,0.0202]]],null],"222":["l3-03","第3講スライド p.3","",[0.081,0.4556,0.397,0.0852,[]],null],"223":["l3-03","第3講スライド p.3","",[0.4822,0.7921,0.4466,0.0702,[]],[0.051,0.5191,0.4507,0.3535]],"224":["l3-03","第3講スライド p.3","",[0.081,0.8661,0.397,0.0555,[]],[0.051,0.5191,0.4507,0.3535]],"225":["l3-03","第3講スライド p.3","",[0.4822,0.7921,0.4466,0.0863,[[0.4881,0.8269,0.4107,0.0168]]],[0.4891,0.1808,0.3591,0.175]],"226":["l3-03","第3講スライド p.3","",[0.4822,0.7599,0.4466,0.1186,[[0.4881,0.7785,0.4298,0.0168]]],[0.051,0.5191,0.4507,0.3535]],"227":["l3-03","第3講スライド p.3","好中球では、顆粒球‐単球系前駆細胞に顆粒球コロニー刺激因子（G-CSF）が作用して 骨髄芽球が産生され、骨髄芽球は前骨髄球に分化し、さらに骨髄球へと分化して、最終的に成熟好中球が形成される。",[0.081,0.4556,0.397,0.0541,[[0.0869,0.4582,0.3491,0.0168]]],null],"228":["l3-03","第3講スライド p.3","なお、単球では、顆粒球‐単球系前駆細胞が マクロファージコロニー刺激因子が（M-CSF）の刺激を受けることで 単芽球に分化し、最終的に成熟単球が形成される。",[0.081,0.4556,0.397,0.0852,[[0.0869,0.4582,0.3491,0.0168],[0.0869,0.4904,0.3538,0.0168],[0.0869,0.5065,0.3491,0.0168],[0.0869,0.5216,0.1924,0.0168]]],null],"240":["l3-03","第3講スライド p.3","",[0.081,0.8661,0.397,0.0555,[]],[0.051,0.5191,0.4507,0.3535]],"261":["l2-14","第2講スライド p.14","特に皮膚では、コレステロール由来のプロビタミンD3（7-デヒドロコレステロール）が紫外線B波の照射により光化学反応を受け、プロビタミンD3を経てビタミンD3へと異性化される。",[0.5419,0.3411,0.3551,0.0961,[[0.5585,0.3436,0.3218,0.0185],[0.5479,0.3617,0.3337,0.0185],[0.5479,0.3799,0.3325,0.0185],[0.5479,0.398,0.3391,0.0185]]],[0.1653,0.3729,0.3266,0.4969]],"262":["l2-14","第2講スライド p.14","体内に取り込まれたビタミンD3は、まず肝臓において25-ヒドロキシラーゼの作用により25-ヒドロキシビタミンD3［25(OH)ビタミンD3］に変換され、さらに腎臓において1α-ヒドロキシラーゼの作用を受けて、活性型ビタミンD3である1α,25-ジヒドロキシビタミンD3［1α,25(OH)2ビタミンD3］（カルシトリオール）が産生される。",[0.5419,0.3955,0.3551,0.1142,[[0.5479,0.4162,0.3313,0.0185],[0.5479,0.4343,0.3325,0.0185],[0.5479,0.4525,0.3313,0.0185],[0.5479,0.4706,0.3325,0.0185]]],[0.1653,0.3729,0.3266,0.4969]],"263":["l2-14","第2講スライド p.14","このVDRはレチノイドX受容体（RXR）とヘテロ二量体を形成し、その複合体は核内へ移行する。",[0.5419,0.6677,0.3551,0.0598,[[0.5479,0.6883,0.3337,0.0185]]],[0.1653,0.3729,0.3266,0.4969]],"264":["l2-15","第2講スライド p.15","なお、Cav1.3は1α,25(OH)₂D₃による発現誘導を受けず、基礎的なCa²⁺取り込みに関与している。",[0.088,0.7622,0.5327,0.0961,[[0.0939,0.7829,0.4715,0.0185],[0.0939,0.8192,0.5208,0.0185]]],null],"265":["l2-15","第2講スライド p.15","さらに、小腸上皮細胞の基底膜側の細胞膜には、ATP依存的な機構で基底膜側へCa²⁺を排出するPMCA1b（ATP依存性Ca²⁺ポンプ）や、ナトリウム勾配を利用して基底膜側へCa²⁺を排出するNCX1（Na⁺/Ca²⁺交換輸送体）がある。",[0.6265,0.441,0.3029,0.1324,[[0.6431,0.4798,0.2643,0.0185],[0.6324,0.4979,0.2749,0.0185],[0.6324,0.5161,0.2803,0.0185],[0.6324,0.5342,0.2589,0.0185]]],[0.0747,0.0466,0.5626,0.5341]],"271":["l3-11","第3講スライド p.11","I型コラーゲンは、骨にしなやかさと引張に対する強さを与える。",[0.5322,0.2281,0.3663,0.1147,[[0.5382,0.2475,0.2315,0.0185],[0.5382,0.2657,0.3542,0.0201],[0.5382,0.2838,0.3489,0.0201],[0.5382,0.3032,0.3469,0.0185]]],[0.0715,0.3124,0.4541,0.1634]],"272":["l3-11","第3講スライド p.11","骨梁の表面に存在する骨芽細胞や破骨細胞は、これらの血管に近接しているため、血中から供給されるミネラル（Ca²⁺・リン酸）、ホルモン、栄養成分などの影響を受ける環境にある。",[0.5322,0.372,0.3663,0.134,[[0.5382,0.412,0.3542,0.0185],[0.5382,0.4302,0.3532,0.0185],[0.5382,0.4471,0.3428,0.0185],[0.5382,0.4665,0.3492,0.0185]]],[0.0715,0.039,0.4541,0.3003]],"273":["l3-12","第3講スライド p.12","",[0.6799,0.1346,0.228,0.078,[[0.6858,0.1371,0.2162,0.0185],[0.6858,0.1553,0.2162,0.0185],[0.6858,0.1734,0.2162,0.0185]]],null],"274":["l3-12","第3講スライド p.12","",[0.6799,0.4794,0.228,0.0961,[[0.6858,0.5,0.2108,0.0185],[0.6858,0.5182,0.2162,0.0185],[0.6858,0.5363,0.2162,0.0185]]],[0.0674,0.047,0.5431,0.4402]],"275":["l3-13","第3講スライド p.13","・骨芽細胞から分泌されたATPは、基質小胞の小胞膜や骨芽細胞の細胞膜に存在しているENPP1によって加水分解され、ピロリン酸とAMPが生成される。",[0.5791,0.7882,0.349,0.1084,[[0.5865,0.825,0.3306,0.0177],[0.5865,0.8422,0.3256,0.0177],[0.5865,0.8593,0.3357,0.0177]]],[0.1665,0.0953,0.4673,0.4042]],"276":["l3-13","第3講スライド p.13","Ca2＋とリン酸（HPO₄²⁻ / H₂PO₄⁻）も、既存のヒドロキシアパタイトと結晶化する",[0.5791,0.506,0.349,0.0741,[[0.5865,0.5256,0.3256,0.0177],[0.5865,0.5428,0.3256,0.0177]]],[0.5952,0.0832,0.2883,0.3544]],"277":["l3-13","第3講スライド p.13","ヒドロキシアパタイトが形成された基質小胞が類骨を構成しているコラーゲン繊維の隙間に埋まっていき、基質小胞からのヒドロキシアパタイトがコラーゲン繊維に沈着して、類骨が石灰化される。",[0.5791,0.5745,0.349,0.0741,[[0.5865,0.5942,0.3256,0.0177],[0.5865,0.6113,0.3256,0.0177]]],[0.1665,0.0953,0.4673,0.4042]],"278":["l3-13","第3講スライド p.13","さらに、沈着したヒドロキシアパタイトに、血液由来のCa²⁺とリン酸が追加されることにより、石灰化が進行する。",[0.5791,0.5917,0.349,0.057,[[0.5865,0.6113,0.3256,0.0177]]],[0.5952,0.0832,0.2883,0.3544]],"279":["l3-13","第3講スライド p.13","",[0.5791,0.4203,0.349,0.1084,[[0.5967,0.4228,0.3155,0.0177],[0.5865,0.4399,0.3256,0.0177],[0.5865,0.4571,0.3256,0.0177],[0.5865,0.4914,0.3306,0.0177]]],[0.1665,0.0953,0.4673,0.4042]],"280":["l3-17","第3講スライド p.17","活性型ビタミンD₃製剤とビタミンD₃誘導体は、「小腸からのCa²⁺と無機リン酸の吸収促進」と「腎臓でのCa²⁺再吸収促進」により、血中Ca²⁺濃度と無機リン酸濃度を上昇させるため、骨形成に必要となる血中のCa²⁺と無機リン酸を維持する。",[0.5225,0.1881,0.3466,0.0796,[[0.5284,0.1907,0.3232,0.0201],[0.5284,0.2088,0.329,0.0201],[0.5284,0.227,0.3253,0.0201]]],[0.105,0.0823,0.393,0.3867]],"281":["l3-14","第3講スライド p.14","血中のCa2＋濃度が低下した時、副甲状腺からパラトニン（PTH)が分泌され、骨芽細胞膜上に存在するPTH受容体に結合すると、Gsαタンパク質を介してアデニル酸シクラーゼが活性化され、細胞内cAMP濃度の上昇に伴いプロテインキナーゼA（PKA）が活性化される。",[0.5881,0.0564,0.3349,0.1145,[[0.594,0.0589,0.323,0.0187],[0.594,0.0773,0.3177,0.0185],[0.594,0.0954,0.323,0.0185],[0.594,0.1136,0.323,0.0185],[0.594,0.1317,0.3177,0.0185]]],[0.0639,0.3313,0.3585,0.4067]],"282":["l3-17","第3講スライド p.17","さらに、活性型ビタミンD₃製剤とビタミンD₃誘導体は、副甲状腺の主細胞に直接作用して、パラトルモンの産生・分泌を抑制する。",[0.5225,0.2619,0.3466,0.0598,[[0.5284,0.2814,0.3348,0.0201],[0.5284,0.3007,0.3209,0.0185]]],[0.105,0.0823,0.393,0.3867]],"283":["l3-17","第3講スライド p.17","活性型ビタミンD₃製剤とビタミンD₃誘導体は、「小腸からのCa²⁺と無機リン酸の吸収促進」と「腎臓でのCa²⁺再吸収促進」により、血中Ca²⁺濃度と無機リン酸濃度を上昇させるため、骨形成に必要となる血中のCa²⁺と無機リン酸を維持する。",[0.5225,0.1881,0.3466,0.1159,[[0.5284,0.1907,0.3232,0.0201],[0.5284,0.2088,0.329,0.0201],[0.5284,0.227,0.3253,0.0201],[0.5284,0.2451,0.3138,0.0201],[0.5284,0.2645,0.3277,0.0185]]],[0.105,0.0823,0.393,0.3867]],"284":["l3-17","第3講スライド p.17","活性型ビタミンD₃製剤とビタミンD₃誘導体は、「小腸からのCa²⁺と無機リン酸の吸収促進」と「腎臓でのCa²⁺再吸収促進」により、血中Ca²⁺濃度と無機リン酸濃度を上昇させるため、骨形成に必要となる血中のCa²⁺と無機リン酸を維持する。",[0.5225,0.3514,0.3466,0.0433,[[0.5284,0.354,0.3216,0.0201]]],null],"287":["l3-17","第3講スライド p.17","活性型ビタミンD₃製剤とビタミンD₃誘導体は、「小腸からのCa²⁺と無機リン酸の吸収促進」と「腎臓でのCa²⁺再吸収促進」により、血中Ca²⁺濃度と無機リン酸濃度を上昇させるため、骨形成に必要となる血中のCa²⁺と無機リン酸を維持する。",[0.5225,0.3514,0.3466,0.0433,[[0.5284,0.354,0.3216,0.0201]]],null],"288":["l2-16","第2講スライド p.16","このように、PTHは、活性型ビタミンD₃と協調することで、血中カルシウム濃度の恒常性を維持するために働く。",[0.5963,0.4861,0.3135,0.1505,[[0.6022,0.5068,0.291,0.0185],[0.6022,0.5612,0.2856,0.0185],[0.6022,0.5794,0.2589,0.0185]]],null],"289":["l3-14","第3講スライド p.14","さらに、PTH刺激により骨芽細胞からのマクロファージコロニー刺激因子（M-CSF）の産生・分泌も亢進し、破骨細胞前駆細胞の生存維持、増殖促進、および分化準備過程（RANK発現の維持）が助長される。",[0.5881,0.2018,0.3349,0.078,[[0.594,0.2224,0.307,0.0185],[0.594,0.2406,0.3177,0.0185]]],[0.0639,0.3313,0.3585,0.4067]],"290":["l3-17","第3講スライド p.17","また、特にビタミンD₃誘導体であるエルデカルシトールは、VDRを介して骨芽細胞におけるRANKL発現を低下させ、加えてOPG発現を上昇させることで、RANKL/OPG比を低下させる。",[0.5225,0.4071,0.3466,0.1493,[[0.5284,0.4265,0.3222,0.0201],[0.5284,0.4447,0.2911,0.0201],[0.5284,0.4628,0.3298,0.0201]]],[0.105,0.0823,0.393,0.3867]],"291":["l3-14","第3講スライド p.14","さらに、酸性条件下で活性化されたリソソーム酵素によって、骨の有機成分であるコラーゲンやオステオカルシンが分解されて、骨の構造的強度や柔軟性がなくなり、ヒドロキシアパタイトの分解が起こりやすくなる。",[0.5881,0.4013,0.3349,0.1324,[[0.594,0.422,0.323,0.0185],[0.594,0.4402,0.3177,0.0185],[0.594,0.4583,0.3177,0.0185],[0.594,0.4764,0.323,0.0185],[0.594,0.4946,0.323,0.0185]]],[0.0639,0.3313,0.3585,0.4067]],"292":["l3-15","第3講スライド p.15","骨粗鬆症は、「破骨細胞による骨吸収」が「骨芽細胞による骨形成」が上回り、「骨密度の低下」と「骨質の劣化」が進み、骨強度が低下し、最終的には骨が脆弱化して、易骨折性となる疾患である。",[0.0859,0.6372,0.4044,0.0598,[[0.0918,0.6397,0.3872,0.0185],[0.0918,0.6579,0.3872,0.0185]]],null],"293":["l3-15","第3講スライド p.15","海綿骨の骨梁は細く、少しの吸収でも構造的強度が急速に低下する・リモデリングサイクルの短さ",[0.0859,0.863,0.4044,0.0598,[[0.0918,0.8837,0.152,0.0185]]],null],"294":["l3-15","第3講スライド p.15","閉経後骨粗鬆症は、エストロゲン欠乏によって「破骨細胞前駆細胞から破骨細胞への分化亢進」「破骨細胞のアポトーシス抑制」が起き、骨吸収が増加して発症する。",[0.4886,0.7025,0.383,0.0417,[[0.5052,0.7051,0.3551,0.0185]]],null],"295":["l3-17","第3講スライド p.17","また、血中のCa²⁺濃度の上昇により、ネガティブフィードバックにより副甲状腺の主細胞からのパラトルモンの分泌が抑制されて、骨吸収が抑制される。",[0.5225,0.2426,0.3466,0.0792,[[0.5284,0.2645,0.3277,0.0185],[0.5284,0.2814,0.3348,0.0201]]],[0.105,0.0823,0.393,0.3867]],"296":["l3-15","第3講スライド p.15","男性では、精巣のライディッヒ細胞から分泌されるテストステロンが、末梢組織、特に皮下脂肪や内臓脂肪に発現するアロマターゼによってエストラジオールに変換される。",[0.4886,0.7388,0.383,0.078,[[0.5052,0.7595,0.3551,0.0185],[0.4945,0.7776,0.3658,0.0185]]],null],"297":["l3-15","第3講スライド p.15","また、骨組織内の骨芽細胞系細胞にもアロマターゼが発現しており、局所的に生成されるエストラジオールがパラクライン的に骨代謝を調節することも知られている。",[0.4886,0.8296,0.383,0.078,[[0.4945,0.8502,0.3658,0.0185],[0.4945,0.8684,0.3658,0.0185]]],null],"298":["l3-16","第3講スライド p.16","各ネフロンは、腎皮質に位置する腎小体と、それに連続する尿細管系からなる。",[0.0841,0.6676,0.4242,0.0541,[[0.0901,0.6863,0.4108,0.0168]]],null],"299":["l3-16","第3講スライド p.16","この原尿には、水、グルコース、Na+、Ca2+、リン酸などが含まれているが、これらの大部分は近位尿細管で再吸収される。",[0.0841,0.6999,0.4242,0.0702,[[0.0901,0.7183,0.4107,0.017],[0.0901,0.7347,0.4123,0.0168]]],null],"300":["l3-16","第3講スライド p.16","遠位尿細管では、 Ca2+とNa＋の再吸収が起こり、集合管では、バソプレシンによる水の再吸収やアルドステロンによるNa＋の再吸収が起こる。",[0.0841,0.7321,0.4242,0.0541,[[0.0901,0.7506,0.4046,0.017]]],null],"301":["l3-16","第3講スライド p.16","最終的に、再吸収されなかった水分や老廃物は集合管を通過し、腎髄質を経て腎盂に集められ、尿として排泄される。",[0.0841,0.7805,0.4242,0.0379,[[0.0901,0.7992,0.4108,0.0168]]],null],"302":["l3-17","第3講スライド p.17","活性型ビタミンD₃製剤（カルシトリオール、アルファカルシドール）とビタミンD₃誘導体（エルデカルシトール）の薬理学的用量による投与は、骨吸収を抑制することによって骨量を上げることが実証されている。",[0.5225,0.0793,0.3466,0.061,[[0.5284,0.0818,0.329,0.0201],[0.5284,0.0999,0.3264,0.0201]]],[0.105,0.0823,0.393,0.3867]],"303":["l3-17","第3講スライド p.17","",[0.5225,0.0793,0.3466,0.0433,[[0.5284,0.0818,0.329,0.0201]]],null],"304":["l3-17","第3講スライド p.17","活性型ビタミンD₃製剤とビタミンD₃誘導体は、「小腸からのCa²⁺と無機リン酸の吸収促進」と「腎臓でのCa²⁺再吸収促進」により、血中Ca²⁺濃度と無機リン酸濃度を上昇させるため、骨形成に必要となる血中のCa²⁺と無機リン酸を維持する。",[0.5225,0.1881,0.3466,0.0796,[[0.5284,0.1907,0.3232,0.0201],[0.5284,0.2088,0.329,0.0201],[0.5284,0.227,0.3253,0.0201]]],null],"305":["l3-16","第3講スライド p.16","カルシトリオールは、小腸上皮細胞内のビタミンD受容体に結合して、RXRとのヘテロ二量体が形成されて、小腸上皮細胞内のCa2+選択性チャネルTRPV5・TRPV6、Ca2+結合タンパク質カルバインディン-D、ATP依存性Ca2+ポンプPMCA1b、Na+/Ca2+交換輸送体NCX1、Na+依存性リン酸共輸送体NaPi-Iicを発現誘導して、小腸上皮細胞から血中へのCa2＋輸送とリン酸輸送を亢進して、血中のCa2＋濃度とリン酸（HPO₄²⁻/H₂PO₄⁻）濃度を上昇させる。",[0.5299,0.4032,0.399,0.1347,[[0.5359,0.438,0.3728,0.0168],[0.5359,0.4539,0.3758,0.017],[0.5359,0.47,0.3726,0.017],[0.5359,0.4862,0.3728,0.017],[0.5359,0.5023,0.3776,0.017]]],null],"306":["l3-17","第3講スライド p.17","また、ビタミンD₃誘導体であるエルデカルシトールは、アルファカルシドールよりも強い骨吸収抑制作用を有する。",[0.5225,0.1168,0.3466,0.0421,[[0.5284,0.1362,0.32,0.0201]]],[0.105,0.0823,0.393,0.3867]],"307":["l3-16","第3講スライド p.16","遠位尿細管におけて、TRPV5、Calbindin-D、PMCA、NCXなどのCa²⁺輸送関連タンパク質が活性化型ビタミンD3/VDR依存的に発現誘導されるため、遠位尿細管でのCa²⁺の再吸収が促進される。",[0.5299,0.8064,0.399,0.0702,[[0.5359,0.8251,0.3729,0.0168],[0.5359,0.8412,0.38,0.0168]]],[0.2798,0.3383,0.2449,0.3175]],"308":["l3-16","第3講スライド p.16","遠位尿細管の上皮細胞において、 Ca²⁺選択性チャネルであるTRPV5は尿細管腔側に存在し、細胞内にCa²⁺を取り込む。",[0.5299,0.5968,0.399,0.0379,[[0.5359,0.5993,0.373,0.0168]]],[0.2798,0.3383,0.2449,0.3175]],"309":["l3-09","第3講スライド p.9","",[0.6265,0.3865,0.3029,0.1142,[[0.6324,0.4072,0.2856,0.0185],[0.6324,0.4435,0.2696,0.0185]]],null],"310":["l3-09","第3講スライド p.9","",[0.088,0.8167,0.5327,0.0961,[[0.0939,0.8736,0.1413,0.0185]]],null],"311":["l3-16","第3講スライド p.16","",[0.5299,0.629,0.399,0.0702,[[0.5359,0.6477,0.3871,0.0168],[0.5359,0.6638,0.3726,0.0168]]],[0.2798,0.3383,0.2449,0.3175]],"312":["l3-16","第3講スライド p.16","この遠位尿細管におけるこの経細胞性Ca²⁺再吸収経路は、腎臓におけるCa²⁺再吸収の調節に重要である。",[0.5299,0.6451,0.399,0.0541,[[0.5359,0.6638,0.3726,0.0168]]],[0.2798,0.3383,0.2449,0.3175]],"313":["l3-17","第3講スライド p.17","また、血中のCa²⁺濃度の上昇により、ネガティブフィードバックにより副甲状腺の主細胞からのパラトルモンの分泌が抑制されて、骨吸収が抑制される。",[0.5225,0.2244,0.3466,0.0796,[[0.5284,0.2451,0.3138,0.0201],[0.5284,0.2645,0.3277,0.0185]]],[0.105,0.0823,0.393,0.3867]],"314":["l3-17","第3講スライド p.17","さらに、活性型ビタミンD₃製剤とビタミンD₃誘導体は、副甲状腺の主細胞に直接作用して、パラトルモンの産生・分泌を抑制する。",[0.5225,0.2619,0.3466,0.0598,[[0.5284,0.2814,0.3348,0.0201],[0.5284,0.3007,0.3209,0.0185]]],[0.105,0.0823,0.393,0.3867]],"315":["l3-17","第3講スライド p.17","血中Ca²⁺濃度が維持される状態では、活性型ビタミンD₃製剤とビタミンD₃誘導体は、骨芽細胞に作用し、ビタミンD受容体（VDR）を介して、骨基質であるⅠ型コラーゲンやオステオカルシン、類骨の石灰化に関与するアルカリホスファターゼなどの発現を誘導して、骨形成に寄与する。",[0.5225,0.3696,0.3466,0.1324,[[0.5284,0.3915,0.3292,0.0185],[0.5284,0.4096,0.3285,0.0185],[0.5284,0.4265,0.3222,0.0201],[0.5284,0.4447,0.2911,0.0201],[0.5284,0.4628,0.3298,0.0201]]],[0.105,0.0823,0.393,0.3867]],"316":["l3-17","第3講スライド p.17","また、特にビタミンD₃誘導体であるエルデカルシトールは、VDRを介して骨芽細胞におけるRANKL発現を低下させ、加えてOPG発現を上昇させることで、RANKL/OPG比を低下させる。",[0.5225,0.4422,0.3466,0.0598,[[0.5284,0.4628,0.3298,0.0201]]],[0.105,0.0823,0.393,0.3867]],"317":["l3-18","第3講スライド p.18","卵胞から分泌されるエストラジオールが骨芽細胞に入ると、細胞質でエストロゲンはエストロゲン受容体（ER）に結合してホモ二量体を形成される。",[0.4958,0.3756,0.4151,0.0417,[[0.5124,0.3782,0.3872,0.0185]]],[0.0942,0.0691,0.3585,0.4067]],"318":["l3-18","第3講スライド p.18","また、エストラジオールは、破骨細胞にも直接作用して、ER依存的にアポトーシスを引き起こす。",[0.4958,0.5389,0.4151,0.078,[[0.5017,0.5596,0.3979,0.0185],[0.5017,0.5778,0.2589,0.0185]]],[0.4812,0.1081,0.3913,0.2682]],"319":["l3-17","第3講スライド p.17","血中Ca²⁺濃度が維持される状態では、活性型ビタミンD₃製剤とビタミンD₃誘導体は、骨芽細胞に作用し、ビタミンD受容体（VDR）を介して、骨基質であるⅠ型コラーゲンやオステオカルシン、類骨の石灰化に関与するアルカリホスファターゼなどの発現を誘導して、骨形成に寄与する。",[0.5225,0.3696,0.3466,0.0796,[[0.5284,0.3915,0.3292,0.0185],[0.5284,0.4096,0.3285,0.0185]]],[0.105,0.0823,0.393,0.3867]],"320":["l3-18","第3講スライド p.18","エストラジオール製剤は同時にエストロゲン受容体（ERα）を介して乳腺上皮細胞や子宮内膜細胞の増殖を促進するため、乳がんおよび子宮体がんの発症・進行リスクの上昇が報告されている。",[0.4958,0.7022,0.4151,0.1324,[[0.5017,0.7229,0.3979,0.0185],[0.5017,0.7411,0.3979,0.0185],[0.5017,0.7592,0.3979,0.0185],[0.5017,0.7773,0.3979,0.0185],[0.5017,0.7955,0.3124,0.0185]]],[0.0673,0.5608,0.4239,0.2745]],"321":["l3-18","第3講スライド p.18","しかし、骨粗鬆症に適応されているラロキシフェンとバゼドキシフェンは選択的エストロゲン受容体モジュレーター（SERM）として、骨芽細胞のエストロゲン受容体に選択的にアゴニストとして作用し、乳腺細胞や子宮体細胞のエストロゲン受容体にはアンタゴニストとして作用する。",[0.4958,0.7022,0.4151,0.0598,[[0.5017,0.7229,0.3979,0.0185]]],[0.0673,0.5608,0.4239,0.2745]],"322":["l3-18","第3講スライド p.18","しかし、骨粗鬆症に適応されているラロキシフェンとバゼドキシフェンは選択的エストロゲン受容体モジュレーター（SERM）として、骨芽細胞のエストロゲン受容体に選択的にアゴニストとして作用し、乳腺細胞や子宮体細胞のエストロゲン受容体にはアンタゴニストとして作用する。",[0.4958,0.6841,0.4151,0.078,[[0.5017,0.7048,0.3872,0.0185],[0.5017,0.7229,0.3979,0.0185]]],[0.0673,0.5608,0.4239,0.2745]],"323":["l3-19","第3講スライド p.19","抗RANKL抗体薬であるデノスマブは、RANKLを標的とするヒト化モノクローナル抗体であり、骨芽細胞からの遊離型RANKLや膜結合型のRANKLにデノスマブが結合することで、RANKLが破骨細胞前駆細胞に結合できなくなり、破骨細胞の分化が抑制され、破骨細胞数が減少し、破骨細胞による骨吸収が抑制されることになり、骨芽細胞による骨形成が優位となり、骨密度と骨質が上がり、骨強度が上がり、骨粗鬆症を改善できる。",[0.6217,0.3272,0.3087,0.0379,[[0.6277,0.3297,0.2874,0.0168]]],null],"324":["l3-19","第3講スライド p.19","ビスホスホネート製剤であるリセドロン酸、アレンドロン酸、ゾレドロン酸は、骨粗鬆症の薬物治療での第一選択薬である。",[0.6217,0.5127,0.3087,0.0541,[[0.6277,0.5152,0.2873,0.0168],[0.6277,0.5313,0.2873,0.0168]]],null],"325":["l3-19","第3講スライド p.19","ビスホスホネート製剤は、骨基質のヒドロキシアパタイトに強固に結合する化合物である。",[0.6217,0.5288,0.3087,0.0541,[[0.6277,0.5475,0.2873,0.0168]]],null],"326":["l3-19","第3講スライド p.19","破骨細胞内に取り込まれたビスホスホネートは、メバロン酸経路におけるFPPS（Farnesyl pyrophosphate synthase：ファルネシルピロリン酸合成酵素）を阻害し、FPP（Farnesyl pyrophosphate：ファルネシルピロリン酸）の合成を抑制する。",[0.3394,0.503,0.0875,0.016,[[0.3473,0.5056,0.0736,0.0109]]],null],"327":["l3-19","第3講スライド p.19","また、FPPの欠乏により、いくつかの低分子GTP結合タンパク質（Rab：リソソーム小胞輸送・骨吸収窩形成；Rho：細胞骨格制御・骨付着；Ras：細胞生存）のプレニル化修飾が阻害される。",[0.6217,0.7869,0.3087,0.0702,[[0.6277,0.8055,0.2873,0.0168],[0.6277,0.8217,0.2874,0.0168]]],null],"328":["l3-19","第3講スライド p.19","",[0.6217,0.7385,0.3087,0.0702,[[0.6277,0.7571,0.2589,0.0168],[0.6277,0.7733,0.2731,0.0168]]],null],"338":["l3-14","第3講スライド p.14","血中のCa2＋濃度が低下した時、副甲状腺からパラトニン（PTH)が分泌され、骨芽細胞膜上に存在するPTH受容体に結合すると、Gsαタンパク質を介してアデニル酸シクラーゼが活性化され、細胞内cAMP濃度の上昇に伴いプロテインキナーゼA（PKA）が活性化される。",[0.5881,0.0747,0.3349,0.078,[[0.594,0.0954,0.323,0.0185],[0.594,0.1136,0.323,0.0185]]],null],"359":["l1-02","第1講スライド p.2","",[0.6893,0.1888,0.2353,0.0454,[[0.6952,0.1913,0.2184,0.0202]]],[0.068,0.0497,0.61,0.5929]],"360":["l1-03","第1講スライド p.3","そして、成熟mRNA上をリボソームが5’→3’方向に移動することにより、リボソーム上でタンパク質が合成される。",[0.4992,0.2909,0.4181,0.0466,[[0.5051,0.3136,0.388,0.0214]]],[0.0867,0.0516,0.4181,0.4549]],"361":["l1-04","第1講スライド p.4","1)転写活性化因子がDNA結合ドメインを介してエンハンサーに結合すると、転写活性化因子の転写活性化ドメインに転写共役因子であるコアクチベーターに結合する。",[0.5326,0.6759,0.335,0.0669,[[0.5386,0.6999,0.3112,0.0202]]],null],"362":["l1-03","第1講スライド p.3","5）NF-YやSp1を起点として「基本転写装置の構築」「転写開始複合体の形成」 「基本転写装置の崩壊」「RNAポリメラーゼⅡの放出」が繰り返し起こり、この過程で、 「基本転写装置の構築」と「基本転写装置の崩壊」がRNAポリメラーゼⅡの放出回数を決めることになり、ひいては、RNAポリラーゼⅡが転写領域を何回、移動するかを決めることになる",[0.5414,0.7889,0.3647,0.1059,[[0.5474,0.8116,0.3528,0.0202],[0.5474,0.8317,0.3528,0.0202],[0.5474,0.8519,0.145,0.0202]]],[0.0867,0.0516,0.4181,0.4549]],"363":["l1-11","第1講スライド p.11","リン酸基を含む部分は親水性頭部として水に親和性を示し、脂肪酸鎖部分は疎水性尾部として水を避ける。",[0.6147,0.1107,0.2952,0.078,[[0.6206,0.1314,0.2696,0.0185],[0.6206,0.1495,0.2696,0.0185]]],[0.2622,0.0585,0.3626,0.4421]],"364":["l2-05","第2講スライド p.5","パルミチン酸レチノールは小腸で加水分解されてレチノールとなり、β-カロテンは小腸上皮細胞でレチナールを経てレチノールとなる。",[0.5362,0.7413,0.383,0.0961,[[0.5422,0.7619,0.3658,0.0185],[0.5422,0.7801,0.3711,0.0185],[0.5422,0.7982,0.3605,0.0185]]],[0.0882,0.031,0.7973,0.2941]],"365":["l2-05","第2講スライド p.5","生成したレチナールは、小腸上皮細胞内で、レチナール還元酵素（retinal reductase）により還元されてレチノールとなる。",[0.5362,0.3784,0.383,0.0598,[[0.5422,0.399,0.3605,0.0185]]],[0.0882,0.031,0.7973,0.2941]],"366":["l2-02","第2講スライド p.2","ベタメタゾン吉草酸エステルが結合したGRは二量体を形成して核内へ移行し、IL-1βやTNF-αなどの炎症関連遺伝子の転写調節領域に結合しているNF-κBと相互作用する。",[0.4119,0.6666,0.4952,0.0961,[[0.4179,0.6872,0.4727,0.0185],[0.4179,0.7054,0.4727,0.0185],[0.4179,0.7235,0.478,0.0185]]],[0.3885,0.0504,0.4983,0.3541]],"367":["l2-11","第2講スライド p.11","レチノイン酸受容体には、α、β、 γ の3つのサブタイプがある。",[0.5014,0.5633,0.4311,0.0417,[[0.5181,0.5659,0.4032,0.0185]]],null],"368":["l2-09","第2講スライド p.9","",[0.081,0.4556,0.397,0.0852,[[0.0869,0.4743,0.349,0.0168]]],null],"369":["l2-09","第2講スライド p.9","2)骨髄内で腫瘍性前骨髄球が大量に増殖すると、この異常細胞が、赤芽球系前駆細胞が骨髄内で成長・分化する領域を占拠するため、赤血球が十分に作られず、貧血が生じる。",[0.4822,0.776,0.4466,0.0702,[[0.4881,0.7946,0.4203,0.0168],[0.4881,0.8108,0.3348,0.0168]]],null],"370":["l2-09","第2講スライド p.9","3)骨髄内で腫瘍性前骨髄球が大量に増殖すると、この異常細胞が、巨核球前駆細胞が骨髄内で成長・分化する領域を占拠するため、血小板が十分に作られず、出血傾向が高くなる（一次止血不良)。",[0.4822,0.8244,0.4466,0.0541,[[0.4881,0.843,0.4347,0.0168]]],null],"371":["l2-12","第2講スライド p.12","PML-RARA融合遺伝子そのものは残っているため、新たなPML-RARAタンパク質は合成されるが、ATOの存在下ではPML-RARAの分解が促進されるため、APL細胞においてPML-RARAタンパク質が減少する。",[0.0889,0.8121,0.3884,0.0598,[[0.0949,0.8328,0.3711,0.0185]]],null],"372":["l2-10","第2講スライド p.10","なお、トレチノインによるTFとアネキシンⅡの発現抑制は、RARを介した転写調節の回復に伴って二次的に起こる現象として考えられている。",[0.0966,0.9055,0.7785,0.0417,[[0.1026,0.9261,0.6811,0.0185]]],null],"373":["l2-08","第2講スライド p.8","甲状腺から分泌される甲状腺ホルモンはチロキシン（T4）が93％と最も多く、トリヨードチロニン（T3）は5%と少量である。",[0.6111,0.498,0.2984,0.0615,[[0.617,0.5005,0.2653,0.0201],[0.617,0.5187,0.2858,0.0201]]],[0.1017,0.1731,0.5112,0.6716]],"374":["l2-08","第2講スライド p.8","血中ではT4とT3は血漿タンパク質に結合して循環し、遊離型のみが末梢細胞に取り込まれる。",[0.6111,0.5162,0.2984,0.0796,[[0.617,0.5368,0.2816,0.0201],[0.617,0.555,0.2775,0.0201]]],null],"375":["l2-15","第2講スライド p.15","また、TRPV5は、基礎的にも発現して働いているが、",[0.6265,0.2777,0.3029,0.0598,[[0.6324,0.2983,0.2215,0.0185]]],null],"376":["l2-14","第2講スライド p.14","前者では、タンパク質因子の遺伝子の転写調節領域にVDREが存在し、活性型ビタミンD3によって発現が誘導される。",[0.5419,0.6677,0.3551,0.0598,[[0.5479,0.6883,0.3337,0.0185]]],null],"377":["l2-16","第2講スライド p.16","さらに、PTHは腎臓の近位尿細管細胞に作用して、1α-ヒドロキシラーゼの発現を誘導する。",[0.5963,0.3773,0.3135,0.1142,[[0.6129,0.4161,0.2749,0.0185],[0.6022,0.4342,0.2856,0.0185],[0.6022,0.4524,0.2856,0.0185]]],[0.0711,0.2519,0.5365,0.215]],"378":["l3-11","第3講スライド p.11","一方、破骨細胞を介した骨吸収では、骨梁表面のヒドロキシアパタイトが分解されてCa²⁺と無機リン酸が骨梁の間の組織液に放出され、そのCa²⁺と無機リン酸が血管内に取り込まれて血中に供給され、血液中のCa²⁺と無機リン酸の濃度が上昇する方向に作用する。",[0.5763,0.7083,0.2807,0.1024,[[0.5822,0.743,0.1638,0.0182],[0.595,0.7592,0.2174,0.0168]]],null],"379":["l3-15","第3講スライド p.15","【骨粗鬆症で、皮質骨に比べて、海綿骨の骨量減少が早い理由】・表面積依存性",[0.0859,0.7098,0.4044,0.086,[[0.0918,0.7385,0.3124,0.0185]]],null],"380":["l3-15","第3講スライド p.15","骨折をしやすい部位は、海綿骨の割合の多い、背骨を構成している脊椎椎体や大腿骨近位部である。",[0.0859,0.6917,0.4044,0.1042,[[0.0918,0.7123,0.3444,0.0185],[0.0918,0.7385,0.3124,0.0185]]],null],"381":["l3-15","第3講スライド p.15","疼痛が発生したときは骨折の可能性を考えるが、骨粗鬆症は、基本的に無症状で進行する。",[0.0859,0.6735,0.4044,0.0598,[[0.0918,0.6942,0.3872,0.0185]]],null],"382":["l3-14","第3講スライド p.14","",[0.0771,0.7928,0.4685,0.0598,[[0.083,0.8134,0.4513,0.0185]]],null],"383":["l3-14","第3講スライド p.14","・M-CSF：Macrophage Colony-Stimulating Factor：マクロファージコロニー刺激因子骨芽細胞から分泌される液性因子であり、破骨細胞前駆細胞の増殖と生存を支え、さらにRANK受容体の発現を維持して、RANKLに応答できる状態にする。",[0.0771,0.7383,0.4685,0.078,[[0.083,0.759,0.4513,0.0185],[0.083,0.7771,0.2856,0.0185]]],null],"384":["l3-19","第3講スライド p.19","ビスホスホネート製剤の二つのホスホネート基が解離して、ヒドロキシアパタイトのCa²⁺と結合する。",[0.6217,0.5449,0.3087,0.0702,[[0.6277,0.5636,0.2873,0.0168],[0.6277,0.5797,0.2873,0.0168]]],null],"385":["l3-19","第3講スライド p.19","低分子GTP結合タンパク質のシステイン残基のSH基にファルネシル基が共有結合する翻訳後修飾抗RANKL抗体",[0.1085,0.9329,0.316,0.0185,[[0.1145,0.9354,0.3042,0.0134]]],null],"386":["l3-17","第3講スライド p.17","また、ビタミンD₃誘導体であるエルデカルシトールは、アルファカルシドールよりも強い骨吸収抑制作用を有する。",[0.5225,0.1168,0.3466,0.0421,[[0.5284,0.1362,0.32,0.0201]]],null],"387":["l3-18","第3講スライド p.18","また、エストラジオールは、破骨細胞にも直接作用して、ER依存的にアポトーシスを引き起こす。",[0.4958,0.5027,0.4151,0.1142,[[0.5017,0.5233,0.3979,0.0185],[0.5017,0.5415,0.3979,0.0185],[0.5017,0.5596,0.3979,0.0185],[0.5017,0.5778,0.2589,0.0185]]],[0.4812,0.1081,0.3913,0.2682]],"388":["l3-16","第3講スライド p.16","各ネフロンは、腎皮質に位置する腎小体と、それに連続する尿細管系からなる。",[0.0841,0.6676,0.4242,0.0541,[[0.0901,0.6863,0.4108,0.0168]]],null],"389":["l3-16","第3講スライド p.16","遠位尿細管では、 Ca2+とNa＋の再吸収が起こり、集合管では、バソプレシンによる水の再吸収やアルドステロンによるNa＋の再吸収が起こる。",[0.0841,0.7321,0.4242,0.0541,[[0.0901,0.7506,0.4046,0.017]]],null],"390":["l3-13","第3講スライド p.13","また、類骨形成の際、骨芽細胞は骨基質の表面に付着するだけでなく、分泌した類骨の中に部分的に埋まり込むように存在して、埋没した骨芽細胞はやがて骨細胞へと分化し、類骨の石灰化が進むと骨梁内の骨細胞ネットワークを形成します。",[0.5791,0.7116,0.349,0.0993,[[0.5865,0.7313,0.3256,0.0177],[0.5865,0.7484,0.3256,0.0177],[0.5865,0.7655,0.1337,0.0177]]],null],"391":["l3-15","第3講スライド p.15","皮質骨よりリモデリングが早いため、骨形成より骨吸収が優位になると骨量減少が加速する",[0.0859,0.6917,0.4044,0.1405,[[0.0918,0.7123,0.3444,0.0185],[0.0918,0.7385,0.3124,0.0185],[0.0918,0.7748,0.3551,0.0185],[0.0918,0.8111,0.3925,0.0185]]],null],"392":["l3-18","第3講スライド p.18","さらに、エストラジオールは、骨芽細胞に作用して、ER依存的に「骨基質であるⅠ型コラーゲン、オステオカルシン」や「類骨の石灰化に関与するアルカリホスファターゼ」を発現誘導したり、骨芽細胞の生存維持にも関与して、骨形成の促進に寄与する。",[0.4958,0.4119,0.4151,0.1324,[[0.5017,0.4326,0.4032,0.0185],[0.5017,0.4507,0.3979,0.0185],[0.5017,0.4689,0.3872,0.0185],[0.5017,0.487,0.3979,0.0185],[0.5017,0.5052,0.3979,0.0185]]],[0.4812,0.1081,0.3913,0.2682]],"393":["l2-09","第2講スライド p.9","1)骨髄内で腫瘍性前骨髄球が大量に増殖すると、この異常細胞が、顆粒球‐単球前駆細胞が骨髄内で成長・分化する領域を占拠するため、成熟好中球が十分に作られず、感染症にかかりやすくなる。",[0.4822,0.7599,0.4466,0.1186,[[0.4881,0.7785,0.4298,0.0168],[0.4881,0.7946,0.4203,0.0168],[0.4881,0.8108,0.3348,0.0168],[0.4881,0.8269,0.4107,0.0168],[0.4881,0.843,0.4347,0.0168]]],[0.4891,0.1808,0.3591,0.175]]};
+
+// ===================== STORAGE =====================
+const KEY="mbq-v1";
+const store={
+  load(){try{return JSON.parse(localStorage.getItem(KEY))||{byQ:{},log:[]}}catch(e){return {byQ:{},log:[]}}},
+  save(s){try{localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}}
+};
+let S=store.load();
+let cfg={len:10,type:"all"};
+let session=null;
+
+// ===================== HELPERS =====================
+const $=id=>document.getElementById(id);
+const norm=s=>(s||"").replace(/[\s　,、。.・]/g,"").replace(/[Ａ-Ｚａ-ｚ０-９]/g,c=>String.fromCharCode(c.charCodeAt(0)-0xFEE0)).toLowerCase();
+function lecName(l){return l===5?"予習範囲":`第${l}講`}
+function band(p){return p>=80?"good":p>=60?"warn":"bad"}
+function bandLabel(p){return p>=80?"安定":p>=60?"あと少し":"要復習"}
+function pct(ok,n){return n? Math.round(ok/n*100):0}
+
+function qStat(id){const r=S.byQ[id];return r||{n:0,ok:0,last:null}}
+function wrongIds(){return Q.filter(q=>qStat(q.id).last===false).map(q=>q.id)}
+function topicStats(){
+  const m={};
+  Q.forEach(q=>{const r=qStat(q.id); if(!r.n)return; (m[q.t]=m[q.t]||{n:0,ok:0}); m[q.t].n+=r.n; m[q.t].ok+=r.ok;});
+  return m;
+}
+function lecStats(){
+  const m={1:{n:0,ok:0},2:{n:0,ok:0},3:{n:0,ok:0},4:{n:0,ok:0},5:{n:0,ok:0}};
+  Q.forEach(q=>{const r=qStat(q.id); if(!r.n)return; m[q.lec].n+=r.n; m[q.lec].ok+=r.ok;});
+  return m;
+}
+function pool(mode){
+  let list=Q.filter(q=>cfg.type==="all"||q.type===cfg.type);
+  if(mode==="lec1")list=list.filter(q=>q.lec===1);
+  if(mode==="lec2")list=list.filter(q=>q.lec===2);
+  if(mode==="lec3")list=list.filter(q=>q.lec===3);
+  if(mode==="lec4")list=list.filter(q=>q.lec===4);
+  if(mode==="lec5")list=list.filter(q=>q.lec===5);
+  if(mode==="wrong"){const w=wrongIds();list=list.filter(q=>w.includes(q.id));}
+  return list;
+}
+function buildSession(mode){
+  let list=pool(mode).slice();
+  if(mode==="weak"){
+    const ts=topicStats();
+    const weight=q=>{const t=ts[q.t]; if(!t||t.n<2)return 2; const p=pct(t.ok,t.n); return p<60?4:p<80?2:1;};
+    const bag=[];list.forEach(q=>{const w=weight(q);for(let i=0;i<w;i++)bag.push(q)});
+    list=[];const seen=new Set();
+    while(bag.length&&list.length<Math.min(cfg.len,pool(mode).length)){
+      const i=Math.floor(Math.random()*bag.length);const q=bag.splice(i,1)[0];
+      if(!seen.has(q.id)){seen.add(q.id);list.push(q)}
+    }
+    return list;
+  }
+  for(let i=list.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[list[i],list[j]]=[list[j],list[i]]}
+  return list.slice(0,cfg.len);
+}
+
+// ===================== HOME RENDER =====================
+function renderHome(){
+  let n=0,ok=0,seen=0;
+  Q.forEach(q=>{const r=qStat(q.id); if(r.n){seen++;n+=r.n;ok+=r.ok}});
+  const p=pct(ok,n);
+  $("dial").style.setProperty("--p",p);
+  $("dial").style.setProperty("--c",`var(--${band(p)})`);
+  $("dialNum").textContent=n?p+"%":"—";
+  $("dialNum").style.color=`var(--${band(p)})`;
+  $("heroLine").textContent=n?`${n}回中 ${ok}問 正解`:"まだ解答がありません";
+  $("kTotal").textContent=n; $("kWrong").textContent=wrongIds().length; $("kSeen").innerHTML=seen+'<span style="font-size:.7rem">/'+Q.length+'</span>';
+  ["lec1","lec2","lec3","lec4","lec5","all","wrong","weak"].forEach(m=>{
+    const c=(m==="weak")?pool("all").length:pool(m).length;
+    $("c-"+m).textContent=c;
+    const btn=document.querySelector(`.mode[data-mode="${m}"]`);
+    if(btn)btn.disabled=c===0;
+  });
+  // topic bars
+  const ts=topicStats();
+  const rows=Object.entries(ts).filter(([,v])=>v.n>=3).sort((a,b)=>pct(a[1].ok,a[1].n)-pct(b[1].ok,b[1].n));
+  $("topicBars").innerHTML=rows.length?rows.map(([name,v])=>{
+    const p=pct(v.ok,v.n);
+    return `<div class="bar ${band(p)}"><span class="name">${name} <span class="tag">${bandLabel(p)}</span></span><span class="num">${p}% ・ ${v.ok}/${v.n}</span><span class="track"><span class="fill" style="width:${p}%"></span></span></div>`;
+  }).join(""):'<p class="muted" style="font-size:.88rem">3問以上解いた論点が出てくると、ここに弱点が並びます。</p>';
+  // lecture bars
+  const ls=lecStats();
+  $("lecBars").innerHTML=[1,2,3,4,5].map(l=>{
+    const v=ls[l],p=pct(v.ok,v.n);
+    const label=v.n?`${p}% ・ ${v.ok}/${v.n}`:"未着手";
+    return `<div class="bar ${v.n?band(p):""}"><span class="name">${lecName(l)}</span><span class="num">${label}</span><span class="track"><span class="fill" style="width:${v.n?p:0}%"></span></span></div>`;
+  }).join("");
+}
+
+// ===================== QUIZ =====================
+function show(id){["home","quiz","result"].forEach(s=>$(s).hidden=s!==id);$("homeBtn").hidden=id==="home";
+  $("screenTitle").textContent=id==="home"?"演習モード":id==="quiz"?"演習中":"結果";window.scrollTo({top:0});}
+
+function start(mode){
+  const list=buildSession(mode);
+  if(!list.length)return;
+  session={mode,list,i:0,results:[]};
+  show("quiz");renderQ();
+}
+function renderQ(){
+  const q=session.list[session.i];
+  $("progFill").style.width=(session.i/session.list.length*100)+"%";
+  $("qCount").textContent=`${session.i+1} / ${session.list.length}`;
+  const typeName={tf:"正誤",mc:"四択",desc:"記述",cloze:"穴埋め"}[q.type];
+  $("qChips").innerHTML=`<span class="chip type">${typeName}</span><span class="chip">${lecName(q.lec)}</span><span class="chip">${q.t}</span>`;
+  $("qText").textContent=q.type==="cloze"?"空欄に入る語句を答えよ。":q.q;
+  $("feedback").innerHTML="";$("nextBtn").hidden=true;
+  const area=$("answerArea");
+  if(q.type==="tf"){
+    area.innerHTML=`<div class="tfrow"><button class="opt" data-v="1">○</button><button class="opt" data-v="0">×</button></div>`;
+    area.querySelectorAll(".opt").forEach(b=>b.addEventListener("click",()=>answerTF(q,b.dataset.v==="1",b)));
+  }else if(q.type==="mc"){
+    const order=q.ch.map((_,i)=>i);
+    for(let i=order.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]]}
+    session.order=order;
+    area.innerHTML=`<div class="opts">${order.map((orig,i)=>`<button class="opt" data-i="${i}">${q.ch[orig]}</button>`).join("")}</div>`;
+    area.querySelectorAll(".opt").forEach(b=>b.addEventListener("click",()=>answerMC(q,+b.dataset.i)));
+  }else if(q.type==="cloze"){
+    renderCloze(q);
+  }else{
+    area.innerHTML=`<textarea id="descIn" placeholder="キーワードを落とさないように書いてみてください。"></textarea>
+      <button class="primary" id="gradeBtn" style="margin-top:10px">採点する</button>`;
+    $("gradeBtn").addEventListener("click",()=>answerDesc(q));
+  }
+}
+function lock(){document.querySelectorAll("#answerArea .opt").forEach(b=>b.disabled=true);const g=$("gradeBtn");if(g)g.hidden=true;}
+const PAGE_AR=842/595.22;
+function cropHTML(src,r){
+  const [x,y,w,h,hl]=r;
+  const bx=w<0.999?x/(1-w)*100:0, by=h<0.999?y/(1-h)*100:0;
+  const marks=(hl||[]).map(([hx,hy,hw,hh])=>`<span class="mk" style="left:${(hx-x)/w*100}%;top:${(hy-y)/h*100}%;width:${hw/w*100}%;height:${hh/h*100}%"></span>`).join("");
+  return `<button type="button" class="crop zoomable" data-src="${src}" aria-label="スライドの切り抜き(タップで全体を拡大)" style="aspect-ratio:${(w*PAGE_AR/h).toFixed(4)};background-image:url('${src}');background-size:${(100/w).toFixed(3)}% auto;background-position:${bx.toFixed(3)}% ${by.toFixed(3)}%">${marks}</button>`;
+}
+function openZoom(src){
+  let lb=document.getElementById("lb");
+  if(!lb){lb=document.createElement("div");lb.id="lb";lb.setAttribute("role","dialog");lb.setAttribute("aria-modal","true");
+    lb.innerHTML='<div class="lbbar"><span>ピンチ・スクロールで拡大して確認</span><button type="button" id="lbClose">閉じる</button></div><div class="lbbox"><img id="lbImg" alt="講義スライド"></div><div class="lbzoom"><button type="button" data-z="-1">縮小</button><button type="button" data-z="0">幅に合わせる</button><button type="button" data-z="1">拡大</button></div>';
+    document.body.appendChild(lb);
+    lb.querySelector("#lbClose").addEventListener("click",()=>{lb.hidden=true;document.body.style.overflow=""});
+    lb.querySelector(".lbzoom").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;const z=+b.dataset.z;
+      lb.dataset.z=z===0?1:Math.min(4,Math.max(1,(+lb.dataset.z||1)+z*0.75));lb.querySelector("#lbImg").style.width=(lb.dataset.z*100)+"%";});
+    document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!lb.hidden){lb.hidden=true;document.body.style.overflow=""}});
+  }
+  lb.dataset.z=1;const im=lb.querySelector("#lbImg");im.style.width="100%";im.src=src;lb.hidden=false;document.body.style.overflow="hidden";
+}
+document.addEventListener("click",e=>{const z=e.target.closest(".zoomable");if(z){e.preventDefault();openZoom(z.dataset.src);}});
+function record(q,correct){
+  const r=S.byQ[q.id]||{n:0,ok:0,last:null};
+  r.n++; if(correct)r.ok++; r.last=correct; S.byQ[q.id]=r;
+  S.log.push({id:q.id,c:correct,t:Date.now()}); if(S.log.length>400)S.log=S.log.slice(-400);
+  store.save(S);
+  session.results.push({q,correct});
+  const sl=SLIDE[q.id];
+  if(sl){
+    const [pg,label,quote,t,f]=sl, src=`slides/${pg}.jpg`;
+    const ex=quote?`<blockquote class="slq">${esc(quote)}</blockquote>`:"";
+    const parts=[];
+    if(t)parts.push(`<p class="cropcap">スライドの記述(該当行に黄色の線)</p>`+cropHTML(src,t));
+    parts.push(`<p class="cropcap">スライド全体(図はここで確認)</p><button type="button" class="zoomable" data-src="${src}" aria-label="${label}を拡大"><img class="full" loading="lazy" src="${src}" alt="${label}"></button>`);
+    $("feedback").insertAdjacentHTML("beforeend",`<details class="model slide" style="margin-top:10px"${correct?"":" open"}><summary>講義スライドで確認(${label})</summary><div class="body">${ex}${parts.join("")}<p class="src">画像をタップすると拡大表示します(2本指で拡大・スクロールできます)。切り抜き位置は自動で決めているので、ずれていることがあります。</p></div></details>`);
+  }
+  $("nextBtn").hidden=false;
+  $("nextBtn").textContent=session.i===session.list.length-1?"結果を見る":"次の問題へ";
+}
+function verdictHTML(ok,txt){return `<div class="verdict ${ok?"ok":"ng"}">${ok?"正解":"不正解"}${txt?" ・ "+txt:""}</div>`}
+function answerTF(q,v,btn){
+  lock();const ok=(v===q.a);
+  document.querySelectorAll("#answerArea .opt").forEach(b=>{
+    const val=b.dataset.v==="1";
+    if(val===q.a)b.classList.add("right"); else if(b===btn)b.classList.add("wrong");
+  });
+  $("feedback").innerHTML=verdictHTML(ok,`正答は ${q.a?"○":"×"}`)+
+    (q.fix?`<div class="explain" style="margin-top:10px"><b>直すところ:</b> ${q.fix}<br>${q.ex}</div>`:`<div class="explain" style="margin-top:10px">${q.ex}</div>`);
+  record(q,ok);
+}
+function answerMC(q,i){
+  const order=session.order||q.ch.map((_,k)=>k);
+  lock();const ok=order[i]===q.a;
+  document.querySelectorAll("#answerArea .opt").forEach((b,bi)=>{
+    if(order[bi]===q.a)b.classList.add("right"); else if(bi===i)b.classList.add("wrong");
+  });
+  $("feedback").innerHTML=verdictHTML(ok)+`<div class="explain" style="margin-top:10px">${q.ex}</div>`;
+  record(q,ok);
+}
+function answerDesc(q){
+  const txt=norm($("descIn").value);
+  if(!txt.trim()){return}
+  const hits=q.kw.map(k=>({k:k.k,hit:k.a.some(a=>txt.includes(norm(a)))}));
+  const n=hits.filter(h=>h.hit).length;
+  const ratio=n/hits.length, ok=ratio>=0.7;
+  lock();
+  $("feedback").innerHTML=
+    verdictHTML(ok,`キーワード ${n}/${hits.length}`)+
+    `<div class="explain" style="margin-top:10px"><b>採点の内訳</b><div class="kw" style="margin-top:8px">${hits.map(h=>`<span class="${h.hit?"hit":"miss"}">${h.hit?"✓":"✗"} ${h.k}</span>`).join("")}</div>
+     <p class="muted" style="font-size:.82rem;margin-top:10px">赤い語が答案に見当たらなかったものです。表現が違うだけで書けていた場合は、下のボタンで判定を変えられます。</p></div>
+    <details class="model" style="margin-top:10px"><summary>模範解答を見る</summary><div class="body">${q.model}</div></details>
+    <button class="ghost" id="flipBtn" style="margin-top:10px;width:100%;padding:10px">自己判定で ${ok?"不正解":"正解"} にする</button>`;
+  record(q,ok);
+  $("flipBtn").addEventListener("click",()=>{
+    const r=S.byQ[q.id]; const was=r.last; r.last=!was; r.ok+=was?-1:1; S.byQ[q.id]=r; store.save(S);
+    session.results[session.results.length-1].correct=!was;
+    $("flipBtn").textContent="判定を変更しました";$("flipBtn").disabled=true;
+  });
+}
+// ---------- cloze ----------
+const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const GREEK={"α":"a","β":"b","γ":"g","κ":"k","δ":"d","ε":"e"};
+function cnorm(s){
+  s=(s||"").normalize("NFKC").toLowerCase();
+  s=s.replace(/[αβγκδε]/g,c=>GREEK[c]);
+  s=s.replace(/[\u30a1-\u30f6]/g,c=>String.fromCharCode(c.charCodeAt(0)-0x60));
+  return s.replace(/[\s　,、。.・\-‐－–—~〜～()（）'’`"“”「」\/／]/g,"");
+}
+function clozeParts(q){
+  const out=[];const re=/\{\{(.*?)\}\}/g;let m,last=0;
+  while((m=re.exec(q.q))){out.push({text:q.q.slice(last,m.index)});const ks=m[1].split("|");
+    if(ks[0].startsWith("@"))out.push({a:ks[0].slice(1),keys:[ks[0].slice(1)],opts:ks.slice(1),sel:true});
+    else out.push({a:ks[0],keys:ks});last=re.lastIndex;}
+  out.push({text:q.q.slice(last)});return out;
+}
+function clozeOK(input,keys){
+  const ni=cnorm(input); if(!ni)return false;
+  return keys.some(k=>{const nk=cnorm(k); if(!nk)return false;
+    return ni===nk || (nk.length>=2&&ni.includes(nk)) || (nk.includes(ni)&&ni.length>=Math.max(2,Math.ceil(nk.length*0.7)));});
+}
+function renderCloze(q){
+  const parts=clozeParts(q);let bi=0;
+  const html=parts.map(p=>{
+    if(p.text!==undefined)return esc(p.text);
+    if(p.sel){const i=bi++;return `<span class="pick" data-b="${i}" data-v="" role="group" aria-label="空欄${bi}">${p.opts.map(o=>`<button type="button" data-o="${esc(o)}" aria-pressed="false">${esc(o)}</button>`).join("")}</span>`;}
+    const w=Math.min(Math.max([...p.a].length,3),13);
+    return `<input type="text" data-b="${bi++}" style="width:${w*0.95+1.4}em" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="next" aria-label="空欄${bi}">`;
+  }).join("");
+  const area=$("answerArea");
+  area.innerHTML=`<div class="cz" id="czBox">${html}</div>
+    <p class="src" style="margin-top:6px">${esc(q.src||"")} ・ 空欄 ${bi}か所</p>
+    <div class="row" style="margin-top:10px;flex-wrap:nowrap">
+      <button class="primary" id="gradeBtn">答え合わせ</button>
+      <button class="ghost" id="giveupBtn" style="flex:none;padding:12px 14px">答えを見る</button>
+    </div>`;
+  // Enter(スマホの「次へ」「改行」「完了」)は次の空欄へ移るだけ。採点は「答え合わせ」ボタンでのみ行う
+  area.querySelectorAll("#czBox .pick").forEach(g=>g.addEventListener("click",e=>{
+    const btn=e.target.closest("button"); if(!btn||g.dataset.locked)return;
+    g.dataset.v=btn.dataset.o;
+    g.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===btn?"true":"false"));
+  }));
+  const ins=[...area.querySelectorAll("#czBox [data-b]")];
+  ins.forEach((el,i)=>{ if(el.tagName!=="INPUT")return;
+    el.addEventListener("keydown",e=>{
+      if((e.key==="Enter"||e.keyCode===13)&&!e.isComposing&&e.keyCode!==229){
+        e.preventDefault();
+        const next=ins.slice(i+1).find(x=>x.tagName==="INPUT");
+        if(next)next.focus(); else el.blur();
+      }
+    });
+  });
+  $("gradeBtn").addEventListener("click",()=>answerCloze(q,false));
+  $("giveupBtn").addEventListener("click",()=>answerCloze(q,true));
+}
+function answerCloze(q,giveup){
+  const blanks=clozeParts(q).filter(p=>p.a!==undefined);
+  const ins=[...document.querySelectorAll("#czBox [data-b]")];
+  const val=el=>el.classList.contains("pick")?el.dataset.v:el.value;
+  if(!giveup&&ins.every(el=>!val(el).trim())){return}
+  let n=0;
+  ins.forEach((el,i)=>{
+    const ok=!giveup&&(blanks[i].sel?val(el)===blanks[i].a:clozeOK(el.value,blanks[i].keys)); if(ok)n++;
+    if(el.classList.contains("pick")){el.dataset.locked="1";el.querySelectorAll("button").forEach(x=>x.disabled=true);} else el.readOnly=true; el.classList.add(ok?"right":"wrong");
+    if(!ok){const s=document.createElement("span");s.className="ans";s.textContent=blanks[i].a;el.after(s);}
+  });
+  const g=$("gradeBtn");if(g)g.parentElement.hidden=true;
+  const ok=n===blanks.length;
+  const missed=blanks.filter((b,i)=>!ins[i].classList.contains("right"));
+  $("feedback").innerHTML=verdictHTML(ok,`空欄 ${n}/${blanks.length}`)+
+    `<div class="explain" style="margin-top:10px">${missed.length?`<b>落とした空欄:</b> ${missed.map(b=>esc(b.a)).join(" ／ ")}`:"すべての空欄が合っています。"}
+     ${q.note?`<p style="margin-top:8px"><b>注:</b> ${q.note}</p>`:""}
+     ${!ok&&!giveup?`<p class="muted" style="font-size:.82rem;margin-top:8px">別の言い方で合っていた場合は、下のボタンで正解にできます。</p>`:""}</div>`+
+    (!ok&&!giveup?`<button class="ghost" id="flipBtn" style="margin-top:10px;width:100%;padding:10px">自己判定で正解にする</button>`:"");
+  record(q,ok);
+  const fb=$("flipBtn");
+  if(fb)fb.addEventListener("click",()=>{
+    const r=S.byQ[q.id]; r.last=true; r.ok+=1; S.byQ[q.id]=r; store.save(S);
+    session.results[session.results.length-1].correct=true;
+    fb.textContent="正解に変更しました";fb.disabled=true;
+  });
+}
+$("nextBtn").addEventListener("click",()=>{
+  if(session.i===session.list.length-1){finish()}else{session.i++;renderQ()}
+});
+function finish(){
+  const ok=session.results.filter(r=>r.correct).length,n=session.results.length,p=pct(ok,n);
+  $("rDial").style.setProperty("--p",p);$("rDial").style.setProperty("--c",`var(--${band(p)})`);
+  $("rDialNum").textContent=p+"%";$("rDialNum").style.color=`var(--${band(p)})`;
+  $("rLine").textContent=`${n}問中 ${ok}問 正解`;
+  $("rSub").textContent=p>=80?"この調子なら試験範囲として安定しています。":p>=60?"あと一息。落とした論点を見直しておきましょう。":"ここが今の弱点です。解説を読んでから、もう一度同じモードで回してみてください。";
+  const wrong=session.results.filter(r=>!r.correct);
+  $("rReviewCard").hidden=wrong.length===0;
+  $("rReview").innerHTML=wrong.map(r=>`<div class="rev"><div class="q">${r.q.type==="cloze"?esc(r.q.q.replace(/\{\{(.*?)\}\}/g,"(　　)")):r.q.q}</div><div class="a">${r.q.type==="tf"?`正答 ${r.q.a?"○":"×"}${r.q.fix?" ・ "+r.q.fix:""}`:r.q.type==="mc"?`正答: ${r.q.ch[r.q.a]}`:r.q.type==="cloze"?`空欄: ${clozeParts(r.q).filter(p=>p.a!==undefined).map(p=>esc(p.a)).join(" ／ ")}`:"模範解答を読み直してください"}</div></div>`).join("");
+  $("retryWrongBtn").hidden=wrong.length===0;
+  show("result");renderHome();
+}
+$("againBtn").addEventListener("click",()=>start(session.mode));
+$("retryWrongBtn").addEventListener("click",()=>{
+  const ids=session.results.filter(r=>!r.correct).map(r=>r.q.id);
+  session={mode:session.mode,list:Q.filter(q=>ids.includes(q.id)),i:0,results:[]};
+  show("quiz");renderQ();
+});
+$("homeBtn").addEventListener("click",()=>{renderHome();show("home")});
+$("resetBtn").addEventListener("click",()=>{
+  if(confirm("すべての正答率と履歴を消します。よろしいですか？")){S={byQ:{},log:[]};store.save(S);renderHome()}
+});
+document.querySelectorAll("#modes .mode").forEach(b=>b.addEventListener("click",()=>start(b.dataset.mode)));
+$("lenSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
+  cfg.len=+b.dataset.len;$("lenSeg").querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));});
+$("typeSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
+  cfg.type=b.dataset.type;$("typeSeg").querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));renderHome();});
+renderHome();
+</script>
+
+</body></html>
