@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>薬学 演習ノート</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+:root{
+  --bg:#F4F6F8; --surface:#FFFFFF; --sunk:#EBEEF2; --line:#DCE1E8;
+  --ink:#141A24; --muted:#59636F; --faint:#8A939F;
+  --accent:#2748A6; --accent-soft:#E2E8F8; --accent-ink:#1E3B8C;
+  --good:#1E7A4C; --warn:#9A6212; --bad:#B3302C;
+  --sans:"Noto Sans JP","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#101319; --surface:#181C24; --sunk:#212632; --line:#2C3340;
+    --ink:#E7EAF0; --muted:#9EA8B6; --faint:#78828F;
+    --accent:#8FA6EE; --accent-soft:#222B44; --accent-ink:#AEBEF5;
+    --good:#5FC08C; --warn:#E0AC5C; --bad:#F08078;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#101319; --surface:#181C24; --sunk:#212632; --line:#2C3340;
+  --ink:#E7EAF0; --muted:#9EA8B6; --faint:#78828F;
+  --accent:#8FA6EE; --accent-soft:#222B44; --accent-ink:#AEBEF5;
+  --good:#5FC08C; --warn:#E0AC5C; --bad:#F08078;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.7;-webkit-text-size-adjust:100%}
+.wrap{max-width:720px;margin:0 auto;padding-inline:16px;padding-block:18px 56px}
+h1{margin:0 0 4px;font-size:1.35rem;line-height:1.35}
+.eyebrow{font-size:.7rem;letter-spacing:.14em;color:var(--faint);font-weight:700}
+.muted{color:var(--muted);font-size:.85rem;margin:0 0 16px}
+.list{display:grid;gap:8px}
+.subj{display:grid;grid-template-columns:1fr auto;gap:2px 12px;align-items:center;background:var(--surface);
+  border:1px solid var(--line);border-radius:12px;padding:14px 16px;color:var(--ink);text-decoration:none}
+a.subj:hover{border-color:var(--accent)}
+a.subj:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.subj b{font-size:1rem}
+.subj small{grid-column:1;color:var(--muted);font-size:.8rem;line-height:1.5}
+.subj .st{grid-column:2;grid-row:1/3;font-family:var(--mono);font-size:.8rem;padding:4px 10px;border-radius:999px;
+  background:var(--accent-soft);color:var(--accent-ink);white-space:nowrap}
+.subj.soon{opacity:.5}
+.subj.soon .st{background:var(--sunk);color:var(--muted)}
+footer{margin-top:24px;font-size:.78rem;color:var(--faint);text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">名城大学 薬学部</div>
+  <h1>演習ノート</h1>
+  <p class="muted">科目を選んで演習を始めます。記録は科目ごとに、この端末のブラウザに保存されます。</p>
+  <div class="list" id="list"></div>
+  <footer>科目を増やすときは index.html の SUBJECTS に1行追加</footer>
+</div>
+<script>
+// path: フォルダ名 / key: そのアプリの localStorage キー(科目ごとに別にする) / ready: 公開済みか
+const SUBJECTS = [
+  {path:"molbio2", name:"分子生物学Ⅱ", desc:"第1〜4講+予習範囲・382問", key:"mbq-v1", ready:true},
+];
+
+function stat(key){
+  try{
+    const s = JSON.parse(localStorage.getItem(key));
+    let n = 0, ok = 0;
+    Object.values((s && s.byQ) || {}).forEach(r => { n += r.n || 0; ok += r.ok || 0; });
+    return n ? `${Math.round(ok / n * 100)}% ・ ${n}回` : "未着手";
+  }catch(e){ return "未着手"; }
+}
+
+const list = document.getElementById("list");
+SUBJECTS.forEach(s => {
+  const el = document.createElement(s.ready ? "a" : "div");
+  el.className = "subj" + (s.ready ? "" : " soon");
+  if (s.ready) el.href = s.path + "/";
+  el.innerHTML = `<b></b><span class="st"></span><small></small>`;
+  el.querySelector("b").textContent = s.name;
+  el.querySelector("small").textContent = s.desc;
+  el.querySelector(".st").textContent = s.ready ? stat(s.key) : "準備中";
+  list.appendChild(el);
+});
+</script>
+</body>
+</html>
